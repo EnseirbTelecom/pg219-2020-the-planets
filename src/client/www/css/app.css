@@ -50,3 +50,37 @@
 }
 
 /* Your app custom styles here */
+
+form {
+  margin: 0 auto;
+  width: 500px;
+  padding: 1em;
+  border: 1px solid;
+}
+
+form div + div {
+  margin-top: 1em;
+}
+
+label {
+  display: inline-block;
+  width: 90px;
+  text-align: right;
+  margin-right: 15px;
+}
+
+input{
+  width: 300px;
+}
+
+.formulaire{
+  display: flex;
+}
+
+.button {
+  padding-left: 90px;
+}
+
+button {
+  margin-left: .5em;
+}

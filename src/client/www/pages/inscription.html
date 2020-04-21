@@ -1,0 +1,39 @@
+<template>
+  <div class="page" data-name="home">
+  <div class="appbar">
+    <a href="#" class="link back">
+      <i class="icon icon-back"></i>
+      <span class="if-not-md">Back</span>
+    </a>
+    <div class="appbar-inner">
+      FriendFinder
+    </div>
+  </div>
+  <div class="page-content block ">
+    <form method="post">
+      <div class="formulaire">
+        <label>Nom</label>
+        <input type="text" name="user_name" placeholder="Entrer votre nom">
+      </div>
+      <div class="formulaire">
+        <label>Prénom</label>
+        <input type="text" name="user_surname" placeholder="Entrer votre prénom">
+      </div>
+      <div class="formulaire">
+        <label>Mail</label>
+        <input type="email" name="user_mail" placeholder="Entrer votre email">
+      </div>
+      <div class="formulaire">
+        <label>Passeword</label>
+        <input type="password" name="user_passeword" placeholder="Entrer votre mot de passe">
+      </div>
+      <div class="formulaire">
+        <label>Confirmation</label>
+        <input type="password" name="user_confirm" placeholder="Confirmation mot de passe">
+      </div>
+      <div class="button">
+        <button type="button" name="button">Valider</button>
+      </div>
+    </form>
+  </div>
+</template>
