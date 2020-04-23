@@ -84,3 +84,7 @@ input{
 button {
   margin-left: .5em;
 }
+
+:required{
+  background-color: #FF0000;
+}
