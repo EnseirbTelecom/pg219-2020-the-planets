@@ -1,4 +1,5 @@
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const app = express();
 
 const bodyParser = require('body-parser');
@@ -12,31 +13,82 @@ app.use((req,res,next) => {
   next();
 });
 
+const secretKey = 'secretKey';
+
 const MongoClient = require("mongodb").MongoClient;
 const ObjectID = require("mongodb").ObjectID;
-const urlMongo = "'mongodb://localhost:27017/FriendFinder";
+const urlMongo = "mongodb://localhost:27017/FriendFinder";
 
-MongoClient.connect(urlMongo)
+MongoClient.connect(urlMongo, {poolSize: 10})
            .then(clients => clients.db("FriendFinder"))
            .then(resultat =>{
 
-             app.get("/users",(req,res) =>{
-               resultat.collection("users").findOne({"mail": req.body.mail,"password": req.body.password})
-                       .then(item => (item) ? res.json(item) : res.status(404).json({ error: "Entity not found." }))
-                       .catch(err => console.log("err" + err));
+             app.get("/users",verifyToken,(req,res) =>{
+               jwt.verify(req.token,secretKey,(err,auth) =>{
+                 if (err) {
+                   res.status(401).json(err);
+                 }else{
+                   resultat.collection("users").find().toArray()
+                            .then(items => res.json(items))
+                 }
+               });
              });
 
-             app.post("/users",(req,res) =>{
-               const product = {
+             app.post("/users",(req,res,next) =>{
+               const user = {
                  name: req.body.name,
                  surname: req.body.surname,
                  mail: req.body.mail,
                  password: req.body.password
                };
-               resultat.collection("users").insert(product)
-                       .then(command => res.status(201).json(product));
+               resultat.collection("users").findOne({"mail": req.body.mail},(err,user) =>{
+                 if(user){
+                   return res.status(404).json({ error: "Compte deja existant" });
+                 }else{
+                   next();
+                 }
+               });
+             },(req,res) => {
+               const user = {
+                 name: req.body.name,
+                 surname: req.body.surname,
+                 mail: req.body.mail,
+                 password: req.body.password
+               };
+               resultat.collection("users").insertOne(user , (err,user) => {
+                 if(user){
+                   const forToken = {
+                     mail: req.body.mail,
+                     name: req.body.name,
+                     surname: req.body.surname
+                   }
+                   jwt.sign(forToken,secretKey,{expiresIn: '120s'},(err,token) => {
+                   res.json({token: token});
+                   })
+                 }
+               });
              });
 
+             app.delete("/users",(req,res) =>{
+               resultat.collection("users").deleteMany()
+                        .then(items => res.json(items));
+             })
+
+
+             // Fonction pour Verifier le token
+             // Format authorization: Basic <token>
+
+             function verifyToken(req,res,next) {
+               const tokenHearder = req.headers['authorization'];
+               if(tokenHearder !== undefined){
+                 const splitTokenHeader = tokenHearder.split(' ');
+                 req.token = splitTokenHeader[1];
+                 console.log(req.token);
+                 next();
+               }else{
+                 res.sendStatus(403);
+               }
+             }
 
              app.listen(3000, () => console.log("Awaiting requests."));
            })
