@@ -20,6 +20,14 @@
           <input id="input-surname" type="text" name="user_surname" placeholder="Entrer votre prénom" required />
         </div>
         <div class="formulaire">
+          <label>Pseudo</label>
+          <input id="input-pseudo" type="text" name="user_pseudo" placeholder="Entrer votre pseudo" required />
+        </div>
+        <div class="formulaire">
+          <label>Date de naissance</label>
+          <input id="input-birthday" type="date" name="user_birthday" placeholder="Entrer votre date de naissance" required />
+        </div>
+        <div class="formulaire">
           <label>Mail</label>
           <input id="input-mail" type="email" name="user_mail" placeholder="Entrer votre email" required />
         </div>
@@ -44,26 +52,39 @@
       valider: function() {
         const name = document.querySelector('#input-name').value;
         const surname = document.querySelector('#input-surname').value;
+        const pseudo = document.querySelector('#input-pseudo').value;
+        const birthday = document.querySelector('#input-birthday').value;
         const mail = document.querySelector('#input-mail').value;
         const password = document.querySelector('#input-password').value;
         const confirmation = document.querySelector('#input-confirmation').value;
         if(password === confirmation){
-          if(name && surname && mail && password && confirmation){
+          if(name && surname && mail && password && confirmation && pseudo){
             const url = "http://localhost:3000/users/";
+            let chemin;
+            const router = this.$router;
+            const dialog = this.$app.dialog;
             fetch(url,{
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 name: name,
                 surname: surname,
+                pseudo: pseudo,
+                birthday: birthday,
                 mail: mail,
                 password: password
               })
             })
-            .catch(err => this.$app.dialog.alert('Error ' + err))
-            .finally(() => {
-              this.$router.navigate("/");
-            });
+            .then(function(response){
+              if (response.ok) {
+                chemin ="/";
+                router.navigate(chemin);
+              }
+              else{
+                response.json().then(data =>{dialog.alert(data.error)});
+              }
+            })
+            .catch(err => this.$app.dialog.alert('Error ' + err.message));
           }
           else{
               this.$app.dialog.alert("Il manque des infos");

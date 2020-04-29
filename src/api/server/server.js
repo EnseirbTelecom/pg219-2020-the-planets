@@ -1,6 +1,8 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const app = express();
+const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
@@ -14,6 +16,7 @@ app.use((req,res,next) => {
 });
 
 const secretKey = 'secretKey';
+const saltRounds = 10;
 
 const MongoClient = require("mongodb").MongoClient;
 const ObjectID = require("mongodb").ObjectID;
@@ -29,42 +32,48 @@ MongoClient.connect(urlMongo, {poolSize: 10})
                    res.status(401).json(err);
                  }else{
                    resultat.collection("users").find().toArray()
-                            .then(items => res.json(items))
+                            .then(items => res.status(201).json(items))
                  }
                });
              });
 
              app.post("/users",(req,res,next) =>{
-               const user = {
-                 name: req.body.name,
-                 surname: req.body.surname,
-                 mail: req.body.mail,
-                 password: req.body.password
-               };
                resultat.collection("users").findOne({"mail": req.body.mail},(err,user) =>{
                  if(user){
-                   return res.status(404).json({ error: "Compte deja existant" });
+                   console.log("Compte deja existant");
+                   return res.status(401).json({ error: "Compte deja existant" });
                  }else{
                    next();
                  }
                });
              },(req,res) => {
-               const user = {
-                 name: req.body.name,
-                 surname: req.body.surname,
-                 mail: req.body.mail,
-                 password: req.body.password
-               };
-               resultat.collection("users").insertOne(user , (err,user) => {
-                 if(user){
-                   const forToken = {
-                     mail: req.body.mail,
+               bcrypt.hash(req.body.password,saltRounds, (err,hash) =>{
+                 if (hash) {
+                   const user = {
                      name: req.body.name,
-                     surname: req.body.surname
-                   }
-                   jwt.sign(forToken,secretKey,{expiresIn: '120s'},(err,token) => {
-                   res.json({token: token});
-                   })
+                     surname: req.body.surname,
+                     pseudo: req.body.pseudo,
+                     birthday: req.body.birthday,
+                     mail: req.body.mail,
+                     password: hash
+                   };
+                   resultat.collection("users").insertOne(user , (err,user) => {
+                     if(user){
+                       const forToken = {
+                         mail: req.body.mail,
+                         name: req.body.name,
+                         surname: req.body.surname
+                       }
+                       jwt.sign(forToken,secretKey,{expiresIn: '1h'},(err,token) => {
+                         console.log(token);
+                         res.status(201).json({token: token,
+                                Passeword: hash});
+                       })
+                     }
+                   });
+                 }
+                 else{
+                   res.status(401).send("hash fail");
                  }
                });
              });
