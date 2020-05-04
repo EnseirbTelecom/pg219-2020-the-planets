@@ -1,5 +1,5 @@
 /**
- * Framework7 5.6.0
+ * Framework7 5.5.1
  * Full featured mobile HTML framework for building iOS & Android apps
  * https://framework7.io/
  *
@@ -7,7 +7,7 @@
  *
  * Released under the MIT License
  *
- * Released on: April 18, 2020
+ * Released on: March 20, 2020
  */
 
 (function (global, factory) {
@@ -2826,7 +2826,6 @@
       cordova: !!(win.cordova || win.phonegap),
       phonegap: !!(win.cordova || win.phonegap),
       electron: false,
-      nwjs: false,
     };
 
     var screenWidth = win.screen.width;
@@ -2841,7 +2840,6 @@
     var firefox = ua.indexOf('Gecko/') >= 0 && ua.indexOf('Firefox/') >= 0;
     var windows = platform === 'Win32';
     var electron = ua.toLowerCase().indexOf('electron') >= 0;
-    var nwjs = typeof nw !== 'undefined' && typeof process !== 'undefined' && typeof process.versions !== 'undefined' && typeof process.versions.nw !== 'undefined';
     var macos = platform === 'MacIntel';
 
     // iPadOs 13 fix
@@ -2901,10 +2899,9 @@
     device.standalone = device.webView;
 
     // Desktop
-    device.desktop = !(device.ios || device.android) || electron || nwjs;
+    device.desktop = !(device.ios || device.android) || electron;
     if (device.desktop) {
       device.electron = electron;
-      device.nwjs = nwjs;
       device.macos = macos;
       device.windows = windows;
       if (device.macos) {
@@ -3191,7 +3188,7 @@
     if ( parameters === void 0 ) parameters = {};
 
     var defaultSelector = parameters.defaultSelector;
-    var Constructor = parameters.constructor;
+    var constructor = parameters.constructor;
     var domProp = parameters.domProp;
     var app = parameters.app;
     var addMethods = parameters.addMethods;
@@ -3200,13 +3197,13 @@
         var args = [], len = arguments.length;
         while ( len-- ) args[ len ] = arguments[ len ];
 
-        if (app) { return new (Function.prototype.bind.apply( Constructor, [ null ].concat( [app], args) )); }
-        return new (Function.prototype.bind.apply( Constructor, [ null ].concat( args) ));
+        if (app) { return new (Function.prototype.bind.apply( constructor, [ null ].concat( [app], args) )); }
+        return new (Function.prototype.bind.apply( constructor, [ null ].concat( args) ));
       },
       get: function get(el) {
         if ( el === void 0 ) el = defaultSelector;
 
-        if (el instanceof Constructor) { return el; }
+        if (el instanceof constructor) { return el; }
         var $el = $(el);
         if ($el.length === 0) { return undefined; }
         return $el[0][domProp];
@@ -3237,66 +3234,30 @@
     if ( parameters === void 0 ) parameters = {};
 
     var defaultSelector = parameters.defaultSelector;
-    var Constructor = parameters.constructor;
+    var constructor = parameters.constructor;
     var app = parameters.app;
     var methods = Utils.extend(
       ConstructorMethods({
         defaultSelector: defaultSelector,
-        constructor: Constructor,
+        constructor: constructor,
         app: app,
         domProp: 'f7Modal',
       }),
       {
-        open: function open(el, animate, targetEl) {
+        open: function open(el, animate) {
           var $el = $(el);
-          if ($el.length > 1 && targetEl) {
-            // check if same modal in other page
-            var $targetPage = $(targetEl).parents('.page');
-            if ($targetPage.length) {
-              $el.each(function (index, modalEl) {
-                var $modalEl = $(modalEl);
-                if ($modalEl.parents($targetPage)[0] === $targetPage[0]) {
-                  $el = $modalEl;
-                }
-              });
-            }
-          }
-          if ($el.length > 1) {
-            $el = $el.eq($el.length - 1);
-          }
           if (!$el.length) { return undefined; }
           var instance = $el[0].f7Modal;
-          if (!instance) {
-            var params = $el.dataset();
-            instance = new Constructor(app, Object.assign({}, {el: $el}, params));
-          }
+          if (!instance) { instance = new constructor(app, { el: $el }); }
           return instance.open(animate);
         },
-        close: function close(el, animate, targetEl) {
+        close: function close(el, animate) {
           if ( el === void 0 ) el = defaultSelector;
 
           var $el = $(el);
           if (!$el.length) { return undefined; }
-          if ($el.length > 1) {
-            // check if close link (targetEl) in this modal
-            var $parentEl;
-            if (targetEl) {
-              var $targetEl = $(targetEl);
-              if ($targetEl.length) {
-                $parentEl = $targetEl.parents($el);
-              }
-            }
-            if ($parentEl && $parentEl.length > 0) {
-              $el = $parentEl;
-            } else {
-              $el = $el.eq($el.length - 1);
-            }
-          }
           var instance = $el[0].f7Modal;
-          if (!instance) {
-            var params = $el.dataset();
-            instance = new Constructor(app, Object.assign({}, {el: $el}, params));
-          }
+          if (!instance) { instance = new constructor(app, { el: $el }); }
           return instance.close(animate);
         },
       }
@@ -3544,12 +3505,8 @@
         var html = doc.querySelector('html');
         if (media === DARK) {
           html.classList.add('theme-dark');
-          app.darkTheme = true;
-          app.emit('darkThemeChange', true);
         } else if (media === LIGHT) {
           html.classList.remove('theme-dark');
-          app.darkTheme = false;
-          app.emit('darkThemeChange', false);
         }
       };
 
@@ -3608,12 +3565,8 @@
       }
       if (app.mq.dark && app.mq.dark.matches) {
         html.classList.add('theme-dark');
-        app.darkTheme = true;
-        app.emit('darkThemeChange', true);
       } else if (app.mq.light && app.mq.light.matches) {
         html.classList.remove('theme-dark');
-        app.darkTheme = false;
-        app.emit('darkThemeChange', false);
       }
     };
 
@@ -6167,8 +6120,8 @@
         .removeClass('navbar-previous navbar-current navbar-next')
         .addClass(("navbar-" + newPagePosition + (isMaster ? ' navbar-master' : '') + (isDetail ? ' navbar-master-detail' : '') + (isDetailRoot ? ' navbar-master-detail-root' : '')))
         .removeClass('stacked');
-      $newNavbarEl.trigger('navbar:position', { position: newPagePosition });
-      router.emit('navbarPosition', $newNavbarEl[0], newPagePosition);
+      $newNavbarEl.trigger('navbar:position', { position: 'newPagePosition' });
+      router.emit('navbarPosition', $newNavbarEl[0], 'newPagePosition');
       if (isMaster || isDetail) {
         router.emit('navbarRole', $newNavbarEl[0], { role: isMaster ? 'master' : 'detail', detailRoot: !!isDetailRoot });
       }
@@ -14206,7 +14159,6 @@
         app: app,
         constructor: Popup,
         defaultSelector: '.popup.modal-in',
-        parentSelector: '.popup',
       });
     },
     clicks: {
@@ -14214,13 +14166,13 @@
         if ( data === void 0 ) data = {};
 
         var app = this;
-        app.popup.open(data.popup, data.animate, $clickedEl);
+        app.popup.open(data.popup, data.animate);
       },
       '.popup-close': function closePopup($clickedEl, data) {
         if ( data === void 0 ) data = {};
 
         var app = this;
-        app.popup.close(data.popup, data.animate, $clickedEl);
+        app.popup.close(data.popup, data.animate);
       },
     },
   };
@@ -14291,13 +14243,13 @@
         if ( data === void 0 ) data = {};
 
         var app = this;
-        app.loginScreen.open(data.loginScreen, data.animate, $clickedEl);
+        app.loginScreen.open(data.loginScreen, data.animate);
       },
       '.login-screen-close': function closeLoginScreen($clickedEl, data) {
         if ( data === void 0 ) data = {};
 
         var app = this;
-        app.loginScreen.close(data.loginScreen, data.animate, $clickedEl);
+        app.loginScreen.close(data.loginScreen, data.animate);
       },
     },
   };
@@ -14619,32 +14571,8 @@
         {
           open: function open(popoverEl, targetEl, animate) {
             var $popoverEl = $(popoverEl);
-            if ($popoverEl.length > 1) {
-              // check if same popover in other page
-              var $targetPage = $(targetEl).parents('.page');
-              if ($targetPage.length) {
-                $popoverEl.each(function (index, el) {
-                  var $el = $(el);
-                  if ($el.parents($targetPage)[0] === $targetPage[0]) {
-                    $popoverEl = $el;
-                  }
-                });
-              }
-            }
-            if ($popoverEl.length > 1) {
-              $popoverEl = $popoverEl.eq($popoverEl.length - 1);
-            }
             var popover = $popoverEl[0].f7Modal;
-            var data = $popoverEl.dataset();
-            if (!popover) {
-              popover = new Popover(app, Object.assign(
-                {
-                  el: $popoverEl,
-                  targetEl: targetEl,
-                },
-                data
-              ));
-            }
+            if (!popover) { popover = new Popover(app, { el: $popoverEl, targetEl: targetEl }); }
             return popover.open(targetEl, animate);
           },
         }
@@ -14661,7 +14589,7 @@
         if ( data === void 0 ) data = {};
 
         var app = this;
-        app.popover.close(data.popover, data.animate, $clickedEl);
+        app.popover.close(data.popover, data.animate);
       },
     },
   };
@@ -14776,30 +14704,18 @@
             targetHeight: targetHeight,
             on: {
               open: function open() {
-                if (!actions.$el) {
-                  actions.$el = popover.$el;
-                }
                 actions.$el.trigger(("modal:open " + (actions.type.toLowerCase()) + ":open"));
                 actions.emit(("local::open modalOpen " + (actions.type) + "Open"), actions);
               },
               opened: function opened() {
-                if (!actions.$el) {
-                  actions.$el = popover.$el;
-                }
                 actions.$el.trigger(("modal:opened " + (actions.type.toLowerCase()) + ":opened"));
                 actions.emit(("local::opened modalOpened " + (actions.type) + "Opened"), actions);
               },
               close: function close() {
-                if (!actions.$el) {
-                  actions.$el = popover.$el;
-                }
                 actions.$el.trigger(("modal:close " + (actions.type.toLowerCase()) + ":close"));
                 actions.emit(("local::close modalClose " + (actions.type) + "Close"), actions);
               },
               closed: function closed() {
-                if (!actions.$el) {
-                  actions.$el = popover.$el;
-                }
                 actions.$el.trigger(("modal:closed " + (actions.type.toLowerCase()) + ":closed"));
                 actions.emit(("local::closed modalClosed " + (actions.type) + "Closed"), actions);
               },
@@ -15004,13 +14920,13 @@
         if ( data === void 0 ) data = {};
 
         var app = this;
-        app.actions.open(data.actions, data.animate, $clickedEl);
+        app.actions.open(data.actions, data.animate);
       },
       '.actions-close': function closeActions($clickedEl, data) {
         if ( data === void 0 ) data = {};
 
         var app = this;
-        app.actions.close(data.actions, data.animate, $clickedEl);
+        app.actions.close(data.actions, data.animate);
       },
     },
   };
@@ -15566,13 +15482,13 @@
         if ($('.sheet-modal.modal-in').length > 0 && data.sheet && $(data.sheet)[0] !== $('.sheet-modal.modal-in')[0]) {
           app.sheet.close('.sheet-modal.modal-in');
         }
-        app.sheet.open(data.sheet, data.animate, $clickedEl);
+        app.sheet.open(data.sheet, data.animate);
       },
       '.sheet-close': function closeSheet($clickedEl, data) {
         if ( data === void 0 ) data = {};
 
         var app = this;
-        app.sheet.close(data.sheet, data.animate, $clickedEl);
+        app.sheet.close(data.sheet, data.animate);
       },
     },
   };
@@ -18073,12 +17989,6 @@
       var $oldTabEl = $tabsEl.children('.tab-active');
       $oldTabEl.removeClass('tab-active');
       if (!swiper || (swiper && !swiper.animating) || (swiper && tabRoute)) {
-        if ($oldTabEl.hasClass('view') && $oldTabEl.children('.page').length) {
-          $oldTabEl.children('.page').each(function (pageIndex, pageEl) {
-            $(pageEl).trigger('page:tabhide');
-            app.emit('pageTabHide', pageEl);
-          });
-        }
         $oldTabEl.trigger('tab:hide');
         app.emit('tabHide', $oldTabEl[0]);
       }
@@ -18086,12 +17996,6 @@
       // Trigger 'show' event on new tab
       $newTabEl.addClass('tab-active');
       if (!swiper || (swiper && !swiper.animating) || (swiper && tabRoute)) {
-        if ($newTabEl.hasClass('view') && $newTabEl.children('.page').length) {
-          $newTabEl.children('.page').each(function (pageIndex, pageEl) {
-            $(pageEl).trigger('page:tabshow');
-            app.emit('pageTabShow', pageEl);
-          });
-        }
         $newTabEl.trigger('tab:show');
         app.emit('tabShow', $newTabEl[0]);
       }
@@ -20324,12 +20228,12 @@
     },
     validate: function validate(inputEl) {
       var $inputEl = $(inputEl);
-      if (!$inputEl.length) { return true; }
+      if (!$inputEl.length) { return; }
       var $itemInputEl = $inputEl.parents('.item-input');
       var $inputWrapEl = $inputEl.parents('.input');
       var validity = $inputEl[0].validity;
       var validationMessage = $inputEl.dataset().errorMessage || $inputEl[0].validationMessage || '';
-      if (!validity) { return true; }
+      if (!validity) { return; }
       if (!validity.valid) {
         var $errorEl = $inputEl.nextAll('.item-input-error-message, .input-error-message');
         if (validationMessage) {
@@ -20346,20 +20250,17 @@
         $itemInputEl.addClass('item-input-invalid');
         $inputWrapEl.addClass('input-invalid');
         $inputEl.addClass('input-invalid');
-        return false;
+      } else {
+        $itemInputEl.removeClass('item-input-invalid item-input-with-error-message');
+        $inputWrapEl.removeClass('input-invalid input-with-error-message');
+        $inputEl.removeClass('input-invalid');
       }
-      $itemInputEl.removeClass('item-input-invalid item-input-with-error-message');
-      $inputWrapEl.removeClass('input-invalid input-with-error-message');
-      $inputEl.removeClass('input-invalid');
-      return true;
     },
     validateInputs: function validateInputs(el) {
       var app = this;
-      var validates = $(el)
-        .find('input, textarea, select')
-        .toArray()
-        .map(function (inputEl) { return app.input.validate(inputEl); });
-      return validates.indexOf(false) < 0;
+      $(el).find('input, textarea, select').each(function (index, inputEl) {
+        app.input.validate(inputEl);
+      });
     },
     focus: function focus(inputEl) {
       var $inputEl = $(inputEl);
@@ -20509,11 +20410,7 @@
           .trigger('input:clear', previousValue);
         app.emit('inputClear', previousValue);
       }
-      function preventDefault(e) {
-        e.preventDefault();
-      }
       $(doc).on('click', '.input-clear-button', clearInput);
-      $(doc).on('mousedown', '.input-clear-button', preventDefault);
       $(doc).on('change input', 'input, textarea, select, .item-input [contenteditable]', onChange, true);
       $(doc).on('focus', 'input, textarea, select, .item-input [contenteditable]', onFocus, true);
       $(doc).on('blur', 'input, textarea, select, .item-input [contenteditable]', onBlur, true);
@@ -29383,11 +29280,8 @@
     }
     // Find slides currently in view
     if (swiper.params.slidesPerView !== 'auto' && swiper.params.slidesPerView > 1) {
-      if (swiper.params.centeredSlides) {
-        swiper.visibleSlides.each(function (index, slide) {
-          activeSlides.push(slide);
-        });
-      } else {
+      if (swiper.params.centeredSlides) { activeSlides.push.apply(activeSlides, swiper.visibleSlides); }
+      else {
         for (i = 0; i < Math.ceil(swiper.params.slidesPerView); i += 1) {
           var index = swiper.activeIndex + i;
           if (index > swiper.slides.length) { break; }
@@ -29631,7 +29525,7 @@
     if (previousRealIndex !== realIndex) {
       swiper.emit('realIndexChange');
     }
-    if (swiper.initialized || swiper.params.runCallbacksOnInit) {
+    if (swiper.initialized || swiper.runCallbacksOnInit) {
       swiper.emit('slideChange');
     }
   }
@@ -30000,18 +29894,14 @@
     }
     if (params.cssMode) {
       var isH = swiper.isHorizontal();
-      var t = -translate;
-      if (rtl) {
-        t = wrapperEl.scrollWidth - wrapperEl.offsetWidth - t;
-      }
       if (speed === 0) {
-        wrapperEl[isH ? 'scrollLeft' : 'scrollTop'] = t;
+        wrapperEl[isH ? 'scrollLeft' : 'scrollTop'] = -translate;
       } else {
         // eslint-disable-next-line
         if (wrapperEl.scrollTo) {
-          wrapperEl.scrollTo(( obj = {}, obj[isH ? 'left' : 'top'] = t, obj.behavior = 'smooth', obj ));
+          wrapperEl.scrollTo(( obj = {}, obj[isH ? 'left' : 'top'] = -translate, obj.behavior = 'smooth', obj ));
         } else {
-          wrapperEl[isH ? 'scrollLeft' : 'scrollTop'] = t;
+          wrapperEl[isH ? 'scrollLeft' : 'scrollTop'] = -translate;
         }
       }
       return true;
@@ -31152,17 +31042,8 @@
   function onScroll () {
     var swiper = this;
     var wrapperEl = swiper.wrapperEl;
-    var rtlTranslate = swiper.rtlTranslate;
     swiper.previousTranslate = swiper.translate;
-    if (swiper.isHorizontal()) {
-      if (rtlTranslate) {
-        swiper.translate = ((wrapperEl.scrollWidth - wrapperEl.offsetWidth) - wrapperEl.scrollLeft);
-      } else {
-        swiper.translate = -wrapperEl.scrollLeft;
-      }
-    } else {
-      swiper.translate = -wrapperEl.scrollTop;
-    }
+    swiper.translate = swiper.isHorizontal() ? -wrapperEl.scrollLeft : -wrapperEl.scrollTop;
     // eslint-disable-next-line
     if (swiper.translate === -0) { swiper.translate = 0; }
 
@@ -31177,7 +31058,7 @@
       newProgress = (swiper.translate - swiper.minTranslate()) / (translatesDiff);
     }
     if (newProgress !== swiper.progress) {
-      swiper.updateProgress(rtlTranslate ? -swiper.translate : swiper.translate);
+      swiper.updateProgress(swiper.translate);
     }
 
     swiper.emit('setTranslate', swiper.translate, false);
@@ -34137,9 +34018,7 @@
           return;
         }
       }
-      if (gesture.$imageEl) {
-        gesture.$imageEl.transition(0);
-      }
+      gesture.$imageEl.transition(0);
       swiper.zoom.isScaling = true;
     },
     onGestureChange: function onGestureChange(e) {
@@ -34341,12 +34220,8 @@
       var zoom = swiper.zoom;
       var gesture = zoom.gesture;
       if (gesture.$slideEl && swiper.previousIndex !== swiper.activeIndex) {
-        if (gesture.$imageEl) {
-          gesture.$imageEl.transform('translate3d(0,0,0) scale(1)');
-        }
-        if (gesture.$imageWrapEl) {
-          gesture.$imageWrapEl.transform('translate3d(0,0,0)');
-        }
+        gesture.$imageEl.transform('translate3d(0,0,0) scale(1)');
+        gesture.$imageWrapEl.transform('translate3d(0,0,0)');
 
         zoom.scale = 1;
         zoom.currentScale = 1;
@@ -34378,11 +34253,7 @@
       var image = zoom.image;
 
       if (!gesture.$slideEl) {
-        if (swiper.params.virtual && swiper.params.virtual.enabled && swiper.virtual) {
-          gesture.$slideEl = swiper.$wrapperEl.children(("." + (swiper.params.slideActiveClass)));
-        } else {
-          gesture.$slideEl = swiper.slides.eq(swiper.activeIndex);
-        }
+        gesture.$slideEl = swiper.slides.eq(swiper.activeIndex);
         gesture.$imageEl = gesture.$slideEl.find('img, svg, canvas, picture, .swiper-zoom-target');
         gesture.$imageWrapEl = gesture.$imageEl.parent(("." + (params.containerClass)));
       }
@@ -34468,11 +34339,7 @@
       var gesture = zoom.gesture;
 
       if (!gesture.$slideEl) {
-        if (swiper.params.virtual && swiper.params.virtual.enabled && swiper.virtual) {
-          gesture.$slideEl = swiper.$wrapperEl.children(("." + (swiper.params.slideActiveClass)));
-        } else {
-          gesture.$slideEl = swiper.slides.eq(swiper.activeIndex);
-        }
+        gesture.$slideEl = swiper.slides.eq(swiper.activeIndex);
         gesture.$imageEl = gesture.$slideEl.find('img, svg, canvas, picture, .swiper-zoom-target');
         gesture.$imageWrapEl = gesture.$imageEl.parent(("." + (params.containerClass)));
       }
@@ -41100,7 +40967,7 @@
     // f7-icon, material-icon, command
     bold: ['bold', 'format_bold', 'bold'],
     italic: ['italic', 'format_italic', 'italic'],
-    underline: ['underline', 'format_underlined', 'underline'],
+    underline: ['underline', 'format_underline', 'underline'],
     strikeThrough: ['strikethrough', 'strikethrough_s', 'strikeThrough'],
     orderedList: ['list_number', 'format_list_numbered', 'insertOrderedList'],
     unorderedList: ['list_bullet', 'format_list_bulleted', 'insertUnorderedList'],

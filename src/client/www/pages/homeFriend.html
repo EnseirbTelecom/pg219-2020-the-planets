@@ -1,0 +1,92 @@
+
+<template>
+  <div class="page" data-name="home">
+   
+    <!-- Appbar -->
+    <div class="appbar">
+      <div class="appbar-inner">
+        Friends
+      </div>
+    </div>
+    
+    <!-- Scrollable page content-->
+    <div class="page-content">
+      
+      <div class="block-title">Liste des amis.</div>
+      
+      <div class="list links-list">
+        <ul>
+          {{#each friends}}
+          <a href="/friends/{{_id}}"><li>{{mailReceiver}} et {{mailSender}} sont amis</li></a>
+          {{/each}}
+        </ul>
+      </div>
+
+      <div class="block-title">Liste des demandes que vous avez envoyées</div>
+
+      <div class="list links-list">
+        <ul>
+          {{#each receiver}}
+          <a href="/friends/{{_id}}"><li>Vous avez envoyé une demande à {{mailReceiver}}</li></a>
+          {{/each}}
+        </ul>
+      </div>
+      
+      <div class="block-title">Liste des demandes à valider</div>
+
+      <div class="list links-list">
+        <ul>
+          {{#each sender}}
+          <a href="/friends/{{_id}}"><li>{{mailSender}} vous a envoyé une demande</li></a>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+
+    <div class="fab fab-center-center">
+      <a @click="add" href="#">
+        <i class="icon f7-icons">plus</i>
+      </a>
+    </div>
+
+    <div class="fab fab-center-bottom">
+      <a @click="ho" href="#">
+        <i class="icon f7-icons">minus</i>
+      </a>
+    </div>
+
+  </div>
+
+</template>
+
+
+<script>
+  return {
+    async data() {
+      let friends = [];
+      try {
+        receiver = await fetch("http://localhost:3000/reqFriendSender/j22.dubreuil@gmail.com")
+          .then(res => res.json());
+        
+        sender = await fetch("http://localhost:3000/reqFriendReceiver/j22.dubreuil@gmail.com")
+          .then(res => res.json());
+
+        friends = await fetch("http://localhost:3000/reqFriends/j22.dubreuil@gmail.com")
+          .then(res => res.json());
+        
+      } catch(err) {
+        this.$app.dialog.alert("Error " + err);
+      }
+      console.log(friends);
+      return { receiver: receiver, sender: sender, friends: friends };
+    },
+    methods: {
+      add: function() {
+        this.$router.navigate("/friends/");
+      },
+      ho: function() {
+        this.$router.navigate("/");
+      },
+    }
+  }
+</script>
