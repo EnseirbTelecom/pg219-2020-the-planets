@@ -1,7 +1,6 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const app = express();
-const crypto = require('crypto');
 const bcrypt = require('bcrypt');
 
 const bodyParser = require('body-parser');
@@ -47,33 +46,36 @@ MongoClient.connect(urlMongo, {poolSize: 10})
                  }
                });
              },(req,res) => {
-               bcrypt.hash(req.body.password,saltRounds, (err,hash) =>{
-                 if (hash) {
-                   const user = {
-                     name: req.body.name,
-                     surname: req.body.surname,
-                     pseudo: req.body.pseudo,
-                     birthday: req.body.birthday,
+               const user = {
+                 name: req.body.name,
+                 surname: req.body.surname,
+                 pseudo: req.body.pseudo,
+                 birthday: req.body.birthday,
+                 mail: req.body.mail,
+                 password: req.body.password
+               };
+               resultat.collection("users").insertOne(user , (err,user) => {
+                 if(user){
+                   const forToken = {
                      mail: req.body.mail,
-                     password: hash
-                   };
-                   resultat.collection("users").insertOne(user , (err,user) => {
-                     if(user){
-                       const forToken = {
-                         mail: req.body.mail,
-                         name: req.body.name,
-                         surname: req.body.surname
-                       }
-                       jwt.sign(forToken,secretKey,{expiresIn: '1h'},(err,token) => {
-                         console.log(token);
-                         res.status(201).json({token: token,
-                                Passeword: hash});
-                       })
-                     }
+                     name: req.body.name,
+                     surname: req.body.surname
+                   }
+                   jwt.sign(forToken,secretKey,{expiresIn: '1h'},(err,token) => {
+                     console.log(token);
+                     res.status(201).json({token: token});
                    });
                  }
+               });
+             });
+
+             app.post("/connection",(req,res) =>{
+               resultat.collection("users").findOne({"mail": req.body.mail,"password": req.body.password},(err,user) =>{
+                 if(user){
+                   res.status(201).json(user);
+                 }
                  else{
-                   res.status(401).send("hash fail");
+                   res.status(403).json({erro: err})
                  }
                });
              });
@@ -81,7 +83,7 @@ MongoClient.connect(urlMongo, {poolSize: 10})
              app.delete("/users",(req,res) =>{
                resultat.collection("users").deleteMany()
                         .then(items => res.json(items));
-             })
+             });
 
 
              // Fonction pour Verifier le token

@@ -50,41 +50,43 @@
   return{
     methods: {
       valider: function() {
-        const name = document.querySelector('#input-name').value;
-        const surname = document.querySelector('#input-surname').value;
-        const pseudo = document.querySelector('#input-pseudo').value;
-        const birthday = document.querySelector('#input-birthday').value;
-        const mail = document.querySelector('#input-mail').value;
+        const dataApp = this.$app.data;
+        dataApp.name = document.querySelector('#input-name').value;
+        dataApp.surname = document.querySelector('#input-surname').value;
+        dataApp.pseudo = document.querySelector('#input-pseudo').value;
+        dataApp.birthday = document.querySelector('#input-birthday').value;
+        dataApp.mail = document.querySelector('#input-mail').value;
         const password = document.querySelector('#input-password').value;
         const confirmation = document.querySelector('#input-confirmation').value;
         if(password === confirmation){
-          if(name && surname && mail && password && confirmation && pseudo){
+          if(dataApp.name && dataApp.surname && dataApp.mail && password && confirmation && dataApp.pseudo){
             const url = "http://localhost:3000/users/";
             let chemin;
             const router = this.$router;
             const dialog = this.$app.dialog;
+            const passwordEncoding = CryptoJS.MD5(password);
             fetch(url,{
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
-                name: name,
-                surname: surname,
-                pseudo: pseudo,
-                birthday: birthday,
-                mail: mail,
-                password: password
+                name: dataApp.name,
+                surname: dataApp.surname,
+                pseudo: dataApp.pseudo,
+                birthday: dataApp.birthday,
+                mail: dataApp.mail,
+                password: passwordEncoding
               })
             })
             .then(function(response){
               if (response.ok) {
-                chemin ="/";
-                router.navigate(chemin);
+                response.json().then(data => {dataApp.token = data.token})
+                router.navigate('/');
               }
               else{
                 response.json().then(data =>{dialog.alert(data.error)});
               }
             })
-            .catch(err => this.$app.dialog.alert('Error ' + err.message));
+            .catch(err => this.$app.dialog.alert('Error ' + err));
           }
           else{
               this.$app.dialog.alert("Il manque des infos");

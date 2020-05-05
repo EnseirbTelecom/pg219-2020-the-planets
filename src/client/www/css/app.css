@@ -51,11 +51,27 @@
 
 /* Your app custom styles here */
 
+.page-content{
+  vertical-align: middle;
+}
+
+.vertical_center{
+  position:relative;
+  top:45%;
+  transform:translateY(-75%);
+}
+
+.appbar-inner{
+  margin-left: 15px;
+}
+
 form {
   margin: 0 auto;
-  width: 500px;
   padding: 1em;
   border: 1px solid;
+  position:relative;
+  top:50%;
+  transform:translateY(-75%);
 }
 
 form div + div {
@@ -70,8 +86,19 @@ label {
 }
 
 input{
-  width: 300px;
+  width: 200px;
 }
+
+.center{
+  margin: auto;
+  display: inline-block;
+}
+
+.col{
+  text-align: center;
+}
+
+
 
 .formulaire{
   display: flex;
