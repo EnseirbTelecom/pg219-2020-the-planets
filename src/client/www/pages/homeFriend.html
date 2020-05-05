@@ -16,8 +16,8 @@
       
       <div class="list links-list">
         <ul>
-          {{#each friends}}
-          <a href="/friends/{{_id}}"><li>{{mailReceiver}} et {{mailSender}} sont amis</li></a>
+          {{#each friendName}}
+          <a href="/friends/{{_id}}"><li>Vous êtes ami avec {{firstName}} {{lastName}}</li></a>
           {{/each}}
         </ul>
       </div>
@@ -26,8 +26,8 @@
 
       <div class="list links-list">
         <ul>
-          {{#each receiver}}
-          <a href="/friends/{{_id}}"><li>Vous avez envoyé une demande à {{mailReceiver}}</li></a>
+          {{#each receiverName}}
+          <a href="/friends/{{_id}}"><li>Vous avez envoyé une demande à {{firstName}} {{lastName}}</li></a>
           {{/each}}
         </ul>
       </div>
@@ -36,8 +36,8 @@
 
       <div class="list links-list">
         <ul>
-          {{#each sender}}
-          <a href="/friends/{{_id}}"><li>{{mailSender}} vous a envoyé une demande</li></a>
+          {{#each senderName}}
+          <a href="/friends/{{_id}}"><li>{{firstName}} {{lastName}} vous a envoyé une demande</li></a>
           {{/each}}
         </ul>
       </div>
@@ -63,23 +63,65 @@
 <script>
   return {
     async data() {
-      let friends = [];
+
+      const USER = "j22.dubreuil@gmail.com"; // utilisateur connecté /!\ voir avec Jérémy
+      
       try {
-        receiver = await fetch("http://localhost:3000/reqFriendSender/j22.dubreuil@gmail.com")
-          .then(res => res.json());
         
-        sender = await fetch("http://localhost:3000/reqFriendReceiver/j22.dubreuil@gmail.com")
+        // récuperation des demandes d'amis envoyées
+        var receiver = [];
+        receiver = await fetch("http://localhost:3000/reqFriendSender/" + USER)
           .then(res => res.json());
 
-        friends = await fetch("http://localhost:3000/reqFriends/j22.dubreuil@gmail.com")
+        // récuperation des noms des demandes d'amis envoyées
+        var receiverName = [];
+        for (let i = 0; i < receiver.length; i++) {
+          let temp = await fetch("http://localhost:3000/friendName/" + receiver[i].mailReceiver)
+            .then(res => res.json());
+            receiverName.push(temp[0]);
+        }
+
+        // récuperation des demandes d'amis reçues
+        var sender = [];
+        sender = await fetch("http://localhost:3000/reqFriendReceiver/" + USER)
           .then(res => res.json());
-        
+
+        // récuperation des noms des demandes d'amis reçues
+        var senderName = [];
+        for (let i = 0; i < sender.length; i++) {
+          let temp = await fetch("http://localhost:3000/friendName/" + sender[i].mailSender)
+            .then(res => res.json());
+          senderName.push(temp[0]);
+        }
+
+        // récuperation des amis
+        var friend = [];
+        friend = await fetch("http://localhost:3000/reqFriends/" + USER)
+          .then(res => res.json());
+
+        // récuperation des noms des amis
+        var friendName = [];
+        for (let i = 0; i < friend.length; i++) {
+          const friendi = Object.values(friend[i]);
+          if (friendi[1] === USER) {
+            let temp = await fetch("http://localhost:3000/friendName/" + friendi[2])
+              .then(res => res.json());
+          }
+          else {
+            temp = await fetch("http://localhost:3000/friendName/" + friendi[1])
+              .then(res => res.json());
+          }
+          friendName.push(temp[0]);
+        }
+
       } catch(err) {
         this.$app.dialog.alert("Error " + err);
       }
-      console.log(friends);
-      return { receiver: receiver, sender: sender, friends: friends };
+
+      return { receiver: receiver, sender: sender, friend: friend, receiverName: receiverName , senderName: senderName, friendName: friendName};
     },
+
+    
     methods: {
       add: function() {
         this.$router.navigate("/friends/");

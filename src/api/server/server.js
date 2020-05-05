@@ -32,11 +32,11 @@ const friendChecker = (req, res, next) => {
 
 MongoClient.connect(url)
 	.then((client) =>
-		client.db("FriendFinder").collection("friends"),
+		client.db("FriendFinder"),
 	)
 	.then((friends) => {
 		app.get("/friends/:id", (req, res) => {
-			friends.findOne({ _id: ObjectID(req.params.id) })
+			friends.collection("friends").findOne({ _id: ObjectID(req.params.id) })
 				.then(item => (item) ? res.json(item) : res.status(404).json({ error: "Entity not found." }))
 				.catch(err => console.log("err" + err))
 		})
@@ -47,7 +47,7 @@ MongoClient.connect(url)
 				mailReceiver: req.body.mailReceiver,
 				acceptation: req.body.acceptation
 			}
-			friends.update({ _id: ObjectID(req.params.id) }, { $set: friend })
+			friends.collection("friends").update({ _id: ObjectID(req.params.id) }, { $set: friend })
 				.then(command => (command.result.n == 1) ? res.json(req.body) : res.status(404).json({ error: "Entity not found." }))
 				.catch(err => console.log("Error " + err))
 		})
@@ -61,13 +61,13 @@ MongoClient.connect(url)
 			if (req.body.acceptation)
 				friend.acceptation = req.body.acceptation
 
-			friends.update({ _id: ObjectID(req.params.id) }, { $set: friend })
+			friends.collection("friends").update({ _id: ObjectID(req.params.id) }, { $set: friend })
 				.then(command => (command.result.n == 1) ? res.json(req.body) : res.status(404).json({ error: "Entity not found." }))
 				.catch(err => console.log("Error: " + err))
 		})
 
 		app.delete("/friends/:id", (req, res) => {
-			friends.remove({ _id: ObjectID(req.params.id) })
+			friends.collection("friends").remove({ _id: ObjectID(req.params.id) })
 				.then(command => (command.result.n == 1) ? res.json(req.params.id) : res.status(404).json({ error: "Entity not found." }))
 		})
 
@@ -77,35 +77,35 @@ MongoClient.connect(url)
 				mailReceiver: req.body.mailReceiver,
 				acceptation: req.body.acceptation
 			}
-			friends.insert(friend)
+			friends.collection("friends").insert(friend)
 				.then(command => res.status(201).json(friend))
 		})
 
 		app.get("/friends", (req, res) => {
-			friends.find().toArray()
+			friends.collection("friends").find().toArray()
 				.then(items => res.json(items))
 		})
 
 		// recuperer les noms liés aux mails
 		app.get("/friendName/:mail", (req, res) => {
-			friends.find({ mailReceiver: req.params.mail }, { _id: 1, mailSender:0, mailReceiver:0, acceptation:0}).toArray()
+			friends.collection("users").find({ mail: req.params.mail }, { _id: 1, firstName:1, lastName:1, mail:1}).toArray()
 				.then(items => res.json(items))
 		})
 		
 		// recuperer la liste des demandes faites par quelqu'un
 		app.get("/reqFriendSender/:mail", (req, res) => {
-			friends.find({ mailSender: req.params.mail }, { _id: 1, mailSender:0, mailReceiver:0, acceptation:0}).toArray()
+			friends.collection("friends").find({$and: [{mailSender: req.params.mail}, {acceptation: "0"} ]}, { _id: 1, mailSender:0, mailReceiver:1, acceptation:0}).toArray()
 				.then(items => res.json(items))
 		})
 		// recuperer la liste des demandes faites à quelqu'un
 		app.get("/reqFriendReceiver/:mail", (req, res) => {
-			friends.find({ mailReceiver: req.params.mail }, { _id: 1, mailSender:0, mailReceiver:0, acceptation:0}).toArray()
+			friends.collection("friends").find({$and: [{mailReceiver: req.params.mail}, {acceptation: "0"} ]}, { _id: 1, mailSender:0, mailReceiver:0, acceptation:0}).toArray()
 				.then(items => res.json(items))
 		})
 
 		// recuperer la liste des amis
 		app.get("/reqFriends/:mail", (req, res) => {
-			friends.find({ $or: [ {mailReceiver: req.params.mail}, {mailSender: req.params.mail} ], $and: [{acceptation: "1"}]}, { _id: 1, mailSender:0, mailReceiver:0, acceptation:0}).toArray()
+			friends.collection("friends").find({ $or: [ {mailReceiver: req.params.mail}, {mailSender: req.params.mail} ], $and: [{acceptation: "1"}]}, { _id: 1, mailSender:0, mailReceiver:0, acceptation:0}).toArray()
 				.then(items => res.json(items))
 		})
 
