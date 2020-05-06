@@ -9,46 +9,36 @@
     <div class="page-content">
       <div class="block-title">
         {{#if friend._id}}
-          Modifier
+          Répondre à une demande ou modifier une amitiée
         {{else}}
           Ajouter un ami
         {{/if}}
       </div>
       <form class="list" id="friend-form">
         <ul>
-
+        {{#if friend._id}}
           <li>
             <div class="item-content item-input">
               <div class="item-inner">
-                <div class="item-title item-label">Expéditeur</div>
-                <div class="item-input-wrap">
-                  <input id="input-mailSender" type="text" name="mailSender" placeholder="mailSender" value="{{friend.mailSender}}">
-                </div>
-              </div>
-            </div>
-          </li>
-
-          <li>
-            <div class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Destinataire</div>
-                <div class="item-input-wrap">
-                  <input id="input-mailReceiver" type="text" name="mailReceiver" placeholder="mailReceiver" value="{{friend.mailReceiver}}">
-                </div>
-              </div>
-            </div>
-          </li>
-
-          <li>
-            <div class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Acceptation</div>
+                <div class="item-title item-label">Voulez vous être amis avec {{friend.mailSender}} (0 = non ; 1 = oui)</div>
                 <div class="item-input-wrap">
                   <input id="input-acceptation" type="text" name="acceptation" placeholder="acceptation" value="{{friend.acceptation}}">
                 </div>
               </div>
             </div>
           </li>
+        {{else}}
+          <li>
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Mail de la personne</div>
+                <div class="item-input-wrap">
+                  <input id="input-mailReceiver" type="text" name="mailReceiver" placeholder="mail" value="">
+                </div>
+              </div>
+            </div>
+          </li>
+        {{/if}}
 
         </ul>
       </form>
@@ -64,10 +54,25 @@
   return {
     async data() {
       let friend = {};
-      const id = this.$route.params.friendId;
-      if (id != undefined) {
+      var USER = "j22.dubreuil@gmail.com";
+      var mailSender = undefined;
+      var mailReceiver = undefined;
+      var acceptation = undefined;
+      
+      mailSender = this.$route.params.mailSender;
+      mailReceiver = this.$route.params.mailReceiver;
+
+      if ((mailSender != undefined) || (mailReceiver != undefined)) {
+        if (mailSender == undefined){
+            mailSender = USER;
+        }
+        else {
+          mailReceiver = USER;
+        }
+
         try {
-          friend = await fetch("http://localhost:3000/friends/" + id).then(res => res.json());
+          friend = await fetch("http://localhost:3000/friendRequest/" + mailSender + "/" + mailReceiver).then(res => res.json());
+          console.log(friend);
         } catch(err) {
           this.$app.dialog.alert("Error " + err);
         }
@@ -83,11 +88,16 @@
       },
 
       save: function() {
-        const mailSender = document.querySelector('#input-mailSender').value;
-        const mailReceiver = document.querySelector('#input-mailReceiver').value;
-        const acceptation = document.querySelector('#input-acceptation').value;;
+        var USER = "j22.dubreuil@gmail.com";
+        if (mailSender != undefined) {
+          mailSender = USER;
+          mailReceiver = document.querySelector('#input-mailReceiver').value;
+          acceptation = "0";
+        }
+        else {
+          const acceptation = document.querySelector('#input-acceptation').value;
+        }
         const queryData = this.getSaveQueryData();
-        console.log(mailReceiver);
 
         fetch(queryData.url, {
           method: queryData.method,
@@ -107,12 +117,12 @@
       getSaveQueryData: function() {
         if (this.friend._id != undefined) {
           return {
-            url: "http://localhost:3000/friends/" + this.friend._id,
+            url: "http://localhost:3000/friendRequest/" + this.friend._id,
             method: "PUT"
           }
         } else {
           return {
-            url: "http://localhost:3000/friends/",
+            url: "http://localhost:3000/friendRequest/",
             method: "POST"
           }
         }
@@ -120,7 +130,7 @@
 
       delete: function() {
         if (this.friend._id != undefined) {
-          fetch("http://localhost:3000/friends/" + this.friend._id, {
+          fetch("http://localhost:3000/friendRequest/" + this.friend._id, {
             method: "DELETE",
           })
             .catch(err => this.$app.dialog.alert('Error ' + err))

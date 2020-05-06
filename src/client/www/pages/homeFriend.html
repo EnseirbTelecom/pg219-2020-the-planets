@@ -5,39 +5,39 @@
     <!-- Appbar -->
     <div class="appbar">
       <div class="appbar-inner">
-        Friends
+        Amis
       </div>
     </div>
     
     <!-- Scrollable page content-->
     <div class="page-content">
       
-      <div class="block-title">Liste des amis.</div>
+      <div class="block-title">Liste des amis : </div>
       
       <div class="list links-list">
         <ul>
           {{#each friendName}}
-          <a href="/friends/{{_id}}"><li>Vous êtes ami avec {{firstName}} {{lastName}}</li></a>
+          <a href="/friendRequest/{{mail}}"><li>Vous êtes ami avec {{firstName}} {{lastName}}</li></a>
           {{/each}}
         </ul>
       </div>
 
-      <div class="block-title">Liste des demandes que vous avez envoyées</div>
+      <div class="block-title">Liste des demandes envoyées : </div>
 
       <div class="list links-list">
         <ul>
           {{#each receiverName}}
-          <a href="/friends/{{_id}}"><li>Vous avez envoyé une demande à {{firstName}} {{lastName}}</li></a>
+          <a href="/friendRequestSender/:{{mail}}?"><li>Vous avez envoyé une demande à {{firstName}} {{lastName}}</li></a>
           {{/each}}
         </ul>
       </div>
       
-      <div class="block-title">Liste des demandes à valider</div>
+      <div class="block-title">Liste des demandes reçues : </div>
 
       <div class="list links-list">
         <ul>
           {{#each senderName}}
-          <a href="/friends/{{_id}}"><li>{{firstName}} {{lastName}} vous a envoyé une demande</li></a>
+          <a href="/friendRequestReceiver/{{mail}}"><li>{{firstName}} {{lastName}} vous a envoyé une demande</li></a>
           {{/each}}
         </ul>
       </div>
@@ -64,7 +64,7 @@
   return {
     async data() {
 
-      const USER = "j22.dubreuil@gmail.com"; // utilisateur connecté /!\ voir avec Jérémy
+      var USER = "j22.dubreuil@gmail.com"; // utilisateur connecté /!\ voir avec Jérémy
       
       try {
         
@@ -118,13 +118,13 @@
         this.$app.dialog.alert("Error " + err);
       }
 
-      return { receiver: receiver, sender: sender, friend: friend, receiverName: receiverName , senderName: senderName, friendName: friendName};
+      return {USER: USER, receiverName: receiverName , senderName: senderName, friendName: friendName};
     },
 
-    
+
     methods: {
       add: function() {
-        this.$router.navigate("/friends/");
+        this.$router.navigate("/friendRequest/");
       },
       ho: function() {
         this.$router.navigate("/");

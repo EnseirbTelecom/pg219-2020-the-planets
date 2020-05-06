@@ -35,6 +35,11 @@ MongoClient.connect(url)
 		client.db("FriendFinder"),
 	)
 	.then((friends) => {
+
+		// ================
+		// ===   home   ===
+		// ================
+
 		app.get("/friends/:id", (req, res) => {
 			friends.collection("friends").findOne({ _id: ObjectID(req.params.id) })
 				.then(item => (item) ? res.json(item) : res.status(404).json({ error: "Entity not found." }))
@@ -86,28 +91,48 @@ MongoClient.connect(url)
 				.then(items => res.json(items))
 		})
 
-		// recuperer les noms liés aux mails
+		// ======================
+		// ===   homeFriend   ===
+		// ======================
+
+		// récupérer les noms liés aux mails
 		app.get("/friendName/:mail", (req, res) => {
 			friends.collection("users").find({ mail: req.params.mail }, { _id: 1, firstName:1, lastName:1, mail:1}).toArray()
 				.then(items => res.json(items))
 		})
 		
-		// recuperer la liste des demandes faites par quelqu'un
+		// récupérer la liste des demandes faites par quelqu'un
 		app.get("/reqFriendSender/:mail", (req, res) => {
 			friends.collection("friends").find({$and: [{mailSender: req.params.mail}, {acceptation: "0"} ]}, { _id: 1, mailSender:0, mailReceiver:1, acceptation:0}).toArray()
 				.then(items => res.json(items))
 		})
-		// recuperer la liste des demandes faites à quelqu'un
+		// récupérer la liste des demandes faites à quelqu'un
 		app.get("/reqFriendReceiver/:mail", (req, res) => {
 			friends.collection("friends").find({$and: [{mailReceiver: req.params.mail}, {acceptation: "0"} ]}, { _id: 1, mailSender:0, mailReceiver:0, acceptation:0}).toArray()
 				.then(items => res.json(items))
 		})
 
-		// recuperer la liste des amis
+		// récupérer la liste des amis
 		app.get("/reqFriends/:mail", (req, res) => {
 			friends.collection("friends").find({ $or: [ {mailReceiver: req.params.mail}, {mailSender: req.params.mail} ], $and: [{acceptation: "1"}]}, { _id: 1, mailSender:0, mailReceiver:0, acceptation:0}).toArray()
 				.then(items => res.json(items))
 		})
+		
+		// =========================
+		// ===   friendRequest   ===
+		// =========================
+		
+		// récuperer les infos de la demande d'amitié à partir des mails des deux personnes
+		app.get("/friendRequest/:mailSender/:mailReceiver", (req, res) => {
+			
+			friends.collection("friends").findOne({$and : [{mailSender: req.params.mailSender}, {mailReceiver: req.params.mailReceiver}]}, { _id: 1, mailSender:1, mailReceiver:1, acceptation:1})
+				.then(item => (item) ? res.json(item) : res.status(404).json({ error: "Entity not found." }))
+				.catch(err => console.log("err" + err))
+		})
+
+		// ==================================
+		// ===   Serveur en mode écoute   ===
+		// ==================================
 
 		app.listen(3000, () => console.log("Awaiting requests."))
   })
