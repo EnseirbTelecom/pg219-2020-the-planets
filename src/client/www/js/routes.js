@@ -1,10 +1,10 @@
 
 var routes = [
   
-  // Afficher la page d'accueil
+  // Afficher la page d'accueil (dev)
   {
     path: '/',
-    componentUrl: './pages/home.html'
+    componentUrl: './pages/dev_home.html'
   },
   // Afficher la page des amis
   {
@@ -26,17 +26,11 @@ var routes = [
     path: '/friendRequestReceiver/:mailSender?',
     componentUrl: './pages/friendRequest.html'
   },
-
-
-
   // Afficher une requete d'amitiée (dev)
   {
     path: '/friends/:friendId?',
-    componentUrl: './pages/friend.html',
+    componentUrl: './pages/dev_friend.html',
   },
-
-
-
   // Default route (404 page). MUST BE THE LAST
   {
     path: '(.*)',

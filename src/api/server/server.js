@@ -36,9 +36,9 @@ MongoClient.connect(url)
 	)
 	.then((friends) => {
 
-		// ================
-		// ===   home   ===
-		// ================
+		// ======================
+		// ===   home (dev)   ===
+		// ======================
 
 		app.get("/friends/:id", (req, res) => {
 			friends.collection("friends").findOne({ _id: ObjectID(req.params.id) })
