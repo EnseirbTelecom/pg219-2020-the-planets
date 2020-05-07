@@ -127,14 +127,14 @@ MongoClient.connect(url, {
 		// ===   friendRequest   ===
 		// =========================
 		
-		// récuperer les infos de la demande d'amitié à partir des mails des deux personnes
+		// récupérer les infos de la demande d'amitié à partir des mails de deux personnes
 		app.get("/friendRequest/:mailSender/:mailReceiver", (req, res) => {
 			friends.collection("friends").findOne({$and : [{mailSender: req.params.mailSender}, {mailReceiver: req.params.mailReceiver}]}, { _id: 1, mailSender:1, mailReceiver:1, acceptation:1})
 				.then(item => (item) ? res.json(item) : res.status(404).json({ error: "Entity not found." }))
 				.catch(err => console.log("err" + err))
 		})
 
-		// supprimer une demande d'ami
+		// supprimer une demande d'ami ou une amitié
 		app.delete("/friendRequest/:id", (req, res) => {
 			friends.collection("friends").deleteOne({ _id: ObjectID(req.params.id) })
 				.then(command => (command.result.n == 1) ? res.json(req.params.id) : res.status(404).json({ error: "Entity not found." }))
@@ -163,7 +163,7 @@ MongoClient.connect(url, {
 				.catch(err => console.log("Error " + err))
 		})
 
-		// récuperer les infos de l'amitié à partir des mails des deux personnes
+		// récupérer les infos de l'amitié à partir des mails des deux personnes
 		app.get("/friend/:mailSender/:mailReceiver", (req, res) => {
 			friends.collection("friends").findOne({$or : [{mailSender: req.params.mailSender, mailReceiver: req.params.mailReceiver},{mailSender: req.params.mailReceiver, mailReceiver: req.params.mailSender}]}, { _id: 1, mailSender:1, mailReceiver:1, acceptation:1})
 				.then(item => (item) ? res.json(item) : res.status(404).json({ error: "Entity not found." }))
