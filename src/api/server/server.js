@@ -17,6 +17,7 @@ const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID
 const url = 'mongodb://localhost:27017/FriendFinder';
 
+// vérifie que tous les paramètres sont ok
 const friendChecker = (req, res, next) => {
 	const friend = {
 		mailSender: req.body.mailSender,
@@ -30,7 +31,11 @@ const friendChecker = (req, res, next) => {
 	next()
 }
 
-MongoClient.connect(url)
+MongoClient.connect(url, {
+	useUnifiedTopology: true,
+	useNewUrlParser: true,
+	})
+
 	.then((client) =>
 		client.db("FriendFinder"),
 	)
@@ -66,13 +71,13 @@ MongoClient.connect(url)
 			if (req.body.acceptation)
 				friend.acceptation = req.body.acceptation
 
-			friends.collection("friends").update({ _id: ObjectID(req.params.id) }, { $set: friend })
+			friends.collection("friends").updateOne({ _id: ObjectID(req.params.id) }, { $set: friend })
 				.then(command => (command.result.n == 1) ? res.json(req.body) : res.status(404).json({ error: "Entity not found." }))
 				.catch(err => console.log("Error: " + err))
 		})
 
 		app.delete("/friends/:id", (req, res) => {
-			friends.collection("friends").remove({ _id: ObjectID(req.params.id) })
+			friends.collection("friends").deleteOne({ _id: ObjectID(req.params.id) })
 				.then(command => (command.result.n == 1) ? res.json(req.params.id) : res.status(404).json({ error: "Entity not found." }))
 		})
 
@@ -82,7 +87,7 @@ MongoClient.connect(url)
 				mailReceiver: req.body.mailReceiver,
 				acceptation: req.body.acceptation
 			}
-			friends.collection("friends").insert(friend)
+			friends.collection("friends").insertOne(friend)
 				.then(command => res.status(201).json(friend))
 		})
 
@@ -114,7 +119,7 @@ MongoClient.connect(url)
 
 		// récupérer la liste des amis
 		app.get("/reqFriends/:mail", (req, res) => {
-			friends.collection("friends").find({ $or: [ {mailReceiver: req.params.mail}, {mailSender: req.params.mail} ], $and: [{acceptation: "1"}]}, { _id: 1, mailSender:0, mailReceiver:0, acceptation:0}).toArray()
+			friends.collection("friends").find({ $or: [ {mailReceiver: req.params.mail, acceptation: "1"}, {mailSender: req.params.mail, acceptation: "1"} ]}, { _id: 1, mailSender:0, mailReceiver:0, acceptation:0}).toArray()
 				.then(items => res.json(items))
 		})
 		
@@ -124,8 +129,43 @@ MongoClient.connect(url)
 		
 		// récuperer les infos de la demande d'amitié à partir des mails des deux personnes
 		app.get("/friendRequest/:mailSender/:mailReceiver", (req, res) => {
-			
 			friends.collection("friends").findOne({$and : [{mailSender: req.params.mailSender}, {mailReceiver: req.params.mailReceiver}]}, { _id: 1, mailSender:1, mailReceiver:1, acceptation:1})
+				.then(item => (item) ? res.json(item) : res.status(404).json({ error: "Entity not found." }))
+				.catch(err => console.log("err" + err))
+		})
+
+		// supprimer une demande d'ami
+		app.delete("/friendRequest/:id", (req, res) => {
+			friends.collection("friends").deleteOne({ _id: ObjectID(req.params.id) })
+				.then(command => (command.result.n == 1) ? res.json(req.params.id) : res.status(404).json({ error: "Entity not found." }))
+		})
+
+		// faire une nouvelle demande d'ami
+		app.post("/friendRequest", friendChecker, (req, res) => {
+			const friend = {
+				mailSender: req.body.mailSender,
+				mailReceiver: req.body.mailReceiver,
+				acceptation: req.body.acceptation
+			}
+			friends.collection("friends").insertOne(friend)
+				.then(command => res.status(201).json(friend))
+		})
+
+		// répondre à une demande d'ami
+		app.put("/friendRequest/:id", friendChecker, (req, res) => {
+			const friend = {
+				mailSender: req.body.mailSender,
+				mailReceiver: req.body.mailReceiver,
+				acceptation: req.body.acceptation
+			}
+			friends.collection("friends").updateOne({ _id: ObjectID(req.params.id) }, { $set: friend })
+				.then(command => (command.result.n == 1) ? res.json(req.body) : res.status(404).json({ error: "Entity not found." }))
+				.catch(err => console.log("Error " + err))
+		})
+
+		// récuperer les infos de l'amitié à partir des mails des deux personnes
+		app.get("/friend/:mailSender/:mailReceiver", (req, res) => {
+			friends.collection("friends").findOne({$or : [{mailSender: req.params.mailSender, mailReceiver: req.params.mailReceiver},{mailSender: req.params.mailReceiver, mailReceiver: req.params.mailSender}]}, { _id: 1, mailSender:1, mailReceiver:1, acceptation:1})
 				.then(item => (item) ? res.json(item) : res.status(404).json({ error: "Entity not found." }))
 				.catch(err => console.log("err" + err))
 		})

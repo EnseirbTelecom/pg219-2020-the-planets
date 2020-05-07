@@ -1,0 +1,116 @@
+<!-- Cette page permet de supprimer une amitié 
+     ou une requête d'amitié  que l'on a envoyée -->
+
+<!-- ===================== -->
+<!-- ===   PAGE HTML   === -->
+<!-- ===================== -->
+
+<template>
+  <div class="page" data-name="friendRequest">
+  
+    <!-- Appbar -->
+    <div class="appbar">
+      <div class="appbar-inner">
+        FriendFinder
+      </div>
+    </div>
+
+    <!-- Scrollable page content -->
+    <div class="page-content">
+      <div class="block-title">
+        {{#if friendOrNot}}
+          Voulez vous supprimer votre demande à {{friendRequest.mailReceiver}} ?
+        {{else}}
+          Supprimer votre amitié avec {{mail}} ?
+        {{/if}}
+      </div>
+
+      <!-- Footer -->
+      <div class="block block-strong row">
+        <div class="col"><a @click="cancel" class="button" href="#">Annuler</a></div>
+        <div class="col"><a @click="delete" class="button" href="#">Supprimer</a></div>
+      </div>
+
+    </div>
+
+  </div>
+</template>
+
+
+<!-- =========================== -->
+<!-- ===   CODE JAVASCRIPT   === -->
+<!-- =========================== -->
+
+<script>
+  return {
+
+    // ===============================================
+    // fonction qui s'exécute au chargement de la page
+    async data() {
+      var USER = "j22.dubreuil@gmail.com";
+      
+      // initialisation des variables
+      let friendRequest = {};
+      var mailSender = undefined;
+      var mailReceiver = undefined;
+      var mail = undefined;
+      
+      // récupération des infos pour identifier la requête d'ami dans la bdd
+      mailReceiver = this.$route.params.mailReceiver;
+      mail = this.$route.params.mail;
+
+      if (mailReceiver != undefined) {
+        mailSender = USER;
+
+        // recherche dans la bdd de la requête d'ami
+        try {
+          friendRequest = await fetch("http://localhost:3000/friendRequest/" + mailSender + "/" + mailReceiver)
+            .then(res => res.json());
+        } catch(err) {
+          this.$app.dialog.alert("Error " + err);
+        }
+      }
+      // récupération des infos pour identifier l'ami dans la bdd
+      else {
+        mailReceiver = USER;
+
+        // recherche dans la bdd de l'ami
+        try {
+          friendRequest = await fetch("http://localhost:3000/friend/" + mail + "/" + mailReceiver)
+            .then(res => res.json());
+        } catch(err) {
+          this.$app.dialog.alert("Error " + err);
+        }
+
+      }
+      // permet de savoir si on traite une requête ou une amitié 
+      friendOrNot = (friendRequest.acceptation === "0");
+
+      return {
+        friendRequest: friendRequest, friendOrNot: friendOrNot, mail
+      }
+    },
+
+    methods: {
+      // ==========================
+      // fonction du bouton Annuler
+      cancel: function() {
+        this.$router.back();
+      },
+
+      // ============================
+      // fonction du bouton Supprimer
+      delete: function() {
+        if (this.friendRequest._id != undefined) {
+          fetch("http://localhost:3000/friendRequest/" + this.friendRequest._id, {
+            method: "DELETE",
+          })
+            .catch(err => this.$app.dialog.alert('Error ' + err))
+            .finally(() => {
+              this.$router.navigate("/homeFriend");
+            });
+        }
+      }
+    }
+  }
+</script>

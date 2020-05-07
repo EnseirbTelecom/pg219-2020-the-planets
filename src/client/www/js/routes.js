@@ -13,13 +13,13 @@ var routes = [
   },
   // Afficher une amitié
   {
-    path: '/friendRequest/',
-    componentUrl: './pages/friendRequest.html'
+    path: '/friend/:mail?',
+    componentUrl: './pages/friendDelete.html'
   },
   // Afficher une demande d'ami envoyée
   {
     path: '/friendRequestSender/:mailReceiver?',
-    componentUrl: './pages/friendRequest.html'
+    componentUrl: './pages/friendDelete.html'
   },
   // Afficher une demande d'ami reçue
   {

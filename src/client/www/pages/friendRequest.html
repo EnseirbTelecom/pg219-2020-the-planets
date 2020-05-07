@@ -1,33 +1,34 @@
+<!-- Cette page permet de faire une nouvelle requête 
+     d'amitié ou de répondre à une requête -->
+
+<!-- ===================== -->
+<!-- ===   PAGE HTML   === -->
+<!-- ===================== -->
 
 <template>
-  <div class="page" data-name="friend">
+  <div class="page" data-name="friendRequest">
+  
+    <!-- Appbar -->
     <div class="appbar">
       <div class="appbar-inner">
         FriendFinder
       </div>
     </div>
+
+    <!-- Scrollable page content -->
     <div class="page-content">
       <div class="block-title">
-        {{#if friend._id}}
-          Répondre à une demande ou modifier une amitiée
+        {{#if friendRequest._id}}
+          Voulez vous être amis avec {{friendRequest.mailSender}} ?
         {{else}}
           Ajouter un ami
         {{/if}}
       </div>
-      <form class="list" id="friend-form">
+
+      {{#if friendRequest._id}}
+      {{else}}
+      <form class="list" id="friendRequest-form">
         <ul>
-        {{#if friend._id}}
-          <li>
-            <div class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">Voulez vous être amis avec {{friend.mailSender}} (0 = non ; 1 = oui)</div>
-                <div class="item-input-wrap">
-                  <input id="input-acceptation" type="text" name="acceptation" placeholder="acceptation" value="{{friend.acceptation}}">
-                </div>
-              </div>
-            </div>
-          </li>
-        {{else}}
           <li>
             <div class="item-content item-input">
               <div class="item-inner">
@@ -38,67 +39,93 @@
               </div>
             </div>
           </li>
-        {{/if}}
-
         </ul>
       </form>
+      {{/if}}
+
+      <!-- Footer -->
       <div class="block block-strong row">
-        <div class="col"><a @click="cancel" class="button" href="#">Cancel</a></div>
-        {{#if friend._id}}<div class="col"><a @click="delete" class="button" href="#">Delete</a></div>{{/if}}
-        <div class="col"><a @click="save" class="button" href="#">Save</a></div>
+        <div class="col"><a @click="cancel" class="button" href="#">Annuler</a></div>
+        {{#if friendRequest._id}}
+          <div class="col"><a @click="delete" class="button" href="#">Supprimer</a></div>
+          <div class="col"><a @click="save" class="button" href="#">Confirmer</a></div>
+        {{else}}
+          <div class="col"><a @click="save" class="button" href="#">Sauvegarder</a></div>
+        {{/if}}
       </div>
+
     </div>
+
   </div>
 </template>
+
+
+<!-- =========================== -->
+<!-- ===   CODE JAVASCRIPT   === -->
+<!-- =========================== -->
+
 <script>
   return {
+
+    // ===============================================
+    // fonction qui s'exécute au chargement de la page
     async data() {
-      let friend = {};
       var USER = "j22.dubreuil@gmail.com";
+      
+      // initialisation des variables
+      let friendRequest = {};
       var mailSender = undefined;
       var mailReceiver = undefined;
-      var acceptation = undefined;
       
+      // récupération des infos pour identifier la requête dans la bdd
       mailSender = this.$route.params.mailSender;
-      mailReceiver = this.$route.params.mailReceiver;
+      if (mailSender != undefined) {
+        mailReceiver = USER;
 
-      if ((mailSender != undefined) || (mailReceiver != undefined)) {
-        if (mailSender == undefined){
-            mailSender = USER;
-        }
-        else {
-          mailReceiver = USER;
-        }
-
+        // recherche dans la bdd de la requête d'ami
         try {
-          friend = await fetch("http://localhost:3000/friendRequest/" + mailSender + "/" + mailReceiver).then(res => res.json());
-          console.log(friend);
+          friendRequest = await fetch("http://localhost:3000/friendRequest/" + mailSender + "/" + mailReceiver)
+            .then(res => res.json());
         } catch(err) {
           this.$app.dialog.alert("Error " + err);
         }
       }
       return {
-        friend: friend
+        friendRequest: friendRequest
       }
     },
 
     methods: {
+      // ==========================
+      // fonction du bouton Annuler
       cancel: function() {
         this.$router.back();
       },
 
+      // =====================================================
+      // fonction du bouton sauvegarder ou du bouton Confirmer
       save: function() {
         var USER = "j22.dubreuil@gmail.com";
-        if (mailSender != undefined) {
+        var mailSender = undefined;
+        var mailReceiver = undefined;
+        var acceptation = undefined;
+
+        // récupération des paramètres 
+        if (this.friendRequest._id != undefined) {
+          mailSender = this.friendRequest.mailSender;
+          mailReceiver = this.friendRequest.mailReceiver;
+          acceptation = "1";
+        }
+        else {
           mailSender = USER;
           mailReceiver = document.querySelector('#input-mailReceiver').value;
           acceptation = "0";
         }
-        else {
-          const acceptation = document.querySelector('#input-acceptation').value;
-        }
+        
+        // récupération du bon entête
         const queryData = this.getSaveQueryData();
 
+        // création de la requête JSON 
         fetch(queryData.url, {
           method: queryData.method,
           headers: { "Content-Type": "application/json" },
@@ -110,14 +137,15 @@
         })
           .catch(err => this.$app.dialog.alert('Error ' + err))
           .finally(() => {
-            this.$router.navigate("/");
+            this.$router.navigate("/homeFriend");
           });
       },
 
+      // retourne le bon entête en fonction de si c'est une nouvelle demande ou une réponse
       getSaveQueryData: function() {
-        if (this.friend._id != undefined) {
+        if (this.friendRequest._id != undefined) {
           return {
-            url: "http://localhost:3000/friendRequest/" + this.friend._id,
+            url: "http://localhost:3000/friendRequest/" + this.friendRequest._id,
             method: "PUT"
           }
         } else {
@@ -128,14 +156,16 @@
         }
       },
 
+      // ============================
+      // fonction du bouton Supprimer
       delete: function() {
-        if (this.friend._id != undefined) {
-          fetch("http://localhost:3000/friendRequest/" + this.friend._id, {
+        if (this.friendRequest._id != undefined) {
+          fetch("http://localhost:3000/friendRequest/" + this.friendRequest._id, {
             method: "DELETE",
           })
             .catch(err => this.$app.dialog.alert('Error ' + err))
             .finally(() => {
-              this.$router.navigate("/");
+              this.$router.navigate("/homeFriend");
             });
         }
       }

@@ -1,3 +1,9 @@
+<!-- Cette page permet d'afficher les amitiés, 
+     les requêtes reçues et les requêtes envoyées -->
+
+<!-- ===================== -->
+<!-- ===   PAGE HTML   === -->
+<!-- ===================== -->
 
 <template>
   <div class="page" data-name="home">
@@ -9,7 +15,7 @@
       </div>
     </div>
     
-    <!-- Scrollable page content-->
+    <!-- Scrollable page content -->
     <div class="page-content">
       
       <div class="block-title">Liste des amis : </div>
@@ -17,7 +23,7 @@
       <div class="list links-list">
         <ul>
           {{#each friendName}}
-          <a href="/friendRequest/{{mail}}"><li>Vous êtes ami avec {{firstName}} {{lastName}}</li></a>
+          <a href="/friend/{{mail}}"><li>Vous êtes ami avec {{firstName}} {{lastName}}</li></a>
           {{/each}}
         </ul>
       </div>
@@ -27,7 +33,7 @@
       <div class="list links-list">
         <ul>
           {{#each receiverName}}
-          <a href="/friendRequestSender/:{{mail}}?"><li>Vous avez envoyé une demande à {{firstName}} {{lastName}}</li></a>
+          <a href="/friendRequestSender/{{mail}}?"><li>Vous avez envoyé une demande à {{firstName}} {{lastName}}</li></a>
           {{/each}}
         </ul>
       </div>
@@ -60,20 +66,26 @@
 </template>
 
 
+<!-- =========================== -->
+<!-- ===   CODE JAVASCRIPT   === -->
+<!-- =========================== -->
+
 <script>
   return {
+    
+    // ===============================================
+    // fonction qui s'exécute au chargement de la page
     async data() {
 
       var USER = "j22.dubreuil@gmail.com"; // utilisateur connecté /!\ voir avec Jérémy
       
-      try {
-        
+      try {    
         // récuperation des demandes d'amis envoyées
         var receiver = [];
         receiver = await fetch("http://localhost:3000/reqFriendSender/" + USER)
           .then(res => res.json());
 
-        // récuperation des noms des demandes d'amis envoyées
+        // récupération des noms des demandes d'amis envoyées
         var receiverName = [];
         for (let i = 0; i < receiver.length; i++) {
           let temp = await fetch("http://localhost:3000/friendName/" + receiver[i].mailReceiver)
@@ -81,12 +93,12 @@
             receiverName.push(temp[0]);
         }
 
-        // récuperation des demandes d'amis reçues
+        // récupération des demandes d'amis reçues
         var sender = [];
         sender = await fetch("http://localhost:3000/reqFriendReceiver/" + USER)
           .then(res => res.json());
 
-        // récuperation des noms des demandes d'amis reçues
+        // récupération des noms des demandes d'amis reçues
         var senderName = [];
         for (let i = 0; i < sender.length; i++) {
           let temp = await fetch("http://localhost:3000/friendName/" + sender[i].mailSender)
@@ -94,17 +106,19 @@
           senderName.push(temp[0]);
         }
 
-        // récuperation des amis
+        // récupération des amis
         var friend = [];
         friend = await fetch("http://localhost:3000/reqFriends/" + USER)
           .then(res => res.json());
 
-        // récuperation des noms des amis
+        // récupération des noms des amis
         var friendName = [];
+        let temp = {};
         for (let i = 0; i < friend.length; i++) {
           const friendi = Object.values(friend[i]);
+
           if (friendi[1] === USER) {
-            let temp = await fetch("http://localhost:3000/friendName/" + friendi[2])
+            temp = await fetch("http://localhost:3000/friendName/" + friendi[2])
               .then(res => res.json());
           }
           else {
@@ -118,14 +132,16 @@
         this.$app.dialog.alert("Error " + err);
       }
 
-      return {USER: USER, receiverName: receiverName , senderName: senderName, friendName: friendName};
+      return {receiverName: receiverName , senderName: senderName, friendName: friendName};
     },
 
-
     methods: {
+      // fonction bouton ajouter un ami
       add: function() {
-        this.$router.navigate("/friendRequest/");
+        this.$router.navigate("/friendRequestReceiver/");
       },
+      
+      // fonction bouton retour à la page d'accueil
       ho: function() {
         this.$router.navigate("/");
       },
