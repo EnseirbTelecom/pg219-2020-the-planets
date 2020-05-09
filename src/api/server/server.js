@@ -31,6 +31,19 @@ const friendChecker = (req, res, next) => {
 	next()
 }
 
+// vérifie qu'une requête d'amitié n'existe pas déjà
+const requestChecker = (friends, req, res, next) => {
+
+	friends.collection("friends").findOne({$or : [{mailSender: req.body.mailSender, mailReceiver: req.body.mailReceiver},{mailSender: req.body.mailReceiver, mailReceiver: req.body.mailSender}]}, { _id: 1, mailSender:1, mailReceiver:1, acceptation:1})
+		.then(item => (item) ? res.json(item) : res.status(404).json({ error: "Entity not found." }))
+		.catch(err => console.log("err" + err))
+	console.log(friends);
+	if (friends._id){
+		return res.status(400).json({ error: "request already exist" })
+	}
+	next()
+}
+
 MongoClient.connect(url, {
 	useUnifiedTopology: true,
 	useNewUrlParser: true,
