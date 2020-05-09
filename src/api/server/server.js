@@ -21,7 +21,11 @@ const ObjectID = require('mongodb').ObjectID
 const url = 'mongodb://localhost:27017/FriendFinder';
 
 
-// Fonction pour Verifier le token
+// ==================================
+// ======      FONCTIONS      =======
+// ==================================
+
+// vérifie le token
 // Format authorization: Basic <token>
 function verifyToken(req,res,next) {
 const tokenHearder = req.headers['authorization'];
@@ -61,6 +65,10 @@ const requestChecker = (friends, req, res, next) => {
 	}
 	next()
 }
+
+// ===================================
+// ======      CONNECTION      =======
+// ===================================
 
 MongoClient.connect(url, {
 	useUnifiedTopology: true,
@@ -201,6 +209,10 @@ MongoClient.connect(url, {
 				.catch(err => console.log("err" + err))
 		})
 
+		// =======================
+		// ===   Inscription   ===
+		// =======================
+
 		// route pour test la présence d'un token dans la phase de test
 		app.get("/users",verifyToken,(req,res) =>{
 			jwt.verify(req.token,secretKey,(err,auth) =>{
@@ -213,45 +225,44 @@ MongoClient.connect(url, {
 			});
 		  });
 
-
-		  // route pour vérifier si il n'existe pas déjà un compte avec le même Mail
-		  // et soit d'ajouter le compte/l'utilisateur ou bien renvoier une erreur
-		  app.post("/users",(req,res,next) =>{
+		// route pour vérifier si il n'existe pas déjà un compte avec le même Mail
+		// et soit d'ajouter le compte/l'utilisateur ou bien renvoier une erreur
+		app.post("/users",(req,res,next) =>{
 			database.collection("users").findOne({"mail": req.body.mail},(err,user) =>{
-			  if(user){
+				if(user){
 				console.log("Compte deja existant");
 				return res.status(401).json({ error: "Compte deja existant" });
-			  }else{
+				}else{
 				next();
-			  }
+				}
 			});
-		  },(req,res) => {
+			},(req,res) => {
 			const user = {
-			  name: req.body.name,
-			  surname: req.body.surname,
-			  pseudo: req.body.pseudo,
-			  birthday: req.body.birthday,
-			  mail: req.body.mail,
-			  password: req.body.password
+				name: req.body.name,
+				surname: req.body.surname,
+				pseudo: req.body.pseudo,
+				birthday: req.body.birthday,
+				mail: req.body.mail,
+				password: req.body.password
 			};
 			database.collection("users").insertOne(user , (err,user) => {
-			  if(user){
+				if(user){
 				const forToken = {
-				  mail: req.body.mail,
-				  name: req.body.name,
-				  surname: req.body.surname
+					mail: req.body.mail,
+					name: req.body.name,
+					surname: req.body.surname
 				}
 				jwt.sign(forToken,secretKey,{expiresIn: '1h'},(err,token) => {
-				  console.log(token);
-				  res.status(201).json({token: token});
+					console.log(token);
+					res.status(201).json({token: token});
 				});
-			  }
+				}
 			});
-		  });
+		});
 
-		  // route pour réaliser la connection et donc vérifier si le mail et le mot envoyé correspondent
-		  // bien à un utilsateur
-		  app.post("/connection",(req,res) =>{
+		// route pour réaliser la connection et donc vérifier si le mail et le mot envoyé correspondent
+		// bien à un utilsateur
+		app.post("/connection",(req,res) =>{
 			database.collection("users").findOne({"mail": req.body.mail,"password": req.body.password},(err,user) =>{
 			  if(user){
 				res.status(201).json(user);
@@ -265,7 +276,7 @@ MongoClient.connect(url, {
 		  // route pour vider la BD pour la phase de test
 		  app.delete("/users",(req,res) =>{
 			database.collection("users").deleteMany()
-					 .then(items => res.json(items));
+				.then(items => res.json(items));
 		  });
 
 

@@ -1,6 +1,6 @@
 var routes = [
   
-  // Afficher la page d'accueil (dev)
+  // Afficher la page d'accueil
   {
     path: '/',
     componentUrl: './pages/home.html'
@@ -24,6 +24,11 @@ var routes = [
   {
     path: '/friendRequestReceiver/:mailSender?',
     componentUrl: './pages/friendRequest.html'
+  },
+  // Afficher la page de la collection friends (dev)
+  {
+    path: '/devFriends',
+    componentUrl: './pages/dev_home.html'
   },
   // Afficher une requete d'amitiée (dev)
   {
