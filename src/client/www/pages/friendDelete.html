@@ -47,7 +47,6 @@
     // ===============================================
     // fonction qui s'exécute au chargement de la page
     async data() {
-      var USER = "j22.dubreuil@gmail.com";
       
       // initialisation des variables
       let friendRequest = {};
@@ -60,7 +59,7 @@
       mail = this.$route.params.mail;
 
       if (mailReceiver != undefined) {
-        mailSender = USER;
+        mailSender = this.$app.data.mail;
 
         // recherche dans la bdd de la requête d'ami
         try {
@@ -72,7 +71,7 @@
       }
       // récupération des infos pour identifier l'ami dans la bdd
       else {
-        mailReceiver = USER;
+        mailReceiver = this.$app.data.mail;
 
         // recherche dans la bdd de l'ami
         try {

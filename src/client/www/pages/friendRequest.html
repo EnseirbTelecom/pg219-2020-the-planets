@@ -70,8 +70,7 @@
     // ===============================================
     // fonction qui s'exécute au chargement de la page
     async data() {
-      var USER = this.$app.data.mail;
-      
+
       // initialisation des variables
       let friendRequest = {};
       var mailSender = undefined;
@@ -80,7 +79,7 @@
       // récupération des infos pour identifier la requête dans la bdd
       mailSender = this.$route.params.mailSender;
       if (mailSender != undefined) {
-        mailReceiver = USER;
+        mailReceiver = this.$app.data.mail;
 
         // recherche dans la bdd de la requête d'ami
         try {
@@ -105,7 +104,8 @@
       // =====================================================
       // fonction du bouton sauvegarder ou du bouton Confirmer
       save: function() {
-        var USER = this.$app.data.mail;
+
+        // initialisation des variables
         var mailSender = undefined;
         var mailReceiver = undefined;
         var acceptation = undefined;
@@ -117,7 +117,7 @@
           acceptation = "1";
         }
         else {
-          mailSender = USER;
+          mailSender = this.$app.data.mail;
           mailReceiver = document.querySelector('#input-mailReceiver').value;
           acceptation = "0";
         }
