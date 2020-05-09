@@ -71,13 +71,10 @@
     // ===============================================
     // fonction qui s'exécute au chargement de la page
     async data() {
-
-      var USER = this.$app.data.mail; // utilisateur connecté /!\ voir avec Jérémy
-      console.log(USER);
       try {    
         // récuperation des demandes d'amis envoyées
         var receiver = [];
-        receiver = await fetch("http://localhost:3000/reqFriendSender/" + USER)
+        receiver = await fetch("http://localhost:3000/reqFriendSender/" + this.$app.data.mail)
           .then(res => res.json());
 
         // récupération des noms des demandes d'amis envoyées
@@ -90,7 +87,7 @@
 
         // récupération des demandes d'amis reçues
         var sender = [];
-        sender = await fetch("http://localhost:3000/reqFriendReceiver/" + USER)
+        sender = await fetch("http://localhost:3000/reqFriendReceiver/" + this.$app.data.mail)
           .then(res => res.json());
 
         // récupération des noms des demandes d'amis reçues
@@ -103,7 +100,7 @@
 
         // récupération des amis
         var friend = [];
-        friend = await fetch("http://localhost:3000/reqFriends/" + USER)
+        friend = await fetch("http://localhost:3000/reqFriends/" + this.$app.data.mail)
           .then(res => res.json());
 
         // récupération des noms des amis
@@ -112,7 +109,7 @@
         for (let i = 0; i < friend.length; i++) {
           const friendi = Object.values(friend[i]);
 
-          if (friendi[1] === USER) {
+          if (friendi[1] === this.$app.data.mail) {
             temp = await fetch("http://localhost:3000/friendName/" + friendi[2])
               .then(res => res.json());
           }
