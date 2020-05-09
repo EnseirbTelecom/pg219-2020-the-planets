@@ -70,7 +70,7 @@
     // ===============================================
     // fonction qui s'exécute au chargement de la page
     async data() {
-      var USER = "j22.dubreuil@gmail.com";
+      var USER = this.$app.data.mail;
       
       // initialisation des variables
       let friendRequest = {};
@@ -105,7 +105,7 @@
       // =====================================================
       // fonction du bouton sauvegarder ou du bouton Confirmer
       save: function() {
-        var USER = "j22.dubreuil@gmail.com";
+        var USER = this.$app.data.mail;
         var mailSender = undefined;
         var mailReceiver = undefined;
         var acceptation = undefined;

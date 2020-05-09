@@ -21,6 +21,20 @@ const ObjectID = require('mongodb').ObjectID
 const url = 'mongodb://localhost:27017/FriendFinder';
 
 
+// Fonction pour Verifier le token
+// Format authorization: Basic <token>
+function verifyToken(req,res,next) {
+const tokenHearder = req.headers['authorization'];
+if(tokenHearder !== undefined){
+	const splitTokenHeader = tokenHearder.split(' ');
+	req.token = splitTokenHeader[1];
+	console.log(req.token);
+	next();
+}else{
+	res.sendStatus(403);
+	}
+}
+
 // vérifie que tous les paramètres sont ok
 const friendChecker = (req, res, next) => {
 	const friend = {
@@ -254,21 +268,6 @@ MongoClient.connect(url, {
 					 .then(items => res.json(items));
 		  });
 
-
-		  // Fonction pour Verifier le token
-		  // Format authorization: Basic <token>
-
-		  function verifyToken(req,res,next) {
-			const tokenHearder = req.headers['authorization'];
-			if(tokenHearder !== undefined){
-			  const splitTokenHeader = tokenHearder.split(' ');
-			  req.token = splitTokenHeader[1];
-			  console.log(req.token);
-			  next();
-			}else{
-			  res.sendStatus(403);
-			}
-		  }
 
 		// ==================================
 		// ===   Serveur en mode écoute   ===

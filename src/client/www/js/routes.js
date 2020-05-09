@@ -3,7 +3,7 @@ var routes = [
   // Afficher la page d'accueil (dev)
   {
     path: '/',
-    componentUrl: './pages/dev_home.html'
+    componentUrl: './pages/home.html'
   },
   // Afficher la page des amis
   {

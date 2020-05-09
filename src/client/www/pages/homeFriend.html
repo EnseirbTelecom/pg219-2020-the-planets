@@ -72,8 +72,8 @@
     // fonction qui s'exécute au chargement de la page
     async data() {
 
-      var USER = "j22.dubreuil@gmail.com"; // utilisateur connecté /!\ voir avec Jérémy
-      
+      var USER = this.$app.data.mail; // utilisateur connecté /!\ voir avec Jérémy
+      console.log(USER);
       try {    
         // récuperation des demandes d'amis envoyées
         var receiver = [];

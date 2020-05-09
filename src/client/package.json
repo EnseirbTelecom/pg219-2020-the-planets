@@ -56,12 +56,7 @@
     "express": "^4.17.1",
     "framework7": "^5.5.1",
     "framework7-icons": "^3.0.0",
-<<<<<<< HEAD
-    "mongodb": "^3.5.7",
-    "nodemon": "^2.0.3",
-=======
     "gradle": "^1.0.9",
->>>>>>> b5d44e6a60317e635f4f681c85b4613284bcf75f
     "template7": "^1.4.2"
   },
   "devDependencies": {
