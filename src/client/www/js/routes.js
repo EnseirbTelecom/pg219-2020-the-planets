@@ -1,4 +1,3 @@
-
 var routes = [
   
   // Afficher la page d'accueil (dev)
@@ -31,9 +30,18 @@ var routes = [
     path: '/friends/:friendId?',
     componentUrl: './pages/dev_friend.html',
   },
+  {
+    path: '/connection',
+    componentUrl: './pages/connection.html',
+  },
+  {
+    path:'/inscription',
+    componentUrl: './pages/inscription.html',
+  },
   // Default route (404 page). MUST BE THE LAST
   {
     path: '(.*)',
     url: './pages/404.html',
+    componentUrl: './pages/home.html',
   },
 ];

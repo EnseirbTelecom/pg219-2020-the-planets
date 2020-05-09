@@ -1,0 +1,71 @@
+<template>
+  <div class="page" data-name="home">
+    <div class="appbar">
+      <a href="#" class="link back">
+        <i class="icon icon-back"></i>
+        <span class="if-not-md">Back</span>
+      </a>
+      <div class="appbar-inner">
+        FriendFinder
+      </div>
+    </div>
+    <div class="page-content block ">
+      <form method="post">
+        <div class="formulaire">
+          <label>Mail</label>
+          <input id="input-mail" type="email" name="user_mail" placeholder="Entrer votre email" required />
+        </div>
+        <div class="formulaire">
+          <label>Passeword</label>
+          <input id="input-password" type="password" name="user_passeword" placeholder="Entrer votre mot de passe" required />
+        </div>
+        <div class="button">
+          <button type="button" @click="connecter" name="button">Se Connecter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+<script>
+  return{
+    methods: {
+      connecter: function() {
+        const dataApp = this.$app.data;
+        dataApp.mail = document.querySelector('#input-mail').value;
+        const password = document.querySelector('#input-password').value;
+        const url = "http://localhost:3000/connection/";
+        const router = this.$router;
+        const dialog = this.$app.dialog;
+        const passwordEncoding = CryptoJS.MD5(password);
+        if(dataApp.mail && passwordEncoding){
+          fetch(url,{
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              mail: dataApp.mail,
+              password: passwordEncoding
+            })
+          })
+          .then(function(response){
+            if (response.ok) {
+              response.json().then(data => {
+                dataApp.name = data.name;
+                dataApp.surname = data.surname;
+                dataApp.pseudo = data.pseudo;
+                dataApp.birthday = data.birthday;
+                router.navigate('/');
+              });
+            }
+            else{
+              response.json().then(data =>{dialog.alert("Le mot de passe ou le mail n'est pas correcte veuillez ressayer")});
+            }
+          })
+          .catch(err => this.$app.dialog.alert('Error ' + err));
+        }
+        else {
+          dialog.alert("Il manque des infos");
+        }
+      }
+    }
+  }
+</script>
