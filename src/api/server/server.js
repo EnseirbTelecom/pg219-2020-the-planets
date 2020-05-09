@@ -1,7 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const app = express();
-const bcrypt = require('bcrypt');
+
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
@@ -15,7 +15,6 @@ app.use((req,res,next) => {
 });
 
 const secretKey = 'secretKey';
-const saltRounds = 10;
 
 const MongoClient = require("mongodb").MongoClient;
 const ObjectID = require("mongodb").ObjectID;
@@ -25,6 +24,7 @@ MongoClient.connect(urlMongo, {poolSize: 10})
            .then(clients => clients.db("FriendFinder"))
            .then(resultat =>{
 
+             // route pour test la présence d'un token dans la phase de test
              app.get("/users",verifyToken,(req,res) =>{
                jwt.verify(req.token,secretKey,(err,auth) =>{
                  if (err) {
@@ -36,6 +36,9 @@ MongoClient.connect(urlMongo, {poolSize: 10})
                });
              });
 
+
+             // route pour vérifier si il n'existe pas déjà un compte avec le même Mail
+             // et soit d'ajouter le compte/l'utilisateur ou bien renvoier une erreur
              app.post("/users",(req,res,next) =>{
                resultat.collection("users").findOne({"mail": req.body.mail},(err,user) =>{
                  if(user){
@@ -69,6 +72,8 @@ MongoClient.connect(urlMongo, {poolSize: 10})
                });
              });
 
+             // route pour réaliser la connection et donc vérifier si le mail et le mot envoyé correspondent
+             // bien à un utilsateur
              app.post("/connection",(req,res) =>{
                resultat.collection("users").findOne({"mail": req.body.mail,"password": req.body.password},(err,user) =>{
                  if(user){
@@ -80,6 +85,7 @@ MongoClient.connect(urlMongo, {poolSize: 10})
                });
              });
 
+             // route pour vider la BD pour la phase de test
              app.delete("/users",(req,res) =>{
                resultat.collection("users").deleteMany()
                         .then(items => res.json(items));
