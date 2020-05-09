@@ -18,7 +18,7 @@ const secretKey = 'secretKey';
 
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectID
-const url = 'mongodb://localhost:27017/FriendFinder';
+const url = 'mongodb+srv://test:toto@cluster0-zz5dr.mongodb.net/test?retryWrites=true&w=majority';
 
 
 // ==================================

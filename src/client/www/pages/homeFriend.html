@@ -24,7 +24,7 @@
       <div class="list links-list">
         <ul>
           {{#each friendName}}
-          <a href="/friend/{{mail}}"><li>Vous êtes ami avec {{firstName}} {{lastName}}</li></a>
+          <a href="/friend/{{mail}}"><li>Vous êtes ami avec {{surname}} {{name}}</li></a>
           {{/each}}
         </ul>
       </div>
@@ -34,7 +34,7 @@
       <div class="list links-list">
         <ul>
           {{#each receiverName}}
-          <a href="/friendRequestSender/{{mail}}?"><li>Vous avez envoyé une demande à {{firstName}} {{lastName}}</li></a>
+          <a href="/friendRequestSender/{{mail}}?"><li>Vous avez envoyé une demande à {{surname}} {{name}}</li></a>
           {{/each}}
         </ul>
       </div>
@@ -44,7 +44,7 @@
       <div class="list links-list">
         <ul>
           {{#each senderName}}
-          <a href="/friendRequestReceiver/{{mail}}"><li>{{firstName}} {{lastName}} vous a envoyé une demande</li></a>
+          <a href="/friendRequestReceiver/{{mail}}"><li>{{surname}} {{name}} vous a envoyé une demande</li></a>
           {{/each}}
         </ul>
       </div>
