@@ -355,7 +355,7 @@ MongoClient.connect(url, {
         historique.insertOne(user_last_position)
         res.status(200).json(user_last_position)
   
-      })
+      });
   
   
       app.get("/mypos", (req, res) => {
@@ -366,7 +366,7 @@ MongoClient.connect(url, {
             res.status(200).json(mypos);
           })
           .catch(err => console.log("Error " + err))
-      })
+      });
   
   
   
@@ -386,14 +386,14 @@ MongoClient.connect(url, {
             res.status(200).json(mypos);
           })
           .catch(err => console.log("Error " + err))
-      })
+      });
   
   
       app.delete("/historique/:id", (req, res) => {
         historique.deleteOne({ _id: ObjectID(req.params.id) })
           .then(command => (command.result.n == 1) ? res.status(200).send() : res.status(404).json({ error: "Couldn't delete." }))
           .catch(err => console.log("Error " + err))
-      })
+      });
 
 
 		// ==================================
