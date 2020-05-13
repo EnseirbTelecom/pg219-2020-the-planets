@@ -1,0 +1,174 @@
+<!-- Cette page permet de faire une nouvelle requête 
+     d'amitié ou de répondre à une requête -->
+
+<!-- ===================== -->
+<!-- ===   PAGE HTML   === -->
+<!-- ===================== -->
+
+<template>
+  <div class="page" data-name="friendRequest">
+  
+    <!-- Appbar -->
+    <div class="appbar">
+      <div class="appbar-inner">
+        FriendFinder
+      </div>
+    </div>
+
+    <!-- Scrollable page content -->
+    <div class="page-content">
+      <div class="block-title">
+        {{#if friendRequest._id}}
+          Voulez vous être amis avec {{friendRequest.mailSender}} ?
+        {{else}}
+          Ajouter un ami
+        {{/if}}
+      </div>
+
+      {{#if friendRequest._id}}
+      {{else}}
+      <form class="list" id="friendRequest-form">
+        <ul>
+          <li>
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Mail de la personne</div>
+                <div class="item-input-wrap">
+                  <input id="input-mailReceiver" type="text" name="mailReceiver" placeholder="mail" value="">
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </form>
+      {{/if}}
+
+      <!-- Footer -->
+      <div class="block block-strong row">
+        <div class="col"><a @click="cancel" class="button" href="#">Annuler</a></div>
+        {{#if friendRequest._id}}
+          <div class="col"><a @click="delete" class="button" href="#">Supprimer</a></div>
+          <div class="col"><a @click="save" class="button" href="#">Confirmer</a></div>
+        {{else}}
+          <div class="col"><a @click="save" class="button" href="#">Sauvegarder</a></div>
+        {{/if}}
+      </div>
+
+    </div>
+
+  </div>
+</template>
+
+
+<!-- =========================== -->
+<!-- ===   CODE JAVASCRIPT   === -->
+<!-- =========================== -->
+
+<script>
+  return {
+
+    // ===============================================
+    // fonction qui s'exécute au chargement de la page
+    async data() {
+
+      // initialisation des variables
+      let friendRequest = {};
+      var mailSender = undefined;
+      var mailReceiver = undefined;
+      
+      // récupération des infos pour identifier la requête dans la bdd
+      mailSender = this.$route.params.mailSender;
+      if (mailSender != undefined) {
+        mailReceiver = this.$app.data.mail;
+
+        // recherche dans la bdd de la requête d'ami
+        try {
+          friendRequest = await fetch("http://localhost:3000/friendRequest/" + mailSender + "/" + mailReceiver)
+            .then(res => res.json());
+        } catch(err) {
+          this.$app.dialog.alert("Error " + err);
+        }
+      }
+      return {
+        friendRequest: friendRequest
+      }
+    },
+
+    methods: {
+      // ==========================
+      // fonction du bouton Annuler
+      cancel: function() {
+        this.$router.back();
+      },
+
+      // =====================================================
+      // fonction du bouton sauvegarder ou du bouton Confirmer
+      save: function() {
+
+        // initialisation des variables
+        var mailSender = undefined;
+        var mailReceiver = undefined;
+        var acceptation = undefined;
+
+        // récupération des paramètres 
+        if (this.friendRequest._id != undefined) {
+          mailSender = this.friendRequest.mailSender;
+          mailReceiver = this.friendRequest.mailReceiver;
+          acceptation = "1";
+        }
+        else {
+          mailSender = this.$app.data.mail;
+          mailReceiver = document.querySelector('#input-mailReceiver').value;
+          acceptation = "0";
+        }
+        
+        // récupération du bon entête
+        const queryData = this.getSaveQueryData();
+
+        // création de la requête JSON 
+        fetch(queryData.url, {
+          method: queryData.method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mailSender: mailSender,
+            mailReceiver: mailReceiver,
+            acceptation: acceptation
+          })
+        })
+          .catch(err => this.$app.dialog.alert('Error ' + err))
+          .finally(() => {
+            this.$router.navigate("/homeFriend");
+          });
+      },
+
+      // retourne le bon entête en fonction de si c'est une nouvelle demande ou une réponse
+      getSaveQueryData: function() {
+        if (this.friendRequest._id != undefined) {
+          return {
+            url: "http://localhost:3000/friendRequest/" + this.friendRequest._id,
+            method: "PUT"
+          }
+        } else {
+          return {
+            url: "http://localhost:3000/friendRequest/",
+            method: "POST"
+          }
+        }
+      },
+
+      // ============================
+      // fonction du bouton Supprimer
+      delete: function() {
+        if (this.friendRequest._id != undefined) {
+          fetch("http://localhost:3000/friendRequest/" + this.friendRequest._id, {
+            method: "DELETE",
+          })
+            .catch(err => this.$app.dialog.alert('Error ' + err))
+            .finally(() => {
+              this.$router.navigate("/homeFriend");
+            });
+        }
+      }
+    }
+  }
+</script>

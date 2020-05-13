@@ -2,28 +2,11 @@ var $$ = Dom7;
 
 var app = new Framework7({
   root: '#app', // App root element
-
-  id: 'io.framework7.myapp', // App bundle ID
+  id: 'fr.theplanets.friendfinder', // App bundle ID
   name: 'FriendFinder', // App name
   theme: 'auto', // Automatic theme detection
-  // App root data
-  data() {
-    return {
-      foo: 'bar'
-    };
-  },
-  // App root methods
-  methods: {
-    doSomething() {
-      // ...
-    }
-  },
-
-
   // App routes
   routes: routes,
-
-
   // Input settings
   input: {
     scrollIntoViewOnFocus: Framework7.device.cordova && !Framework7.device.electron,
@@ -44,3 +27,8 @@ var app = new Framework7({
     },
   },
 });
+
+app.views.create('.view-main', {
+  url: '/'
+})
+

@@ -1,5 +1,5 @@
 /**
- * Framework7 5.6.0
+ * Framework7 5.5.1
  * Full featured mobile HTML framework for building iOS & Android apps
  * https://framework7.io/
  *
@@ -7,7 +7,7 @@
  *
  * Released under the MIT License
  *
- * Released on: April 18, 2020
+ * Released on: March 20, 2020
  */
 
 (function (global, factory) {
@@ -2826,7 +2826,6 @@
       cordova: !!(win.cordova || win.phonegap),
       phonegap: !!(win.cordova || win.phonegap),
       electron: false,
-      nwjs: false,
     };
 
     var screenWidth = win.screen.width;
@@ -2841,7 +2840,6 @@
     var firefox = ua.indexOf('Gecko/') >= 0 && ua.indexOf('Firefox/') >= 0;
     var windows = platform === 'Win32';
     var electron = ua.toLowerCase().indexOf('electron') >= 0;
-    var nwjs = typeof nw !== 'undefined' && typeof process !== 'undefined' && typeof process.versions !== 'undefined' && typeof process.versions.nw !== 'undefined';
     var macos = platform === 'MacIntel';
 
     // iPadOs 13 fix
@@ -2901,10 +2899,9 @@
     device.standalone = device.webView;
 
     // Desktop
-    device.desktop = !(device.ios || device.android) || electron || nwjs;
+    device.desktop = !(device.ios || device.android) || electron;
     if (device.desktop) {
       device.electron = electron;
-      device.nwjs = nwjs;
       device.macos = macos;
       device.windows = windows;
       if (device.macos) {
@@ -3191,7 +3188,7 @@
     if ( parameters === void 0 ) parameters = {};
 
     var defaultSelector = parameters.defaultSelector;
-    var Constructor = parameters.constructor;
+    var constructor = parameters.constructor;
     var domProp = parameters.domProp;
     var app = parameters.app;
     var addMethods = parameters.addMethods;
@@ -3200,13 +3197,13 @@
         var args = [], len = arguments.length;
         while ( len-- ) args[ len ] = arguments[ len ];
 
-        if (app) { return new (Function.prototype.bind.apply( Constructor, [ null ].concat( [app], args) )); }
-        return new (Function.prototype.bind.apply( Constructor, [ null ].concat( args) ));
+        if (app) { return new (Function.prototype.bind.apply( constructor, [ null ].concat( [app], args) )); }
+        return new (Function.prototype.bind.apply( constructor, [ null ].concat( args) ));
       },
       get: function get(el) {
         if ( el === void 0 ) el = defaultSelector;
 
-        if (el instanceof Constructor) { return el; }
+        if (el instanceof constructor) { return el; }
         var $el = $(el);
         if ($el.length === 0) { return undefined; }
         return $el[0][domProp];
@@ -3237,66 +3234,30 @@
     if ( parameters === void 0 ) parameters = {};
 
     var defaultSelector = parameters.defaultSelector;
-    var Constructor = parameters.constructor;
+    var constructor = parameters.constructor;
     var app = parameters.app;
     var methods = Utils.extend(
       ConstructorMethods({
         defaultSelector: defaultSelector,
-        constructor: Constructor,
+        constructor: constructor,
         app: app,
         domProp: 'f7Modal',
       }),
       {
-        open: function open(el, animate, targetEl) {
+        open: function open(el, animate) {
           var $el = $(el);
-          if ($el.length > 1 && targetEl) {
-            // check if same modal in other page
-            var $targetPage = $(targetEl).parents('.page');
-            if ($targetPage.length) {
-              $el.each(function (index, modalEl) {
-                var $modalEl = $(modalEl);
-                if ($modalEl.parents($targetPage)[0] === $targetPage[0]) {
-                  $el = $modalEl;
-                }
-              });
-            }
-          }
-          if ($el.length > 1) {
-            $el = $el.eq($el.length - 1);
-          }
           if (!$el.length) { return undefined; }
           var instance = $el[0].f7Modal;
-          if (!instance) {
-            var params = $el.dataset();
-            instance = new Constructor(app, Object.assign({}, {el: $el}, params));
-          }
+          if (!instance) { instance = new constructor(app, { el: $el }); }
           return instance.open(animate);
         },
-        close: function close(el, animate, targetEl) {
+        close: function close(el, animate) {
           if ( el === void 0 ) el = defaultSelector;
 
           var $el = $(el);
           if (!$el.length) { return undefined; }
-          if ($el.length > 1) {
-            // check if close link (targetEl) in this modal
-            var $parentEl;
-            if (targetEl) {
-              var $targetEl = $(targetEl);
-              if ($targetEl.length) {
-                $parentEl = $targetEl.parents($el);
-              }
-            }
-            if ($parentEl && $parentEl.length > 0) {
-              $el = $parentEl;
-            } else {
-              $el = $el.eq($el.length - 1);
-            }
-          }
           var instance = $el[0].f7Modal;
-          if (!instance) {
-            var params = $el.dataset();
-            instance = new Constructor(app, Object.assign({}, {el: $el}, params));
-          }
+          if (!instance) { instance = new constructor(app, { el: $el }); }
           return instance.close(animate);
         },
       }
@@ -3544,12 +3505,8 @@
         var html = doc.querySelector('html');
         if (media === DARK) {
           html.classList.add('theme-dark');
-          app.darkTheme = true;
-          app.emit('darkThemeChange', true);
         } else if (media === LIGHT) {
           html.classList.remove('theme-dark');
-          app.darkTheme = false;
-          app.emit('darkThemeChange', false);
         }
       };
 
@@ -3608,12 +3565,8 @@
       }
       if (app.mq.dark && app.mq.dark.matches) {
         html.classList.add('theme-dark');
-        app.darkTheme = true;
-        app.emit('darkThemeChange', true);
       } else if (app.mq.light && app.mq.light.matches) {
         html.classList.remove('theme-dark');
-        app.darkTheme = false;
-        app.emit('darkThemeChange', false);
       }
     };
 
@@ -6167,8 +6120,8 @@
         .removeClass('navbar-previous navbar-current navbar-next')
         .addClass(("navbar-" + newPagePosition + (isMaster ? ' navbar-master' : '') + (isDetail ? ' navbar-master-detail' : '') + (isDetailRoot ? ' navbar-master-detail-root' : '')))
         .removeClass('stacked');
-      $newNavbarEl.trigger('navbar:position', { position: newPagePosition });
-      router.emit('navbarPosition', $newNavbarEl[0], newPagePosition);
+      $newNavbarEl.trigger('navbar:position', { position: 'newPagePosition' });
+      router.emit('navbarPosition', $newNavbarEl[0], 'newPagePosition');
       if (isMaster || isDetail) {
         router.emit('navbarRole', $newNavbarEl[0], { role: isMaster ? 'master' : 'detail', detailRoot: !!isDetailRoot });
       }
@@ -11563,7 +11516,7 @@
   };
 
   /**
-   * Framework7 5.6.0
+   * Framework7 5.5.1
    * Full featured mobile HTML framework for building iOS & Android apps
    * https://framework7.io/
    *
@@ -11571,7 +11524,7 @@
    *
    * Released under the MIT License
    *
-   * Released on: April 18, 2020
+   * Released on: March 20, 2020
    */
 
   // Install Core Modules & Components

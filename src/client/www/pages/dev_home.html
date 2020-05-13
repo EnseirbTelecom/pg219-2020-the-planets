@@ -1,0 +1,58 @@
+
+<template>
+  <div class="page" data-name="home">
+
+  <!-- Appbar -->
+  <div class="appbar">
+    <div class="appbar-inner">
+      Control center
+      <div class="col"><a @click="fri" class="button" href="#">Amis</a></div>
+    </div>
+  </div>
+
+  <!-- Scrollable page content-->
+  <div class="page-content">
+
+    <div class="block-title">Collection : friends</div>
+      <div class="list links-list">
+        <ul>
+          {{#each friends}}
+          <a href="/friends/{{_id}}"><li>{{mailSender}} a envoyé une demande à {{mailReceiver}} (état : {{acceptation}})</li></a>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+
+    <div class="fab fab-center-bottom">
+      <a @click="add" href="#">
+        <i class="icon f7-icons">plus</i>
+      </a>
+    </div>
+
+  </div>
+
+</template>
+
+
+<script>
+  return {
+    async data() {
+      let friends = [];
+      try {
+        friends = await fetch("http://localhost:3000/friends")
+          .then(res => res.json());
+      } catch(err) {
+        this.$app.dialog.alert("Error " + err);
+      }
+      return { friends: friends };
+    },
+    methods: {
+      add: function() {
+        this.$router.navigate("/friends/");
+      },
+      fri: function(){
+        this.$router.navigate("/homeFriend/");
+      }
+    }
+  }
+</script>

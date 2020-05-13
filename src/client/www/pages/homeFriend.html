@@ -1,0 +1,165 @@
+<!-- Cette page permet d'afficher les amitiés, 
+     les requêtes reçues et les requêtes envoyées -->
+
+<!-- ===================== -->
+<!-- ===   PAGE HTML   === -->
+<!-- ===================== -->
+
+<template>
+  <div class="page" data-name="home">
+   
+    <!-- Appbar -->
+    <div class="appbar">
+      <div class="appbar-inner">
+        Amis
+        <div class="col"><a @click="ho" class="button" href="#">Accueil</a></div>
+      </div>
+    </div>
+    
+    <!-- Scrollable page content -->
+    <div class="page-content">
+      
+      <div class="block-title">Liste des amis : </div>
+      
+      <div class="list links-list">
+        <ul>
+          {{#each friendName}}
+          <a href="/friend/{{mail}}"><li>Vous êtes ami avec {{surname}} {{name}}</li></a>
+          {{/each}}
+        </ul>
+      </div>
+
+      <div class="block-title">Liste des demandes envoyées : </div>
+
+      <div class="list links-list">
+        <ul>
+          {{#each receiverName}}
+          <a href="/friendRequestSender/{{mail}}?"><li>Vous avez envoyé une demande à {{surname}} {{name}}</li></a>
+          {{/each}}
+        </ul>
+      </div>
+      
+      <div class="block-title">Liste des demandes reçues : </div>
+
+      <div class="list links-list">
+        <ul>
+          {{#each senderName}}
+          <a href="/friendRequestReceiver/{{mail}}"><li>{{surname}} {{name}} vous a envoyé une demande</li></a>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+
+    <div class="fab fab-center-center">
+      <a @click="add" href="#">
+        <i class="icon f7-icons">plus</i>
+      </a>
+    </div>
+
+    <div class="page-content">
+      <div class="block block-strong col">
+          <div class="col">
+              <a class="button" href="/postpos">Post my position</a>
+          </div>
+      </div>
+      <div class="block block-strong col">
+          <div class="col">
+              <a class="button" href="/map">Show map</a>
+          </div>
+      </div>
+      <div class="block block-strong col">
+          <div class="col">
+              <a class="button" href="/friendspos">See friends pos</a>
+          </div>
+      </div>
+      <div class="block block-strong col">
+          <div class="col">
+              <a class="button" href="/historique">Historique</a>
+          </div>
+      </div>
+  </div>
+
+  </div>
+
+</template>
+
+
+<!-- =========================== -->
+<!-- ===   CODE JAVASCRIPT   === -->
+<!-- =========================== -->
+
+<script>
+  return {
+    
+    // ===============================================
+    // fonction qui s'exécute au chargement de la page
+    async data() {
+      try {    
+        // récuperation des demandes d'amis envoyées
+        var receiver = [];
+        receiver = await fetch("http://localhost:3000/reqFriendSender/" + this.$app.data.mail)
+          .then(res => res.json());
+
+        // récupération des noms des demandes d'amis envoyées
+        var receiverName = [];
+        for (let i = 0; i < receiver.length; i++) {
+          let temp = await fetch("http://localhost:3000/friendName/" + receiver[i].mailReceiver)
+            .then(res => res.json());
+            receiverName.push(temp[0]);
+        }
+
+        // récupération des demandes d'amis reçues
+        var sender = [];
+        sender = await fetch("http://localhost:3000/reqFriendReceiver/" + this.$app.data.mail)
+          .then(res => res.json());
+
+        // récupération des noms des demandes d'amis reçues
+        var senderName = [];
+        for (let i = 0; i < sender.length; i++) {
+          let temp = await fetch("http://localhost:3000/friendName/" + sender[i].mailSender)
+            .then(res => res.json());
+          senderName.push(temp[0]);
+        }
+
+        // récupération des amis
+        var friend = [];
+        friend = await fetch("http://localhost:3000/reqFriends/" + this.$app.data.mail)
+          .then(res => res.json());
+
+        // récupération des noms des amis
+        var friendName = [];
+        let temp = {};
+        for (let i = 0; i < friend.length; i++) {
+          const friendi = Object.values(friend[i]);
+
+          if (friendi[1] === this.$app.data.mail) {
+            temp = await fetch("http://localhost:3000/friendName/" + friendi[2])
+              .then(res => res.json());
+          }
+          else {
+            temp = await fetch("http://localhost:3000/friendName/" + friendi[1])
+              .then(res => res.json());
+          }
+          friendName.push(temp[0]);
+        }
+
+      } catch(err) {
+        this.$app.dialog.alert("Error " + err);
+      }
+
+      return {receiverName: receiverName , senderName: senderName, friendName: friendName};
+    },
+
+    methods: {
+      // fonction bouton ajouter un ami
+      add: function() {
+        this.$router.navigate("/friendRequestReceiver/");
+      },
+      
+      // fonction bouton retour à la page d'accueil
+      ho: function() {
+        this.$router.navigate("/devFriends");
+      },
+    }
+  }
+</script>

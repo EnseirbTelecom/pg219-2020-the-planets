@@ -112,3 +112,68 @@
   outline:none;
 }
 
+
+.page-content{
+  vertical-align: middle;
+}
+
+.vertical_center{
+  position:relative;
+  top:45%;
+  transform:translateY(-75%);
+}
+
+.appbar-inner{
+  margin-left: 15px;
+}
+
+form {
+  margin: 0 auto;
+  padding: 1em;
+  border: 1px solid;
+  position:relative;
+  top:50%;
+  transform:translateY(-75%);
+}
+
+form div + div {
+  margin-top: 1em;
+}
+
+label {
+  display: inline-block;
+  width: 90px;
+  text-align: right;
+  margin-right: 15px;
+}
+
+input{
+  width: 200px;
+}
+
+.center{
+  margin: auto;
+  display: inline-block;
+}
+
+.col{
+  text-align: center;
+}
+
+
+
+.formulaire{
+  display: flex;
+}
+
+.button {
+  padding-left: 90px;
+}
+
+button {
+  margin-left: .5em;
+}
+
+:required{
+  background-color: #FF0000;
+}

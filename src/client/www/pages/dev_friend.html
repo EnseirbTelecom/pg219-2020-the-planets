@@ -1,0 +1,133 @@
+
+<template>
+  <div class="page" data-name="friend">
+    <div class="appbar">
+      <div class="appbar-inner">
+        FriendFinder
+      </div>
+    </div>
+    <div class="page-content">
+      <div class="block-title">
+        {{#if friend._id}}
+          Modifier
+        {{else}}
+          Ajouter un ami
+        {{/if}}
+      </div>
+      <form class="list" id="friend-form">
+        <ul>
+
+          <li>
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Expéditeur</div>
+                <div class="item-input-wrap">
+                  <input id="input-mailSender" type="text" name="mailSender" placeholder="mailSender" value="{{friend.mailSender}}">
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Destinataire</div>
+                <div class="item-input-wrap">
+                  <input id="input-mailReceiver" type="text" name="mailReceiver" placeholder="mailReceiver" value="{{friend.mailReceiver}}">
+                </div>
+              </div>
+            </div>
+          </li>
+
+          <li>
+            <div class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Acceptation</div>
+                <div class="item-input-wrap">
+                  <input id="input-acceptation" type="text" name="acceptation" placeholder="acceptation" value="{{friend.acceptation}}">
+                </div>
+              </div>
+            </div>
+          </li>
+
+        </ul>
+      </form>
+      <div class="block block-strong row">
+        <div class="col"><a @click="cancel" class="button" href="#">Cancel</a></div>
+        {{#if friend._id}}<div class="col"><a @click="delete" class="button" href="#">Delete</a></div>{{/if}}
+        <div class="col"><a @click="save" class="button" href="#">Save</a></div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+  return {
+    async data() {
+      let friend = {};
+      const id = this.$route.params.friendId;
+      if (id != undefined) {
+        try {
+          friend = await fetch("http://localhost:3000/friends/" + id).then(res => res.json());
+        } catch(err) {
+          this.$app.dialog.alert("Error " + err);
+        }
+      }
+      return {
+        friend: friend
+      }
+    },
+
+    methods: {
+      cancel: function() {
+        this.$router.back();
+      },
+
+      save: function() {
+        const mailSender = document.querySelector('#input-mailSender').value;
+        const mailReceiver = document.querySelector('#input-mailReceiver').value;
+        const acceptation = document.querySelector('#input-acceptation').value;;
+        const queryData = this.getSaveQueryData();
+
+        fetch(queryData.url, {
+          method: queryData.method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            mailSender: mailSender,
+            mailReceiver: mailReceiver,
+            acceptation: acceptation
+          })
+        })
+          .catch(err => this.$app.dialog.alert('Error ' + err))
+          .finally(() => {
+            this.$router.navigate("/");
+          });
+      },
+
+      getSaveQueryData: function() {
+        if (this.friend._id != undefined) {
+          return {
+            url: "http://localhost:3000/friends/" + this.friend._id,
+            method: "PUT"
+          }
+        } else {
+          return {
+            url: "http://localhost:3000/friends/",
+            method: "POST"
+          }
+        }
+      },
+
+      delete: function() {
+        if (this.friend._id != undefined) {
+          fetch("http://localhost:3000/friends/" + this.friend._id, {
+            method: "DELETE",
+          })
+            .catch(err => this.$app.dialog.alert('Error ' + err))
+            .finally(() => {
+              this.$router.navigate("/devFriends");
+            });
+        }
+      }
+    }
+  }
+</script>
