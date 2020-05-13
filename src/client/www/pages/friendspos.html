@@ -1,0 +1,61 @@
+<template>
+    <div class="page" data-name="home">
+        <div class="appbar">
+            <a href="#" class="link back">
+                <i class="icon icon-back"></i>
+                <span class="if-not-md">Back</span>
+            </a>
+            <div class="appbar-inner">
+                FriendFinder
+            </div>
+        </div>
+        <div class="page-content">
+            <div class="list simple-list">
+                <ul>
+                    {{#each friendsnames}}
+                    <li>{{this}}</li>
+                    {{/each}}
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+    return {
+        data: function () {
+            return {
+                // empty initial user data
+                friendsnames: null,
+            }
+        },
+        on: {
+            pageInit: function () {
+                var self = this;
+                fetch("http://localhost:3000/friendsname/", {
+                    method: "GET",
+
+                })
+                    .then(function (res) {
+                        return res.json()
+                            .then(function (data) {
+
+                                if (res.ok == true) {
+                                    friendsnames = [];
+                                    var i;
+                                    for (i = 0; i < data.length; i++) {
+                                        friendsnames.push(data[i].name);
+                                    }
+
+                                    self.$setState({
+                                        friendsnames: friendsnames,
+                                    });
+                                }
+
+                                else console.log("error");
+
+                            })
+                    });
+            },
+        }
+    }
+</script>

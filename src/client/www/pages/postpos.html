@@ -1,0 +1,180 @@
+<template>
+    <div class="page" data-name="home">
+        <div class="appbar">
+            <a href="#" class="link back">
+                <i class="icon icon-back"></i>
+                <span class="if-not-md">Back</span>
+            </a>
+            <div class="appbar-inner">
+                FriendFinder
+            </div>
+        </div>
+        <div class="page-content">
+            {{this.statuspos}}
+            <div class="block-title">Timeout position</div>
+            <div class="list no-hairlines-md">
+                <ul>
+                    <li>
+                        <div class="item-content item-input">
+                            <div class="item-inner">
+                                <div class="item-input-wrap">
+                                    <input type="text" placeholder="Select date and time" readonly="readonly"
+                                        id="input-timeout" />
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="comment">
+                <label>Comment</label>
+                <input id="input-comment" type="text" name="user_comment" placeholder="Commentaire additionel"
+                    required />
+            </div>
+
+            <div class="block block-strong col">
+                <div class="col">
+                    <button @click="getPosition">{{this.statuspos}}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+    return {
+        data: function () {
+            return {
+                // empty initial user data
+                statuspos: null,
+                userpos: null,
+            }
+        },
+        methods: {
+            getPosition: function () {
+
+                const dataApp = this.$app.data;
+                dataApp.comment = document.querySelector('#input-comment').value;
+                dataApp.timeout = document.querySelector('#input-timeout').value;
+                dataApp.myid = "5eb53d6bbd2f9326602accc2";
+
+                var options = {
+                    enableHighAccuracy: true,
+                    maximumAge: 3600000
+                }
+
+                var watchID = navigator.geolocation.getCurrentPosition(Postmypos, onError, options);
+
+                function Postmypos(position) {
+                    // alert('Latitude: ' + position.coords.latitude + '\n' +
+                    //     'Longitude: ' + position.coords.longitude + '\n' +
+                    //     'Altitude: ' + position.coords.altitude + '\n' +
+                    //     'Accuracy: ' + position.coords.accuracy + '\n' +
+                    //     'Altitude Accuracy: ' + position.coords.altitudeAccuracy + '\n' +
+                    //     'Heading: ' + position.coords.heading + '\n' +
+                    //     'Speed: ' + position.coords.speed + '\n' +
+                    //     'Timestamp: ' + position.timestamp + '\n')
+
+                    const url = "http://localhost:3000/postpos/";
+
+                    if (statuspos == "Update position") {
+
+                        fetch("http://localhost:3000/deletecurrentpos/", {
+							method: "DELETE",
+							headers: { "Content-Type": "application/json"}
+						});
+                        
+                        fetch("http://localhost:3000/posthistpos/", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                _id: userpos[0]["_id"],
+                                myid: dataApp.myid,
+                                latitude: userpos[0]["latitude"],
+                                longitude: userpos[0]["longitude"],
+                                comment: userpos[0]["comment"],
+                                timeout: userpos[0]["timeout"],
+                                createtime: userpos[0]["createtime"]
+                            })
+                        });
+
+                        fetch("http://localhost:3000/postpos/", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                myid: dataApp.myid,
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude,
+                                comment: dataApp.comment,
+                                timeout: dataApp.timeout
+                            })
+                        });
+                    }
+                    else {
+                        const router = this.$router;
+                        fetch(url, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                myid: dataApp.myid,
+                                latitude: position.coords.latitude,
+                                longitude: position.coords.longitude,
+                                comment: dataApp.comment,
+                                timeout: dataApp.timeout
+                            })
+                        });
+
+                    }
+                    // router.navigate("/historique");
+                };
+
+                function onError(error) {
+                    alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
+                }
+            }
+        },
+        on: {
+            pageInit: function () {
+                var self = this;
+                var app = self.$app;
+
+                var calendarDateTime = app.calendar.create({
+                    inputEl: '#input-timeout',
+                    timePicker: true,
+                    dateFormat: 'yyyy-mm-ddTHH::mm:ss',
+                    disabled: {
+                        to: new Date()
+                    },
+                });
+
+                fetch("http://localhost:3000/mypos/", {
+                    method: "GET",
+                })
+                    .then(function (res1) {
+                        return res1.json()
+                            .then(function (datamypos) {
+                                if (res1.ok == true) {
+                                    
+                                    userpos = datamypos;
+                                    console.log(userpos);
+
+                                    if (datamypos.length >= 1) {
+                                        statuspos = "Update position";
+                                    }
+                                    else {
+                                        statuspos = "Post new position";
+                                    }
+
+                                    self.$setState({
+                                        statuspos: statuspos,
+                                        userpos: datamypos,
+                                    });
+                                }
+
+                            })
+                    })
+
+            }
+        }
+    }
+</script>

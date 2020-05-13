@@ -1,0 +1,97 @@
+<template>
+    <div class="page" data-name="home">
+        <div class="appbar">
+            <a href="#" class="link back">
+                <i class="icon icon-back"></i>
+                <span class="if-not-md">Back</span>
+            </a>
+            <div class="appbar-inner">
+                FriendFinder
+            </div>
+        </div>
+        <div class="page-content">
+            <div class="hist-title">Historique</div>
+            <div class="list simple-list">
+                <ul>
+                    <div>
+                        {{#each totalItem}}
+
+                        <div class="container">
+                            <div class="latitude-display">Latitude: {{this.latitude}}</div><br>
+                            <div class="longitude-display">Longitude: {{this.longitude}}</div><br>
+                            <div class="timeout-display">Archived {{this.timeout}}</div>
+                            <!-- <i class="f7-icons">location</i> -->
+                            <div class="trash">
+                                <button class="btn-delete-pos" @click="deletePositionHist('{{this.id}}')">
+                                    <i class="f7-icons">
+                                        trash
+                                    </i>
+                                </button>
+                            </div>
+                        </div>
+                        <br>
+                        {{/each}}
+                    </div>
+                </ul>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+    return {
+        async data() {
+            return {
+                // empty initial user data
+                totalItem: null,
+            }
+        },
+        methods: {
+            deletePositionHist: function (idpos) {
+                const router = this.$router;
+
+                fetch("http://localhost:3000/historique/" + idpos, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json"}
+                })
+                .catch(err => this.$app.dialog.alert('Error ' + err));
+                router.navigate("/historique", {reloadCurrent: true});
+            }
+        },
+        on: {
+            pageInit: function () {
+                var self = this;
+                fetch("http://localhost:3000/historique/", {
+                    method: "GET",
+
+                })
+                    .then(function (res) {
+                        return res.json()
+                            .then(function (data) {
+
+                                if (res.ok == true) {
+                                    totalItem = [];
+                                    var i;
+                                    for (i = 0; i < data.length; i++) {
+                                        var date = new Date(data[i].timeout);
+                                        var hours = date.getHours();
+                                        var datec = date.getDate() + '/' + ("0" + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear() + ' at ' 
+                                                     + date.getHours() + ':' + date.getMinutes();
+                                        totalItem.push({ latitude: data[i].latitude.toFixed(2), 
+                                                         longitude: data[i].longitude.toFixed(2),
+                                                         id: data[i]._id,
+                                                         timeout:  datec});
+                                    }
+
+                                    self.$setState({
+                                        totalItem: totalItem
+                                    });
+                                }
+
+                                else console.log("error");
+
+                            })
+                    });
+            },
+        }
+    }
+</script>
