@@ -43,12 +43,6 @@ var routes = [
     path: '/inscription',
     componentUrl: './pages/inscription.html',
   },
-  // Default route (404 page). MUST BE THE LAST
-  {
-    path: '(.*)',
-    url: './pages/404.html',
-    componentUrl: './pages/home.html',
-  },
   {
     path: '/postpos',
     componentUrl: './pages/postpos.html',
@@ -66,5 +60,11 @@ var routes = [
     componentUrl: './pages/historique.html',
     reloadCurrent: true,
     ignoreCache: true,
+  },
+  // Default route (404 page). MUST BE THE LAST
+  {
+    path: '(.*)',
+    url: './pages/404.html',
+    componentUrl: './pages/home.html',
   },
 ];

@@ -79,7 +79,7 @@
 
                     if (statuspos == "Update position") {
 
-                        fetch("http://localhost:3000/deletecurrentpos/", {
+                        fetch("http://localhost:3000/deletecurrentpos/" + app.data.mail, {
 							method: "DELETE",
 							headers: { "Content-Type": "application/json"}
 						});
@@ -89,7 +89,7 @@
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
                                 _id: userpos[0]["_id"],
-                                myid: dataApp.myid,
+                                mymail: dataApp.mail,
                                 latitude: userpos[0]["latitude"],
                                 longitude: userpos[0]["longitude"],
                                 comment: userpos[0]["comment"],
@@ -102,7 +102,8 @@
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
-                                myid: dataApp.myid,
+                                mymail: dataApp.mail,
+                                pseudo: dataApp.pseudo,
                                 latitude: position.coords.latitude,
                                 longitude: position.coords.longitude,
                                 comment: dataApp.comment,
@@ -116,7 +117,8 @@
                             method: "POST",
                             headers: { "Content-Type": "application/json" },
                             body: JSON.stringify({
-                                myid: dataApp.myid,
+                                mymail: dataApp.mail,
+                                pseudo: dataApp.pseudo,
                                 latitude: position.coords.latitude,
                                 longitude: position.coords.longitude,
                                 comment: dataApp.comment,
@@ -147,7 +149,7 @@
                     },
                 });
 
-                fetch("http://localhost:3000/mypos/", {
+                fetch("http://localhost:3000/mypos/" + app.data.mail, {
                     method: "GET",
                 })
                     .then(function (res1) {
@@ -156,7 +158,6 @@
                                 if (res1.ok == true) {
                                     
                                     userpos = datamypos;
-                                    console.log(userpos);
 
                                     if (datamypos.length >= 1) {
                                         statuspos = "Update position";

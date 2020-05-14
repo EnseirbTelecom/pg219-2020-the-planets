@@ -12,8 +12,10 @@
         <div class="page-content">
             <div class="list simple-list">
                 <ul>
-                    {{#each friendsnames}}
-                    <li>{{this}}</li>
+                    {{#each friendsPos}}
+                    <li>{{this.pseudo}}</li>
+                    <li>{{this.latitude}}</li>
+                    <li>{{this.longitude}}</li>
                     {{/each}}
                 </ul>
             </div>
@@ -25,30 +27,72 @@
         data: function () {
             return {
                 // empty initial user data
-                friendsnames: null,
+                friendsPos: null,
             }
         },
         on: {
             pageInit: function () {
                 var self = this;
-                fetch("http://localhost:3000/friendsname/", {
+
+
+                fetch("http://localhost:3000/reqFriends/" + app.data.mail, {
                     method: "GET",
 
                 })
                     .then(function (res) {
                         return res.json()
                             .then(function (data) {
-
+                                console.log(data);
                                 if (res.ok == true) {
-                                    friendsnames = [];
+
+                                    friendsPos = [];
+                                    FrirendMail = null;
+
                                     var i;
                                     for (i = 0; i < data.length; i++) {
-                                        friendsnames.push(data[i].name);
-                                    }
+                                        if (data[i].mailSender != app.data.mail) {
+                                            FrirendMail = data[i].mailSender;
+                                        }
+                                        else {
+                                            FrirendMail = data[i].mailReceiver;
+                                        }
+                                        console.log(FrirendMail);
 
-                                    self.$setState({
-                                        friendsnames: friendsnames,
-                                    });
+                                        fetch("http://localhost:3000/mypos/" + FrirendMail, {
+                                            method: "GET",
+                                        })
+                                            .then(function (res1) {
+                                                return res1.json()
+                                                    .then(function (dataFriendpos) {
+
+
+                                                        var j;
+                                                        for (j = 0; j < dataFriendpos.length; j++) {
+                                                            friendsPos.push({
+                                                                pseudo:  dataFriendpos[j].pseudo,
+                                                                latitude: dataFriendpos[j].latitude.toFixed(2),
+                                                                longitude: dataFriendpos[j].longitude.toFixed(2),
+                                                            });
+                                                        }
+
+
+
+                                                        console.log(friendsPos);
+
+                                                        self.$setState({
+                                                            friendsPos: friendsPos,
+                                                        });
+                                                    });
+
+
+                                            })
+
+
+
+
+
+
+                                    }
                                 }
 
                                 else console.log("error");

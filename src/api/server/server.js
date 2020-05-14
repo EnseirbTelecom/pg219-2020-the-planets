@@ -167,6 +167,7 @@ MongoClient.connect(url, {
 				.then(items => res.json(items))
 		})
 		
+		
 		// =========================
 		// ===   friendRequest   ===
 		// =========================
@@ -290,7 +291,8 @@ MongoClient.connect(url, {
         // positions.createIndex({ "expireAt": 1 }, { expireAfterSeconds: 0 });
   
         const user_position = {
-          myid: ObjectID(req.body.myid),
+		  mymail: req.body.mymail,
+		  pseudo: req.body.pseudo,
           latitude: req.body.latitude,
           longitude: req.body.longitude,
           comment: req.body.comment,
@@ -332,9 +334,9 @@ MongoClient.connect(url, {
       });
   
   
-      app.delete('/deletecurrentpos', (req, res) => {
+      app.delete('/deletecurrentpos/:mymail', (req, res) => {
   
-        positions.deleteOne({})
+        positions.deleteOne({"mymail": req.params.mymail})
           .then(command => (command.result.n == 1) ? res.status(200).send() : res.status(404).json({ error: "Couldn't delete." }))
   
       });
@@ -344,7 +346,7 @@ MongoClient.connect(url, {
         console.log(req);
         const user_last_position = {
           _id: ObjectID(req.body._id),
-          myid: ObjectID(req.body.myid),
+          mymail: req.body.mymail,
           latitude: req.body.latitude,
           longitude: req.body.longitude,
           comment: req.body.comment,
@@ -358,10 +360,9 @@ MongoClient.connect(url, {
       });
   
   
-      app.get("/mypos", (req, res) => {
-        var ObjectId = require('mongodb').ObjectId;
-        var myid = new ObjectId("5eb53d6bbd2f9326602accc2");
-        positions.find({ "myid": myid }).toArray()
+      app.get("/mypos/:mymail", (req, res) => {
+
+        positions.find({ "mymail": req.params.mymail }).toArray()
           .then(mypos => {
             res.status(200).json(mypos);
           })
@@ -378,10 +379,10 @@ MongoClient.connect(url, {
           .catch(err => console.log("Error " + err))
       });
   
-      app.get("/historique", (req, res) => {
-        var ObjectId = require('mongodb').ObjectId;
-        var myid = new ObjectId("5eb53d6bbd2f9326602accc2");
-        historique.find({ "myid": myid }).sort({timeout: 1}).toArray()
+      app.get("/historique/:mymail", (req, res) => {
+        // var ObjectId = require('mongodb').ObjectId;
+		// var myid = new ObjectId("5eb53d6bbd2f9326602accc2");
+        historique.find({ "mymail": req.params.mymail }).sort({timeout: 1}).toArray()
           .then(mypos => {
             res.status(200).json(mypos);
           })

@@ -60,7 +60,9 @@
         on: {
             pageInit: function () {
                 var self = this;
-                fetch("http://localhost:3000/historique/", {
+                var app = self.$app;
+                
+                fetch("http://localhost:3000/historique/" + app.data.mail, {
                     method: "GET",
 
                 })
