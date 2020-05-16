@@ -60,7 +60,7 @@
         const confirmation = document.querySelector('#input-confirmation').value;
         if(password === confirmation){
           if(dataApp.name && dataApp.surname && dataApp.mail && password && confirmation && dataApp.pseudo){
-            const url = "http://localhost:3000/users/";
+            const url = "http://localhost:3000/registration/";
             let chemin;
             const router = this.$router;
             const dialog = this.$app.dialog;
@@ -79,8 +79,13 @@
             })
             .then(function(response){
               if (response.ok) {
-                response.json().then(data => {dataApp.token = data.token})
-                router.navigate('/');
+                response.json().then(data => {
+                  dataApp.token = data.token;
+                  const httpHeaders = { 'Content-Type' : 'application/json', 'authorization' : 'Basic ' + data.token};
+                  dataApp.header = new Headers(httpHeaders);
+                  dialog.alert(dataApp.header.get('authorization'));
+                  router.navigate('/');
+                });
               }
               else{
                 response.json().then(data =>{dialog.alert(data.error)});

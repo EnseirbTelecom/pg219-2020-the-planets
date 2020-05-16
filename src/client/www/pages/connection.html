@@ -7,6 +7,7 @@
       </a>
       <div class="appbar-inner">
         FriendFinder
+        <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Deconnexion</button>
       </div>
     </div>
     <div class="page-content block ">
@@ -40,7 +41,7 @@
         if(dataApp.mail && passwordEncoding){
           fetch(url,{
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: dataApp.header,
             body: JSON.stringify({
               mail: dataApp.mail,
               password: passwordEncoding
@@ -53,11 +54,15 @@
                 dataApp.surname = data.surname;
                 dataApp.pseudo = data.pseudo;
                 dataApp.birthday = data.birthday;
+                dataApp.token = data.token;
+                const httpHeaders = { 'Content-Type' : 'application/json', 'authorization' : 'Basic ' + dataApp.token};
+                dataApp.header = new Headers(httpHeaders);
+                dialog.alert(dataApp.header.get('authorization'));
                 router.navigate('/homeFriend');
               });
             }
             else{
-              response.json().then(data =>{dialog.alert("Le mot de passe ou le mail n'est pas correcte veuillez ressayer")});
+              response.json().then(data =>{dialog.alert(data.err)});
             }
           })
           .catch(err => this.$app.dialog.alert('Error ' + err));

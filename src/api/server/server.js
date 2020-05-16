@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use((req, res, next) => {
     res.append('Access-Control-Allow-Origin', ['*']);
     res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH');
-    res.append('Access-Control-Allow-Headers', 'Content-Type');
+    res.append('Access-Control-Allow-Headers', 'Content-Type,authorization');
     next();
 });
 
@@ -32,10 +32,16 @@ const tokenHearder = req.headers['authorization'];
 if(tokenHearder !== undefined){
 	const splitTokenHeader = tokenHearder.split(' ');
 	req.token = splitTokenHeader[1];
-	console.log(req.token);
-	next();
+  jwt.verify(req.token,secretKey,(err,decode)=>{
+    if (decode) {
+      req.id = decode.id;
+      next();
+    }else{
+      res.status(401).json({err: erro});
+    }
+  });
 }else{
-	res.sendStatus(403);
+	res.status(403).json({err: "Manque le token"});
 	}
 }
 
@@ -144,7 +150,7 @@ MongoClient.connect(url, {
 			database.collection("users").find({ mail: req.params.mail }, { _id: 1, firstName:1, lastName:1, mail:1}).toArray()
 				.then(items => res.json(items))
 		})
-		
+
 		// récupérer la liste des demandes faites par quelqu'un
 		app.get("/reqFriendSender/:mail", (req, res) => {
 			database.collection("friends").find({$and: [{mailSender: req.params.mail}, {acceptation: "0"} ]}, { _id: 1, mailSender:0, mailReceiver:1, acceptation:0}).toArray()
@@ -161,11 +167,11 @@ MongoClient.connect(url, {
 			database.collection("friends").find({ $or: [ {mailReceiver: req.params.mail, acceptation: "1"}, {mailSender: req.params.mail, acceptation: "1"} ]}, { _id: 1, mailSender:0, mailReceiver:0, acceptation:0}).toArray()
 				.then(items => res.json(items))
 		})
-		
+
 		// =========================
 		// ===   friendRequest   ===
 		// =========================
-		
+
 		// récupérer les infos de la demande d'amitié à partir des mails de deux personnes
 		app.get("/friendRequest/:mailSender/:mailReceiver", (req, res) => {
 			database.collection("friends").findOne({$and : [{mailSender: req.params.mailSender}, {mailReceiver: req.params.mailReceiver}]}, { _id: 1, mailSender:1, mailReceiver:1, acceptation:1})
@@ -223,15 +229,15 @@ MongoClient.connect(url, {
 						 .then(items => res.status(201).json(items))
 			  }
 			});
-		  });
+		 });
 
 		// route pour vérifier si il n'existe pas déjà un compte avec le même Mail
 		// et soit d'ajouter le compte/l'utilisateur ou bien renvoier une erreur
-		app.post("/users",(req,res,next) =>{
+		app.post("/registration",(req,res,next) =>{
 			database.collection("users").findOne({"mail": req.body.mail},(err,user) =>{
 				if(user){
 				console.log("Compte deja existant");
-				return res.status(401).json({ error: "Compte deja existant" });
+				return res.(401).json({ error: "Compte deja existant" });
 				}else{
 				next();
 				}
@@ -248,13 +254,18 @@ MongoClient.connect(url, {
 			database.collection("users").insertOne(user , (err,user) => {
 				if(user){
 				const forToken = {
+          id: user.insertedId,
 					mail: req.body.mail,
-					name: req.body.name,
-					surname: req.body.surname
 				}
+        console.log(forToken);
 				jwt.sign(forToken,secretKey,{expiresIn: '1h'},(err,token) => {
-					console.log(token);
-					res.status(201).json({token: token});
+          if (token) {
+            console.log(token);
+            res.status(201).json({token: token});
+          }
+          else{
+            res.status(401).json({err: err});
+          }
 				});
 				}
 			});
@@ -265,13 +276,33 @@ MongoClient.connect(url, {
 		app.post("/connection",(req,res) =>{
 			database.collection("users").findOne({"mail": req.body.mail,"password": req.body.password},(err,user) =>{
 			  if(user){
-				res.status(201).json(user);
+          const forTokenConnexion = {
+            id: user._id,
+            mail: req.body.mail,
+          };
+          console.log(forTokenConnexion);
+          jwt.sign(forTokenConnexion,secretKey,{expiresIn: '1h'},(err,token) => {
+            if (token) {
+              const response = {
+                name: user.name,
+                surname: user.surname,
+                birthday: user.birthday,
+                mail: user.mail,
+                token: token,
+              }
+              console.log(response);
+              res.status(201).json(response);
+            }
+            else{
+              res.status(401).json({err: err});
+            }
+    			});
 			  }
 			  else{
-				res.status(403).json({erro: err})
+				res.status(404).json({erro: err})
 			  }
 			});
-		  });
+		 });
 
 		  // route pour vider la BD pour la phase de test
 		  app.delete("/users",(req,res) =>{
@@ -288,4 +319,3 @@ MongoClient.connect(url, {
   })
 
 	.catch(err => { throw err })
-

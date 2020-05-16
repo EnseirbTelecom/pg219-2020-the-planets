@@ -65,6 +65,10 @@
   margin-left: 15px;
 }
 
+.back{
+  width:10px;
+}
+
 form {
   margin: 0 auto;
   padding: 1em;
@@ -114,4 +118,10 @@ button {
 
 :required{
   background-color: #FF0000;
+}
+
+.deconnexion{
+  float: right;
+  width: auto;
+  display: inline-block;
 }

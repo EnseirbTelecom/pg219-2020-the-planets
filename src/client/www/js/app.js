@@ -26,9 +26,16 @@ var app = new Framework7({
       }
     },
   },
+
+  methods: {
+    deconnexion: function(){
+      app.data.token = null;
+      app.views.main.router.navigate('/');
+    },
+  },
+
 });
 
 app.views.create('.view-main', {
   url: '/'
 })
-
