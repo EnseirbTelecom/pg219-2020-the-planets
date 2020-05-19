@@ -1,4 +1,5 @@
 <template>
+    <!-- <div data-page="index" class="page"> -->
     <div class="page" data-name="home">
         <div class="appbar">
             <a href="#" class="link back">
@@ -9,37 +10,73 @@
                 FriendFinder
             </div>
         </div>
+
         <div class="page-content">
-            {{this.statuspos}}
-            <div class="block-title">Timeout position</div>
-            <div class="list no-hairlines-md">
-                <ul>
-                    <li>
-                        <div class="item-content item-input">
-                            <div class="item-inner">
-                                <div class="item-input-wrap">
-                                    <input type="text" placeholder="Select date and time" readonly="readonly"
-                                        id="input-timeout" />
-                                </div>
+
+            <div class="card">
+                <div class="card-header">{{this.statuspos}}</div>
+                <div class="card-content card-content-padding">
+                    <div class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-input-wrap">
+                                <input type="text" placeholder="Select date and time" readonly="readonly"
+                                    id="input-timeout" />
                             </div>
                         </div>
-                    </li>
-                </ul>
-            </div>
-
-            <div class="comment">
-                <label>Comment</label>
-                <input id="input-comment" type="text" name="user_comment" placeholder="Commentaire additionel"
-                    required />
-            </div>
-
-            <div class="block block-strong col">
-                <div class="col">
-                    <button @click="getPosition">{{this.statuspos}}</button>
+                    </div>
                 </div>
+                <div class="card-content card-content-padding">
+                    <div class="comment">
+                        <label>Comment</label>
+                        <div class="text-editor text-editor-init" data-placeholder="Enter text..."
+                            data-buttons='["bold", "italic", "underline", "strikeThrough"]' data-mode="popover"
+                            style="--f7-text-editor-height: 150px">
+                            <div class="text-editor-content" contenteditable></div>
+                        </div>
+                        <div class="card-footer">
+                            <a @click="getPosition" class="link">{{this.statuspos}}</a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+
+            {{#js_if "this.statuspos === 'Update position'" }}
+            <div class="card">
+                <div class="card-header">Current Position</div>
+
+                <div class="card-content card-content-padding">
+                    <div class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-input-wrap">
+                                {{#each userpos}}
+                                <p>Latitude: {{this.latitude}}</p>
+                                <p>Longitude: {{this.longitude}}</p>
+                                <div class="block-title">Comment</div>
+                                <!-- Inset content block -->
+                                <div class="block block-strong inset"
+                                    style="background-color: rgba(216, 216, 216, 0.226);">
+                                    <p>{{this.comment}} </p>
+                                </div>
+                                {{/each}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer"><a></a>
+                        <button class="btn-delete-pos" @click="deleteCurrentPos">
+                            <i class="f7-icons">
+                                trash
+                            </i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            {{/js_if}}
+            <!-- <div class="preloader infinite-scroll-preloader"></div> -->
         </div>
     </div>
+    <!-- </div>         -->
 </template>
 <script>
     return {
@@ -52,11 +89,15 @@
         },
         methods: {
             getPosition: function () {
-
+                var self = this;
                 const dataApp = this.$app.data;
-                dataApp.comment = document.querySelector('#input-comment').value;
+
+                var textEditor = app.textEditor.get('.text-editor-init');
+                dataApp.comment = textEditor.value;
+                textEditor.setValue("");
+
                 dataApp.timeout = document.querySelector('#input-timeout').value;
-                dataApp.myid = "5eb53d6bbd2f9326602accc2";
+                $$('#input-timeout').val('')
 
                 var options = {
                     enableHighAccuracy: true,
@@ -77,70 +118,149 @@
 
                     const url = "http://localhost:3000/postpos/";
 
-                    if (statuspos == "Update position") {
+                    if (dataApp.timeout != "") {
 
-                        fetch("http://localhost:3000/deletecurrentpos/" + app.data.mail, {
-							method: "DELETE",
-							headers: { "Content-Type": "application/json"}
-						});
-                        
-                        fetch("http://localhost:3000/posthistpos/", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                _id: userpos[0]["_id"],
-                                mymail: dataApp.mail,
-                                latitude: userpos[0]["latitude"],
-                                longitude: userpos[0]["longitude"],
-                                comment: userpos[0]["comment"],
-                                timeout: userpos[0]["timeout"],
-                                createtime: userpos[0]["createtime"]
-                            })
-                        });
+                        if (statuspos == "Update position") {
 
-                        fetch("http://localhost:3000/postpos/", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                mymail: dataApp.mail,
-                                pseudo: dataApp.pseudo,
-                                latitude: position.coords.latitude,
-                                longitude: position.coords.longitude,
-                                comment: dataApp.comment,
-                                timeout: dataApp.timeout
+                            fetch("http://localhost:3000/deletecurrentpos/" + userpos[0]._id, {
+                                method: "DELETE",
+                                headers: { "Content-Type": "application/json" }
+                            });
+
+                            fetch("http://localhost:3000/posthistpos/", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    _id: userpos[0]._id,
+                                    mymail: dataApp.mail,
+                                    latitude: userpos[0].latitude,
+                                    longitude: userpos[0].longitude,
+                                    comment: userpos[0].comment,
+                                    timeout: userpos[0].timeout,
+                                    createtime: userpos[0].createtime
+                                })
+                            });
+
+                            fetch("http://localhost:3000/postpos/", {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    mymail: dataApp.mail,
+                                    pseudo: dataApp.pseudo,
+                                    latitude: position.coords.latitude,
+                                    longitude: position.coords.longitude,
+                                    comment: dataApp.comment,
+                                    timeout: dataApp.timeout
+                                })
                             })
-                        });
+                                .then(function (res1) {
+                                    return res1.json()
+                                        .then(function (datamypos) {
+                                            console.log(datamypos);
+
+                                            userpos = [];
+
+                                            userpos.push(datamypos);
+                                            console.log(userpos);
+
+                                            self.$setState({
+                                                userpos: userpos,
+                                                statuspos: "Update position"
+                                            });
+                                        })
+                                });
+
+                            self.$setState({
+                                userpos: userpos,
+                            });
+
+                        }
+                        else {
+                            const router = this.$router;
+
+                            fetch(url, {
+                                method: "POST",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({
+                                    mymail: dataApp.mail,
+                                    pseudo: dataApp.pseudo,
+                                    latitude: position.coords.latitude,
+                                    longitude: position.coords.longitude,
+                                    comment: dataApp.comment,
+                                    timeout: dataApp.timeout
+                                })
+                            })
+                                .then(function (res1) {
+                                    return res1.json()
+                                        .then(function (datamypos) {
+                                            console.log(datamypos);
+
+                                            userpos = [];
+
+                                            userpos.push(datamypos);
+
+
+                                            statuspos = "Update position"
+
+                                            self.$setState({
+                                                userpos: userpos,
+                                                statuspos: statuspos,
+                                            });
+                                        })
+                                });
+
+                            // self.app.calendar.get().update();
+
+
+                        }
                     }
-                    else {
-                        const router = this.$router;
-                        fetch(url, {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({
-                                mymail: dataApp.mail,
-                                pseudo: dataApp.pseudo,
-                                latitude: position.coords.latitude,
-                                longitude: position.coords.longitude,
-                                comment: dataApp.comment,
-                                timeout: dataApp.timeout
-                            })
-                        });
 
-                    }
+
                     // router.navigate("/historique");
                 };
 
                 function onError(error) {
                     alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
                 }
-            }
+            },
+            deleteCurrentPos: function () {
+                const router = this.$router;
+                const dataApp = this.$app.data;
+
+                fetch("http://localhost:3000/posthistpos/", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        _id: userpos[0]._id,
+                        mymail: dataApp.mail,
+                        latitude: userpos[0].latitude,
+                        longitude: userpos[0].longitude,
+                        comment: userpos[0].comment,
+                        timeout: userpos[0].timeout,
+                        // createtime: userpos[0].createtime
+                    })
+                });
+
+                fetch("http://localhost:3000/deletecurrentpos/" + userpos[0]._id, {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" }
+                })
+                    .catch(err => this.$app.dialog.alert('Error ' + err));
+
+                statuspos = "Post new position";
+
+                this.$setState({
+                    statuspos: statuspos,
+                    userpos: null,
+                });
+            },
         },
         on: {
             pageInit: function () {
                 var self = this;
                 var app = self.$app;
 
-                var calendarDateTime = app.calendar.create({
+                self.calendarDateTime = app.calendar.create({
                     inputEl: '#input-timeout',
                     timePicker: true,
                     dateFormat: 'yyyy-mm-ddTHH::mm:ss',
@@ -149,6 +269,8 @@
                     },
                 });
 
+
+
                 fetch("http://localhost:3000/mypos/" + app.data.mail, {
                     method: "GET",
                 })
@@ -156,26 +278,76 @@
                         return res1.json()
                             .then(function (datamypos) {
                                 if (res1.ok == true) {
-                                    
-                                    userpos = datamypos;
-
+                                    userpos = [];
                                     if (datamypos.length >= 1) {
                                         statuspos = "Update position";
+                                        userpos.push({
+                                            latitude: datamypos[0].latitude.toFixed(2),
+                                            longitude: datamypos[0].longitude.toFixed(2),
+                                            _id: datamypos[0]._id,
+                                            comment: datamypos[0].comment
+                                        });
+
                                     }
                                     else {
                                         statuspos = "Post new position";
                                     }
+                                    console.log(userpos);
 
                                     self.$setState({
                                         statuspos: statuspos,
-                                        userpos: datamypos,
+                                        userpos: userpos,
                                     });
                                 }
 
                             })
                     })
 
-            }
+            },
+            // pageAfterIn: function (e, page) {
+
+            //     var self = this;
+            //     var app = self.$app;
+
+            //     //start your interval after page is in
+
+
+            //     setInterval(function () {
+            //         fetch("http://localhost:3000/mypos/" + app.data.mail, {
+            //             method: "GET",
+            //         })
+            //             .then(function (res1) {
+            //                 return res1.json()
+            //                     .then(function (datamypos) {
+            //                         if (res1.ok == true) {
+            //                             console.log(datamypos.length)
+            //                             userpos = [];
+            //                             if (datamypos.length >= 1) {
+            //                                 statuspos = "Update position";
+            //                                 userpos.push({
+            //                                     latitude: datamypos[0].latitude.toFixed(2),
+            //                                     longitude: datamypos[0].longitude.toFixed(2),
+            //                                     _id: datamypos[0]._id,
+            //                                     comment: datamypos[0].comment
+            //                                 });
+
+            //                             }
+            //                             else {
+            //                                 statuspos = "Post new position";
+            //                             }
+            //                             console.log(userpos);
+
+            //                             self.$setState({
+            //                                 statuspos: statuspos,
+            //                                 userpos: userpos,
+            //                             });
+            //                         }
+
+            //                     })
+            //             })
+            //     }, 30000)
+
+            // },
         }
     }
 </script>

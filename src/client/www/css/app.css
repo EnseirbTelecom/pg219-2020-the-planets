@@ -113,8 +113,18 @@
 }
 
 
+
 .page-content{
   vertical-align: middle;
+}
+
+.page-content.login-screen-content.fixed-container{
+  /* top: 100%; */
+  height: 70%;
+  margin: auto;
+  padding-top:600px;
+    
+  overflow: scroll;
 }
 
 .vertical_center{
@@ -161,11 +171,6 @@ input{
 }
 
 
-
-.formulaire{
-  display: flex;
-}
-
 .button {
   padding-left: 90px;
 }
@@ -176,4 +181,15 @@ button {
 
 :required{
   background-color: #FF0000;
+}
+
+
+.demo-card-header-pic .card-header {
+  height: 40vw;
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+}
+.demo-card-header-pic .card-content-padding .date{
+  color: #8e8e93;
 }

@@ -16,11 +16,39 @@
                     <div>
                         {{#each totalItem}}
 
-                        <div class="container">
+                        <div class="card demo-card-header-pic">
+                            <div class="card-content card-content-padding">
+                                <div class="item-content item-input">
+                                    <div class="item-inner">
+                                        <div class="item-input-wrap">
+                                            
+                                            <p class="date">Archived on {{this.timeout}}</p>
+                                            <p>Latitude: {{this.latitude}}</p>
+                                            <p>Longitude: {{this.longitude}}</p>
+
+                                            <div class="block-title">Comment</div>
+                                            <!-- Inset content block -->
+                                            <div class="block block-strong inset"
+                                                style="background-color: rgba(216, 216, 216, 0.226);">
+                                                <p>{{this.comment}} </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-footer"><a href="#" class="link"></a><button class="btn-delete-pos"
+                                    @click="deletePositionHist('{{this.id}}')">
+                                    <i class="f7-icons">
+                                        trash
+                                    </i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- <div class="container">
                             <div class="latitude-display">Latitude: {{this.latitude}}</div><br>
                             <div class="longitude-display">Longitude: {{this.longitude}}</div><br>
                             <div class="timeout-display">Archived {{this.timeout}}</div>
-                            <!-- <i class="f7-icons">location</i> -->
                             <div class="trash">
                                 <button class="btn-delete-pos" @click="deletePositionHist('{{this.id}}')">
                                     <i class="f7-icons">
@@ -28,7 +56,7 @@
                                     </i>
                                 </button>
                             </div>
-                        </div>
+                        </div> -->
                         <br>
                         {{/each}}
                     </div>
@@ -46,22 +74,43 @@
             }
         },
         methods: {
+            RemoveNode: function (id, data) {
+                data.forEach(function (e, index) {
+                    if (id == e.id) {
+                        data.splice(index, 1);
+                    }
+                })
+            },
+
             deletePositionHist: function (idpos) {
                 const router = this.$router;
 
                 fetch("http://localhost:3000/historique/" + idpos, {
                     method: "DELETE",
-                    headers: { "Content-Type": "application/json"}
+                    headers: { "Content-Type": "application/json" }
                 })
-                .catch(err => this.$app.dialog.alert('Error ' + err));
-                router.navigate("/historique", {reloadCurrent: true});
-            }
+                    .catch(err => this.$app.dialog.alert('Error ' + err));
+                totalItem.forEach(function (e, index) {
+                    if (idpos == e.id) {
+                        totalItem.splice(index, 1);
+                    }
+
+                })
+
+                this.$setState({
+                    totalItem: totalItem
+                });
+                // router.navigate("/historique", {reloadCurrent: true});
+            },
+
+
+
         },
         on: {
             pageInit: function () {
                 var self = this;
                 var app = self.$app;
-                
+
                 fetch("http://localhost:3000/historique/" + app.data.mail, {
                     method: "GET",
 
@@ -72,16 +121,22 @@
 
                                 if (res.ok == true) {
                                     totalItem = [];
+                                    const monthNames = ["January", "February", "March", "April", "May", "June",
+                                        "July", "August", "September", "October", "November", "December"
+                                    ];
                                     var i;
                                     for (i = 0; i < data.length; i++) {
                                         var date = new Date(data[i].timeout);
                                         var hours = date.getHours();
-                                        var datec = date.getDate() + '/' + ("0" + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear() + ' at ' 
-                                                     + date.getHours() + ':' + date.getMinutes();
-                                        totalItem.push({ latitude: data[i].latitude.toFixed(2), 
-                                                         longitude: data[i].longitude.toFixed(2),
-                                                         id: data[i]._id,
-                                                         timeout:  datec});
+                                        var datec = monthNames[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' at '
+                                            + ("0" + (date.getHours())).slice(-2) + ':' + ("0" + (date.getMinutes())).slice(-2);
+                                        totalItem.push({
+                                            latitude: parseFloat(data[i].latitude).toFixed(2),
+                                            longitude: parseFloat(data[i].longitude).toFixed(2),
+                                            id: data[i]._id,
+                                            timeout: datec,
+                                            comment: data[i].comment
+                                        });
                                     }
 
                                     self.$setState({
