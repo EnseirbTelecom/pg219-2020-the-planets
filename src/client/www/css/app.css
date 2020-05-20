@@ -51,9 +51,12 @@
 
 /* Your app custom styles here */
 .hist-title{
-    margin: auto;
     text-align:center; 
-    background-color: brown;
+    vertical-align: middle;
+    line-height: 50px;
+    height: 50px;
+    font-weight:bold;
+    font-size: larger;
   }
 
 .container{
@@ -127,6 +130,13 @@
   overflow: scroll;
 }
 
+/* 
+.page-content.scroll{
+  height: 200%;
+  padding-top:60px;
+
+} */
+
 .vertical_center{
   position:relative;
   top:45%;
@@ -192,4 +202,49 @@ button {
 }
 .demo-card-header-pic .card-content-padding .date{
   color: #8e8e93;
+}
+
+
+/* clock */
+
+
+.clock {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgb(39, 36, 36);
+  border-radius: 50%;
+}
+
+.wrapper {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+}
+
+.inner-1, .inner-2 {
+  border-radius: 10px;
+  background-color: rgb(39, 36, 36);
+  position: absolute;
+  top: calc(50% - (10px /2));
+  left: calc(50% - (10px /2));
+}
+
+.inner-1 {
+  width: 25px;
+  height: 9px;
+}
+.inner-2 {
+  width: 25px;
+  height: 9px;
+}
+
+.rotate-1 { 
+  animation: rotate 1s linear infinite; 
+}
+.rotate-2 { 
+  animation: rotate 10s linear infinite; 
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg) }
 }

@@ -296,7 +296,7 @@ MongoClient.connect(url, {
 				latitude: req.body.latitude,
 				longitude: req.body.longitude,
 				comment: req.body.comment,
-				createtime: req.body.create,
+				createtime: req.body.createtime,
 				timeout: new Date(req.body.timeout)
 			}
 
