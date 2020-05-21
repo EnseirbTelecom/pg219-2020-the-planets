@@ -107,6 +107,7 @@
             getPosition: function () {
                 var self = this;
                 const dataApp = this.$app.data;
+                const dialog = this.$app.dialog;
 
                 var textEditor = app.textEditor.get('.text-editor-init');
                 dataApp.comment = textEditor.value;
@@ -140,7 +141,7 @@
                         "July", "August", "September", "October", "November", "December"
                     ];
 
-                    if (dataApp.timeout != "") {
+                    if (new Date(dataApp.timeout) > new Date(dataApp.createtime)) {
 
                         if (statuspos == "Update position") {
                             $$(".page-content").scrollTop(10000, 400);
@@ -260,6 +261,10 @@
                                 });
 
                         }
+                    }
+
+                    else {
+                        dialog.alert("Enter a valid time out date");
                     }
 
                 };

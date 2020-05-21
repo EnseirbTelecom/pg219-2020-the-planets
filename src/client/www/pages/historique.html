@@ -70,7 +70,6 @@
             },
 
             deletePositionHist: function (idpos) {
-                const router = this.$router;
 
                 fetch("http://localhost:3000/historique/" + idpos, {
                     method: "DELETE",
@@ -87,7 +86,6 @@
                 this.$setState({
                     totalItem: totalItem
                 });
-                // router.navigate("/historique", {reloadCurrent: true});
             },
 
 
@@ -114,9 +112,10 @@
                                     var i;
                                     for (i = 0; i < data.length; i++) {
                                         var date = new Date(data[i].timeout);
-                                        var hours = date.getHours();
+
                                         var datec = monthNames[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' at '
                                             + ("0" + (date.getHours())).slice(-2) + ':' + ("0" + (date.getMinutes())).slice(-2);
+                                            
                                         totalItem.push({
                                             latitude: parseFloat(data[i].latitude).toFixed(2),
                                             longitude: parseFloat(data[i].longitude).toFixed(2),
