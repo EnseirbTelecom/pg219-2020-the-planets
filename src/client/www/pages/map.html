@@ -1,61 +1,52 @@
-<template>
-    <div class="page">
-      <div class="appbar">
-        <a href="#" class="link back">
-          <i class="icon icon-back"></i>
-          <span class="if-not-md">Back</span>
-        </a>
-        <div class="appbar-inner">
-          FriendFinder
-          <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
-        </div>
+
+
+   <template>
+        <div class="page" data-name="home">
+          <div class="appbar">
+            <div class="appbar-inner">
+              FriendFinder
+            </div>
+          </div>
+          <div class="page-content">
+            <div class="vertical_center">
+                  <div id="map" style=" height:400px " ></div>
+      
+
+            </div>
+          </div>
+      
+           
+      
       </div>
-     <div class="navbar">
-       <div class="navbar-inner sliding">
-         <div class="title">Map</div>
-       </div>
-     </div>
-     <div class="page-content">
-       <div id="map"></div>
-     </div>
-   </div>
- </template>
- <script>
-   return {
-       data: function () {
-        return {
-      //    data: somedata,
-       }
-     },
-
-     on: {
-       pageInit: function(e, page) {
-
-         var self = this;
-         var app = self.$app
-
-         var map = L.map('map').fitWorld();
-         L.tileLayer('https://api.mapbox.com/styles/v1/maxxo/cjnq7a3nl0h842rt71w6s65s1/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaW50ZXJ2cHJvIiwiYSI6ImNrOXZjNTJpZDBhMHUzcm53cHc4dnIzc2cifQ.GkbKwEYnKBqOH1rdr7-Hjg', {
-             attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
-             maxZoom: 18,
-             accessToken: 'some-token',
-         }).addTo(map);
-
-         map.locate({setView: true, maxZoom: 13});
-
-         function onLocationFound(e) {
-             var radius = e.accuracy / 2;
-                    L.circle(e.latlng, radius).addTo(map); //My Circle
-                   //more logic
-         }
-
-       map.on('locationfound', onLocationFound);
-       map.on('locationerror', onLocationError);
-
-       function onLocationError(e) {
-           //something..
-       }
-       },
-     }
-   }
- </script>
+      </template>
+      
+      <script>
+      
+          return{
+              on:{
+                  pageInit : function() {
+                      console.log('Show Map');
+                      var lat = this.$route.params.lat;
+                      var lon = this.$route.params.lon;
+                    
+                      var macarte = null;
+                      // Créer l'objet "macarte" et l'insèrer dans l'élément HTML qui a l'ID "map"
+                      macarte = L.map('map').setView([lat, lon], 11);
+                      // Leaflet ne récupère pas les cartes (tiles) sur un serveur par défaut. Nous devons lui préciser où nous souhaitons les récupérer. Ici, openstreetmap.fr
+                      L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+                          // Il est toujours bien de laisser le lien vers la source des données
+                          attribution: 'données © <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
+                          minZoom: 1,
+                          maxZoom: 20
+                      }).addTo(macarte);
+                      var marker = L.marker([lat, lon]).addTo(macarte);
+      
+                  }
+              }
+          }
+      
+      </script>
+      
+      
+      
+      

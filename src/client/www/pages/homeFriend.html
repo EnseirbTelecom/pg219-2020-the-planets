@@ -57,6 +57,34 @@
           {{/each}}
         </ul>
       </div>
+
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/postpos">Post my position</a>
+        </div>
+      </div>
+      <!-- <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/map">Show map</a>
+        </div>
+      </div> -->
+         
+    <div class="fab fab-center-center">
+      <!-- <a class="button button-round button-fill" @click="testMap"> 
+        Test!!!
+      </a> -->
+
+    </div>
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/friendspos">See friends pos</a>
+        </div>
+      </div>
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/historique">Historique</a>
+        </div>
+      </div>
     </div>
 
 
@@ -152,6 +180,9 @@
         this.$router.navigate("/homeApp");
       },
 
+      testMap : function(){
+        this.$router.navigate("/map");
+      }
     }
   }
 </script>

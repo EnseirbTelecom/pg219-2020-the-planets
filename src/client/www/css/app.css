@@ -165,6 +165,11 @@
   width:10px;
 }
 
+.page-previous {
+  display: none;
+}
+
+
 form {
   margin: 0 auto;
   padding: 1em;

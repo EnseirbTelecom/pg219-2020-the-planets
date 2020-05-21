@@ -67,6 +67,10 @@ var routes = [
     componentUrl: './pages/map.html',
   },
   {
+    path: '/map/:lat/:lon',
+    componentUrl: './pages/map.html',
+  },
+  {
     path: '/friendspos',
     componentUrl: './pages/friendspos.html',
   },
