@@ -46,6 +46,7 @@
             localStorage.setItem("token",null);
             response.json().then(data =>{
               console.log(data);
+            });
           }
         })
         .catch(err => this.$app.dialog.alert('Error ' + err));
