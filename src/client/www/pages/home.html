@@ -4,7 +4,6 @@
       <div class="appbar-inner">
         FriendFinder
       </div>
-      <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Deconnexion</button>
     </div>
     <div class="page-content">
       <div class="vertical_center">
@@ -18,3 +17,50 @@
     </div>
   </div>
 </template>
+<script>
+  return {
+    // ===============================================
+    // fonction qui s'exécute au chargement de la page
+    async data() {
+      try {
+        // Accéder à des données enregistrées
+        const url = "http://localhost:3000/testtoken";
+        const dialog = this.$app.dialog;
+        const dataApp = this.$app.data;
+        const router = this.$router;
+        /*const result = await fetch(url,{method: "GET",
+        headers: { "Content-Type": "application/json", "authorization" : 'Basic ' + localStorage.getItem("token")}});
+        console.log(result);
+        result.json().then(data=>{
+          console.log(result);
+        });*/
+
+        fetch(url,{
+          method: "GET",
+          headers: { "Content-Type": "application/json","authorization" : 'Basic ' + localStorage.getItem("token")}
+        })
+        .then(function(response){
+          if (response.ok) {
+            response.json().then(data => {
+              dataApp.token = localStorage.getItem("token");
+              dataApp.mail = localStorage.getItem("email");
+              const httpHeaders = { 'Content-Type' : 'application/json', 'authorization' : 'Basic ' + localStorage.getItem("token")};
+              dataApp.header = new Headers(httpHeaders);
+              router.navigate('/homeFriend');
+            });
+          }
+          else{
+            localStorage.setItem("email",null);
+            localStorage.setItem("token",null);
+            response.json().then(data =>{
+              console.log(data);
+              dialog.alert(data.err)});
+          }
+        })
+        .catch(err => this.$app.dialog.alert('Error ' + err));
+      } catch(err) {
+        this.$app.dialog.alert("Error " + err);
+      }
+    }
+  }
+</script>

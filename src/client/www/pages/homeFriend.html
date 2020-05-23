@@ -1,4 +1,4 @@
-<!-- Cette page permet d'afficher les amitiés, 
+<!-- Cette page permet d'afficher les amitiés,
      les requêtes reçues et les requêtes envoyées -->
 
 <!-- ===================== -->
@@ -7,7 +7,7 @@
 
 <template>
   <div class="page" data-name="home">
-   
+
     <!-- Appbar -->
     <div class="appbar">
       <div class="appbar-inner">
@@ -15,12 +15,12 @@
         <div class="col"><a @click="ho" class="button" href="#">Accueil</a></div>
       </div>
     </div>
-    
+
     <!-- Scrollable page content -->
     <div class="page-content">
-      
+
       <div class="block-title">Liste des amis : </div>
-      
+
       <div class="list links-list">
         <ul>
           {{#each friendName}}
@@ -38,7 +38,7 @@
           {{/each}}
         </ul>
       </div>
-      
+
       <div class="block-title">Liste des demandes reçues : </div>
 
       <div class="list links-list">
@@ -67,11 +67,11 @@
 
 <script>
   return {
-    
+
     // ===============================================
     // fonction qui s'exécute au chargement de la page
     async data() {
-      try {    
+      try {
         // récuperation des demandes d'amis envoyées
         var receiver = [];
         receiver = await fetch("http://localhost:3000/reqFriendSender/" + this.$app.data.mail)
@@ -108,7 +108,6 @@
         let temp = {};
         for (let i = 0; i < friend.length; i++) {
           const friendi = Object.values(friend[i]);
-
           if (friendi[1] === this.$app.data.mail) {
             temp = await fetch("http://localhost:3000/friendName/" + friendi[2])
               .then(res => res.json());
@@ -119,6 +118,7 @@
           }
           friendName.push(temp[0]);
         }
+
 
       } catch(err) {
         this.$app.dialog.alert("Error " + err);
@@ -132,7 +132,7 @@
       add: function() {
         this.$router.navigate("/friendRequestReceiver/");
       },
-      
+
       // fonction bouton retour à la page d'accueil
       ho: function() {
         this.$router.navigate("/devFriends");

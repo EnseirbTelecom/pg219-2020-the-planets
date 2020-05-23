@@ -35,13 +35,14 @@
         dataApp.mail = document.querySelector('#input-mail').value;
         const password = document.querySelector('#input-password').value;
         const url = "http://localhost:3000/connection/";
+        console.log(dataApp.mail);
         const router = this.$router;
         const dialog = this.$app.dialog;
         const passwordEncoding = CryptoJS.MD5(password);
         if(dataApp.mail && passwordEncoding){
           fetch(url,{
             method: "POST",
-            headers: dataApp.header,
+            headers:{'Content-Type' : 'application/json'},
             body: JSON.stringify({
               mail: dataApp.mail,
               password: passwordEncoding
@@ -55,9 +56,10 @@
                 dataApp.pseudo = data.pseudo;
                 dataApp.birthday = data.birthday;
                 dataApp.token = data.token;
+                localStorage.setItem("token",dataApp.token);
+                localStorage.setItem("email",dataApp.mail);
                 const httpHeaders = { 'Content-Type' : 'application/json', 'authorization' : 'Basic ' + dataApp.token};
                 dataApp.header = new Headers(httpHeaders);
-                dialog.alert(dataApp.header.get('authorization'));
                 router.navigate('/homeFriend');
               });
             }

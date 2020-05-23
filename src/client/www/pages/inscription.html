@@ -81,9 +81,10 @@
               if (response.ok) {
                 response.json().then(data => {
                   dataApp.token = data.token;
+                  localStorage.setItem("token",dataApp.token);
+                  localStorage.setItem("email",dataApp.mail);
                   const httpHeaders = { 'Content-Type' : 'application/json', 'authorization' : 'Basic ' + data.token};
                   dataApp.header = new Headers(httpHeaders);
-                  dialog.alert(dataApp.header.get('authorization'));
                   router.navigate('/');
                 });
               }
