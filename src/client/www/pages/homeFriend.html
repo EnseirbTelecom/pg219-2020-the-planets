@@ -19,22 +19,14 @@
     <!-- Scrollable page content -->
     <div class="page-content">
 
-      <div class="block-title">Liste des amis : </div>
-
-      <div class="list links-list">
-        <ul>
-          {{#each friendName}}
-          <a href="/friend/{{mail}}"><li>Vous êtes ami avec {{surname}} {{name}}</li></a>
-          {{/each}}
-        </ul>
-      </div>
-
       <div class="block-title">Liste des demandes envoyées : </div>
 
       <div class="list links-list">
         <ul>
           {{#each receiverName}}
-          <a href="/friendRequestSender/{{mail}}?"><li>Vous avez envoyé une demande à {{surname}} {{name}}</li></a>
+          <a href="/friendRequestSender/{{mail}}?">
+            <li>Vous avez envoyé une demande à {{surname}} {{name}}</li>
+          </a>
           {{/each}}
         </ul>
       </div>
@@ -44,17 +36,51 @@
       <div class="list links-list">
         <ul>
           {{#each senderName}}
-          <a href="/friendRequestReceiver/{{mail}}"><li>{{surname}} {{name}} vous a envoyé une demande</li></a>
+          <a href="/friendRequestReceiver/{{mail}}">
+            <li>{{surname}} {{name}} vous a envoyé une demande</li>
+          </a>
           {{/each}}
         </ul>
       </div>
+
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/postpos">Post my position</a>
+        </div>
+      </div>
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/map">Show map</a>
+        </div>
+      </div>
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/friendspos">See friends pos</a>
+        </div>
+      </div>
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/historique">Historique</a>
+        </div>
+      </div>
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/FriendList">Friend List</a>
+        </div>
+      </div>
+      <br>
+      <br>
+      <br>
     </div>
+
+
 
     <div class="fab fab-center-center">
       <a @click="add" href="#">
         <i class="icon f7-icons">plus</i>
       </a>
     </div>
+  </div>
 
   </div>
 
@@ -82,7 +108,7 @@
         for (let i = 0; i < receiver.length; i++) {
           let temp = await fetch("http://localhost:3000/friendName/" + receiver[i].mailReceiver)
             .then(res => res.json());
-            receiverName.push(temp[0]);
+          receiverName.push(temp[0]);
         }
 
         // récupération des demandes d'amis reçues
@@ -98,43 +124,22 @@
           senderName.push(temp[0]);
         }
 
-        // récupération des amis
-        var friend = [];
-        friend = await fetch("http://localhost:3000/reqFriends/" + this.$app.data.mail)
-          .then(res => res.json());
 
-        // récupération des noms des amis
-        var friendName = [];
-        let temp = {};
-        for (let i = 0; i < friend.length; i++) {
-          const friendi = Object.values(friend[i]);
-          if (friendi[1] === this.$app.data.mail) {
-            temp = await fetch("http://localhost:3000/friendName/" + friendi[2])
-              .then(res => res.json());
-          }
-          else {
-            temp = await fetch("http://localhost:3000/friendName/" + friendi[1])
-              .then(res => res.json());
-          }
-          friendName.push(temp[0]);
-        }
-
-
-      } catch(err) {
+      } catch (err) {
         this.$app.dialog.alert("Error " + err);
       }
 
-      return {receiverName: receiverName , senderName: senderName, friendName: friendName};
+      return { receiverName: receiverName, senderName: senderName };
     },
 
     methods: {
       // fonction bouton ajouter un ami
-      add: function() {
+      add: function () {
         this.$router.navigate("/friendRequestReceiver/");
       },
 
       // fonction bouton retour à la page d'accueil
-      ho: function() {
+      ho: function () {
         this.$router.navigate("/devFriends");
       },
     }

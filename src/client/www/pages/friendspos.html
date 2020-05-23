@@ -1,0 +1,141 @@
+<template>
+    <div class="page" data-name="home">
+        <div class="appbar">
+            <a href="#" class="link back">
+                <i class="icon icon-back"></i>
+                <span class="if-not-md">Back</span>
+            </a>
+            <div class="appbar-inner">
+                FriendFinder
+            </div>
+        </div>
+        <div class="page-content">
+            <div class="hist-title">Friends Position</div>
+            <!-- <div class="list simple-list">
+                <ul>
+                    {{#each friendsPos}}
+                    <li>{{this.pseudo}}</li>
+                    <li>{{this.latitude}}</li>
+                    <li>{{this.longitude}}</li>
+                    {{/each}}
+                </ul>
+            </div> -->
+
+            {{#each friendsPos}}
+
+            <div class="card">
+                <div class="card-header">
+                    Friend: {{this.pseudo}}
+                </div>
+
+                <div class="card-content card-content-padding">
+                    <div class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-input-wrap">
+                                <p>Latitude: {{this.latitude}}</p>
+                                <p>Longitude: {{this.longitude}}</p>
+                                <div class="block-title">Comment</div>
+                                <!-- Inset content block -->
+                                <div class="block block-strong inset"
+                                    style="background-color: rgba(216, 216, 216, 0.226);">
+                                    <p>{{this.comment}} </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <br>
+            {{/each}}
+            <br>
+            <br>
+            <br>
+
+
+
+        </div>
+    </div>
+</template>
+<script>
+    return {
+        data: function () {
+            return {
+                // empty initial user data
+                friendsPos: null,
+            }
+        },
+        on: {
+            pageInit: function () {
+                var self = this;
+
+
+                fetch("http://localhost:3000/reqFriends/" + app.data.mail, {
+                    method: "GET",
+
+                })
+                    .then(function (res) {
+                        return res.json()
+                            .then(function (data) {
+                                console.log(data);
+                                if (res.ok == true) {
+
+                                    friendsPos = [];
+                                    FrirendMail = null;
+
+                                    var i;
+                                    for (i = 0; i < data.length; i++) {
+                                        if (data[i].mailSender != app.data.mail) {
+                                            FrirendMail = data[i].mailSender;
+                                        }
+                                        else {
+                                            FrirendMail = data[i].mailReceiver;
+                                        }
+                                        console.log(FrirendMail);
+
+                                        fetch("http://localhost:3000/mypos/" + FrirendMail, {
+                                            method: "GET",
+                                        })
+                                            .then(function (res1) {
+                                                return res1.json()
+                                                    .then(function (dataFriendpos) {
+
+
+                                                        var j;
+                                                        for (j = 0; j < dataFriendpos.length; j++) {
+                                                            friendsPos.push({
+                                                                pseudo:  dataFriendpos[j].pseudo,
+                                                                latitude: dataFriendpos[j].latitude,
+                                                                longitude: dataFriendpos[j].longitude,
+                                                                comment: dataFriendpos[j].comment,
+                                                            });
+                                                        }
+
+
+
+                                                        console.log(friendsPos);
+
+                                                        self.$setState({
+                                                            friendsPos: friendsPos,
+                                                        });
+                                                    });
+
+
+                                            })
+
+
+
+
+
+
+                                    }
+                                }
+
+                                else console.log("error");
+
+                            })
+                    });
+            },
+        }
+    }
+</script>

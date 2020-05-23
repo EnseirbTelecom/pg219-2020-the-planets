@@ -1,0 +1,51 @@
+<template>
+    <div class="page">
+     <div class="navbar">
+       <div class="navbar-inner sliding">
+         <div class="title">Map</div>
+       </div>
+     </div>
+     <div class="page-content">
+       <div id="map"></div>
+     </div>
+   </div> 
+   </template>
+   <script>
+     return {
+         data: function () {
+          return {
+        //    data: somedata,
+         }
+       },
+       
+       on: {
+         pageInit: function(e, page) {
+   
+           var self = this;
+           var app = self.$app
+   
+           var map = L.map('map').fitWorld(); 
+           L.tileLayer('https://api.mapbox.com/styles/v1/maxxo/cjnq7a3nl0h842rt71w6s65s1/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoiaW50ZXJ2cHJvIiwiYSI6ImNrOXZjNTJpZDBhMHUzcm53cHc4dnIzc2cifQ.GkbKwEYnKBqOH1rdr7-Hjg', {
+               attribution: '&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>',
+               maxZoom: 18,
+               accessToken: 'some-token',
+           }).addTo(map);
+   
+           map.locate({setView: true, maxZoom: 13});
+   
+           function onLocationFound(e) {
+               var radius = e.accuracy / 2;
+                      L.circle(e.latlng, radius).addTo(map); //My Circle
+                     //more logic
+           }
+   
+         map.on('locationfound', onLocationFound);
+         map.on('locationerror', onLocationError);
+   
+         function onLocationError(e) {
+             //something..
+         }
+         },
+       }
+     }
+   </script>

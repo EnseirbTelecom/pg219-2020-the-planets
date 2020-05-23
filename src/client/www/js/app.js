@@ -4,7 +4,7 @@ var app = new Framework7({
   root: '#app', // App root element
   id: 'fr.theplanets.friendfinder', // App bundle ID
   name: 'FriendFinder', // App name
-  theme: 'auto', // Automatic theme detection
+  theme: 'md', // Automatic theme detection
   // App routes
   routes: routes,
   // Input settings

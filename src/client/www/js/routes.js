@@ -1,5 +1,5 @@
 var routes = [
-  
+
   // Afficher la page d'accueil
   {
     path: '/',
@@ -40,8 +40,30 @@ var routes = [
     componentUrl: './pages/connection.html',
   },
   {
-    path:'/inscription',
+    path: '/inscription',
     componentUrl: './pages/inscription.html',
+  },
+  {
+    path: '/postpos',
+    componentUrl: './pages/postpos.html',
+  },
+  {
+    path: '/map',
+    componentUrl: './pages/map.html',
+  },
+  {
+    path: '/friendspos',
+    componentUrl: './pages/friendspos.html',
+  },
+  {
+    path: '/FriendList',
+    componentUrl: './pages/FriendList.html',
+  },
+  {
+    path: '/historique',
+    componentUrl: './pages/historique.html',
+    reloadCurrent: true,
+    ignoreCache: true,
   },
   // Default route (404 page). MUST BE THE LAST
   {

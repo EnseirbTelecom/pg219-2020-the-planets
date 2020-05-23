@@ -9,40 +9,76 @@
         FriendFinder
       </div>
     </div>
-    <div class="page-content block ">
-      <form method="post">
-        <div class="formulaire">
-          <label>Nom</label>
-          <input id="input-name" type="text" name="user_name" placeholder="Entrer votre nom" required />
+    <div data-page="index" class="page">
+    <div class="page-content login-screen-content fixed-container">
+      <form style="border:none">
+        <div class="list">
+          <!-- <ul> -->
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Name</div>
+                <div class="item-input-wrap">
+                  <input id="input-name" type="text" name="user_name" placeholder="Entrer votre nom" required />
+                </div>
+              </div>
+            </li>
+            <li class="item-content item-input">
+              <div class="item-input-wrap">
+                <div class="item-title item-label">Surname</div>
+                <div class="item-input">
+                  <input id="input-surname" type="text" name="user_surname" placeholder="Entrer votre prénom" required />
+                </div>
+              </div>
+            </li>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Pseudo</div>
+                <div class="item-input-wrap">
+                  <input id="input-pseudo" type="text" name="user_pseudo" placeholder="Entrer votre pseudo" required />
+                </div>
+              </div>
+            </li>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Date of the birth</div>
+                <div class="item-input-wrap">
+                  <input id="input-birthday" type="date" name="user_birthday" placeholder="Entrer votre date de naissance" required />
+                </div>
+              </div>
+            </li>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Mail</div>
+                <div class="item-input-wrap">
+                  <input id="input-mail" type="email" name="user_mail" placeholder="Entrer votre email" required />
+                </div>
+              </div>
+            </li>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Password</div>
+                <div class="item-input-wrap">
+                  <input id="input-password" type="password" name="user_passeword" placeholder="Entrer votre mot de passe" required />
+                </div>
+              </div>
+            </li>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Confirmation</div>
+                <div class="item-input-wrap">
+                  <input id="input-confirmation" type="password" name="user_confirm" placeholder="Confirmation mot de passe" required />
+                </div>
+              </div>
+            </li>
+          <!-- </ul> -->
         </div>
-        <div class="formulaire">
-          <label>Prénom</label>
-          <input id="input-surname" type="text" name="user_surname" placeholder="Entrer votre prénom" required />
-        </div>
-        <div class="formulaire">
-          <label>Pseudo</label>
-          <input id="input-pseudo" type="text" name="user_pseudo" placeholder="Entrer votre pseudo" required />
-        </div>
-        <div class="formulaire">
-          <label>Date de naissance</label>
-          <input id="input-birthday" type="date" name="user_birthday" placeholder="Entrer votre date de naissance" required />
-        </div>
-        <div class="formulaire">
-          <label>Mail</label>
-          <input id="input-mail" type="email" name="user_mail" placeholder="Entrer votre email" required />
-        </div>
-        <div class="formulaire">
-          <label>Passeword</label>
-          <input id="input-password" type="password" name="user_passeword" placeholder="Entrer votre mot de passe" required />
-        </div>
-        <div class="formulaire">
-          <label>Confirmation</label>
-          <input id="input-confirmation" type="password" name="user_confirm" placeholder="Confirmation mot de passe" required />
-        </div>
-        <div class="button">
-          <button type="button" @click="valider" name="button">Valider</button>
+        <div class="list">
+          <ul>
+            <li><a class="list-button" type="button" @click="valider" name="button" >Valider</a></li>
+          </ul>
         </div>
       </form>
+    </div>
     </div>
   </div>
 </template>

@@ -7,21 +7,35 @@
       </a>
       <div class="appbar-inner">
         FriendFinder
-        <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Deconnexion</button>
+        <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
       </div>
     </div>
-    <div class="page-content block ">
-      <form method="post">
-        <div class="formulaire">
-          <label>Mail</label>
-          <input id="input-mail" type="email" name="user_mail" placeholder="Entrer votre email" required />
+    <div class="page-content login-screen-content">
+      <form style="border:none">
+        <div class="list">
+          <ul>
+            <li class="item-content item-input">
+              <div class="item-inner">
+                <div class="item-title item-label">Username</div>
+                <div class="item-input-wrap">
+                  <input id="input-mail" type="email" name="user_mail" placeholder="Your email" required />
+                </div>
+              </div>
+            </li>
+            <li class="item-content item-input">
+              <div class="item-input-wrap">
+                <div class="item-title item-label">Password</div>
+                <div class="item-input">
+                  <input id="input-password" type="password" name="user_passeword" placeholder="Your password" required />
+                </div>
+              </div>
+            </li>
+          </ul>
         </div>
-        <div class="formulaire">
-          <label>Passeword</label>
-          <input id="input-password" type="password" name="user_passeword" placeholder="Entrer votre mot de passe" required />
-        </div>
-        <div class="button">
-          <button type="button" @click="connecter" name="button">Se Connecter</button>
+        <div class="list">
+          <ul>
+            <li><a class="list-button" type="button" @click="connecter" name="button" >Sign In</a></li>
+          </ul>
         </div>
       </form>
     </div>

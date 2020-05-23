@@ -1,0 +1,214 @@
+<template>
+    <!-- <div data-page="index" class="page"> -->
+    <div class="page" data-name="home">
+        <div class="appbar">
+            <a href="#" class="link back">
+                <i class="icon icon-back"></i>
+                <span class="if-not-md">Back</span>
+            </a>
+            <div class="appbar-inner">
+                FriendFinder
+            </div>
+        </div>
+
+        <div class="page-content">
+            <div class="hist-title">Friends List</div>
+            <div class="list contacts-list">
+                <div class="list-group">
+                    <ul>
+                        {{#each this.friendsPos}}
+                        <li>
+                            <div class="item-content">
+                                <div class="item-inner">
+                                    <div class="item-title">{{ this.pseudo}}</div>
+                                    <button class="btn-delete-friend" @click="delete('{{this.id}}')">
+                                        <i class="f7-icons">
+                                            trash
+                                        </i>
+                                    </button>
+                                    {{#js_if "this.active === 1" }}
+                                    <div class="item-after"><span class="badge color-green">Active</span></div>
+                                    {{/js_if}}
+                                </div>
+                            </div>
+                        </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+        </div>
+</template>
+
+
+
+
+<script>
+    return {
+        data: function () {
+            return {
+                // empty initial user data
+                friendsPos: null,
+            }
+        },
+        methods: {
+
+            // ============================
+            // fonction du bouton Supprimer
+            delete: function (idpos) {
+                if (idpos != undefined) {
+                    fetch("http://localhost:3000/friendRequest/" + idpos, {
+                        method: "DELETE",
+                    })
+                        .catch(err => this.$app.dialog.alert('Error ' + err))
+                    friendsPos.forEach(function (e, index) {
+                        if (idpos == e.id) {
+                            friendsPos.splice(index, 1);
+                        }
+
+                    })
+
+                    this.$setState({
+                        friendsPos: friendsPos
+                    });
+                }
+            }
+        },
+        on: {
+            pageInit: function () {
+                var self = this;
+                const dataApp = this.$app.data;
+
+
+
+                fetch("http://localhost:3000/reqFriends/" + app.data.mail, {
+                    method: "GET",
+
+                })
+                    .then(function (res) {
+                        return res.json()
+                            .then(function (data) {
+
+                                if (res.ok == true) {
+                                    
+
+                                    friendsPos = [];
+                                    FrirendMail = [];
+                                    idFriend = [];
+
+
+                                    for (i = 0; i < data.length; i++) {
+                                        
+                                        if (data[i].mailSender != app.data.mail) {
+                                            FrirendMail.push(data[i].mailSender);
+                                            
+                                        }
+                                        else {
+                                            FrirendMail.push(data[i].mailReceiver);
+                                        }
+                                        
+                                        idFriend.push(data[i]._id);
+                                        
+                                    }
+                                    dataApp.idFriend = idFriend;
+                                    dataApp.index = 0;
+                                    
+                                    
+
+                                    
+                                    for (j = 0; j < FrirendMail.length; j++) {
+                                        
+
+                                        fetch("http://localhost:3000/friendName/" + FrirendMail[j])
+                                            .then(function (res) {
+                                                return res.json()
+                                                    .then(function (datan) {
+                                                        
+                                                        friendsPos.push({
+                                                            pseudo: datan[0].pseudo, 
+                                                            active: 0,
+                                                            id: dataApp.idFriend[dataApp.index],
+                                                        });
+                                                        dataApp.index = dataApp.index + 1;
+
+                                                        self.$setState({
+                                                            friendsPos: friendsPos,
+                                                        });
+
+
+
+                                                    })
+                                            })
+                                    }
+                                    
+                                }
+
+                                else console.log("error");
+
+                            })
+                    })
+
+
+                fetch("http://localhost:3000/reqFriends/" + app.data.mail, {
+                    method: "GET",
+
+                })
+                    .then(function (res) {
+                        return res.json()
+                            .then(function (data) {
+
+                                if (res.ok == true) {
+
+                                    FrirendMail = null;
+
+
+                                    var i;
+                                    for (i = 0; i < data.length; i++) {
+
+
+                                        if (data[i].mailSender != app.data.mail) {
+                                            FrirendMail = data[i].mailSender;
+                                        }
+                                        else {
+                                            FrirendMail = data[i].mailReceiver;
+                                        }
+
+                                        fetch("http://localhost:3000/mypos/" + FrirendMail, {
+                                            method: "GET",
+                                        })
+                                            .then(function (res1) {
+                                                return res1.json()
+                                                    .then(function (dataFriendpos) {
+
+
+                                                        var j;
+                                                        for (j = 0; j < dataFriendpos.length; j++) {
+                                                            friendsPos.forEach(function (e, index) {
+                                                                console.log(dataFriendpos[j].pseudo)
+                                                                console.log(e.pseudo)
+                                                                if (dataFriendpos[j].pseudo == e.pseudo) {
+                                                                    e.active = 1;
+                                                                }
+
+                                                            })
+
+                                                        }
+                                                        self.$setState({
+                                                            friendsPos: friendsPos,
+                                                        });
+
+                                                    });
+                                            })
+                                    }
+                                }
+                            })
+                    })
+
+                    
+
+
+
+
+            },
+        }
+    }
+</script>

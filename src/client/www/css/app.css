@@ -50,10 +50,106 @@
 }
 
 /* Your app custom styles here */
+.hist-title{
+    text-align:center;
+    vertical-align: middle;
+    line-height: 50px;
+    height: 50px;
+    font-weight:bold;
+    font-size: larger;
+  }
+
+.container{
+  width: 60%;
+  height: 110px;
+  margin: auto;
+  box-sizing: border-box;
+  line-height: 100px;
+  background-color: rgb(53, 113, 182);
+  position: relative;
+  border-radius: 20px;
+}
+
+.trash{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 40%;
+  left: 83%;
+  /* background-color: rgb(26, 27, 27); */
+}
+
+.latitude-display{
+  position: absolute;
+  bottom: 30%;
+  left: 5%;
+  color: black;
+  /* background-color: rgb(26, 27, 27); */
+}
+
+.longitude-display{
+  position: absolute;
+  bottom: 10%;
+  left: 5%;
+  color: black;
+}
+
+.timeout-display{
+  position: absolute;
+  bottom: -10%;
+  left: 5%;
+  color: black;
+}
+
+.btn-delete-pos {
+  width: 20%;
+  height: 40%;
+  position: relative;
+  top: 0%;
+  left: 0%;
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+}
+
+.btn-delete-friend {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0%;
+  margin-left: 30%;
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+}
+
+
 
 .page-content{
   vertical-align: middle;
 }
+
+.page-content.login-screen-content.fixed-container{
+  /* top: 100%; */
+  height: 70%;
+  margin: auto;
+  padding-top:600px;
+
+  overflow: scroll;
+}
+
+/*
+.page-content.scroll{
+  height: 200%;
+  padding-top:60px;
+
+} */
 
 .vertical_center{
   position:relative;
@@ -103,11 +199,6 @@ input{
 }
 
 
-
-.formulaire{
-  display: flex;
-}
-
 .button {
   padding-left: 90px;
 }
@@ -120,8 +211,58 @@ button {
   background-color: #FF0000;
 }
 
-.deconnexion{
-  float: right;
-  width: auto;
-  display: inline-block;
+
+.demo-card-header-pic .card-header {
+  height: 40vw;
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+}
+.demo-card-header-pic .card-content-padding .date{
+  color: #8e8e93;
+}
+
+
+/* clock */
+
+
+.clock {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgb(39, 36, 36);
+  border-radius: 50%;
+}
+
+.wrapper {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+}
+
+.inner-1, .inner-2 {
+  border-radius: 10px;
+  background-color: rgb(39, 36, 36);
+  position: absolute;
+  top: calc(50% - (10px /2));
+  left: calc(50% - (10px /2));
+}
+
+.inner-1 {
+  width: 25px;
+  height: 9px;
+}
+.inner-2 {
+  width: 25px;
+  height: 9px;
+}
+
+.rotate-1 {
+  animation: rotate 1s linear infinite;
+}
+.rotate-2 {
+  animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg) }
 }
