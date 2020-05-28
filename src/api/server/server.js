@@ -9,10 +9,10 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use((req, res, next) => {
-	res.append('Access-Control-Allow-Origin', ['*']);
-	res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH');
-	res.append('Access-Control-Allow-Headers', 'Content-Type');
-	next();
+    res.append('Access-Control-Allow-Origin', ['*']);
+    res.append('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,PATCH');
+    res.append('Access-Control-Allow-Headers', 'Content-Type,authorization');
+    next();
 });
 
 const secretKey = 'secretKey';
@@ -28,15 +28,25 @@ const url = 'mongodb+srv://test:toto@cluster0-zz5dr.mongodb.net/test?retryWrites
 
 // vérifie le token
 // Format authorization: Basic <token>
-function verifyToken(req, res, next) {
-	const tokenHearder = req.headers['authorization'];
-	if (tokenHearder !== undefined) {
-		const splitTokenHeader = tokenHearder.split(' ');
-		req.token = splitTokenHeader[1];
-		console.log(req.token);
-		next();
-	} else {
-		res.sendStatus(403);
+function verifyToken(req,res,next) {
+const tokenHearder = req.headers['authorization'];
+if(tokenHearder !== undefined){
+	const splitTokenHeader = tokenHearder.split(' ');
+	req.token = splitTokenHeader[1];
+  jwt.verify(req.token,secretKey,(err,decode)=>{
+    if (err) {
+      console.log(err);
+      res.status(401).json({err: err.message});
+      return;
+    }
+    if (decode) {
+      console.log(decode);
+      req.id = decode.id;
+      next();
+    }
+  });
+}else{
+	res.status(403).json({err: "Manque le token"});
 	}
 }
 
@@ -220,26 +230,20 @@ MongoClient.connect(url, {
 		// =======================
 
 		// route pour test la présence d'un token dans la phase de test
-		app.get("/users", verifyToken, (req, res) => {
-			jwt.verify(req.token, secretKey, (err, auth) => {
-				if (err) {
-					res.status(401).json(err);
-				} else {
-					database.collection("users").find().toArray()
-						.then(items => res.status(201).json(items))
-				}
-			});
-		});
+		app.get("/users",(req,res) =>{
+      database.collection("users").find().toArray()
+           .then(items => res.status(201).json(items))
+		 });
 
 		// route pour vérifier si il n'existe pas déjà un compte avec le même Mail
 		// et soit d'ajouter le compte/l'utilisateur ou bien renvoier une erreur
-		app.post("/users", (req, res, next) => {
-			database.collection("users").findOne({ "mail": req.body.mail }, (err, user) => {
-				if (user) {
-					console.log("Compte deja existant");
-					return res.status(401).json({ error: "Compte deja existant" });
-				} else {
-					next();
+		app.post("/registration",(req,res,next) =>{
+			database.collection("users").findOne({"mail": req.body.mail},(err,user) =>{
+				if(user){
+				console.log("Compte deja existant");
+				return res.status(401).json({ error: "Compte deja existant" });
+				}else{
+				next();
 				}
 			});
 		}, (req, res) => {
@@ -251,33 +255,65 @@ MongoClient.connect(url, {
 				mail: req.body.mail,
 				password: req.body.password
 			};
-			database.collection("users").insertOne(user, (err, user) => {
-				if (user) {
-					const forToken = {
-						mail: req.body.mail,
-						name: req.body.name,
-						surname: req.body.surname
-					}
-					jwt.sign(forToken, secretKey, { expiresIn: '1h' }, (err, token) => {
-						console.log(token);
-						res.status(201).json({ token: token });
-					});
+			database.collection("users").insertOne(user , (err,user) => {
+				if(user){
+				const forToken = {
+          id: user.insertedId,
+					mail: req.body.mail,
+				}
+        console.log(forToken);
+				jwt.sign(forToken,secretKey,{expiresIn: 120},(err,token) => {
+          if (token) {
+            console.log(token);
+            res.status(201).json({token: token});
+          }
+          else{
+            res.status(401).json({err: err});
+          }
+				});
 				}
 			});
 		});
 
 		// route pour réaliser la connection et donc vérifier si le mail et le mot envoyé correspondent
 		// bien à un utilsateur
-		app.post("/connection", (req, res) => {
-			database.collection("users").findOne({ "mail": req.body.mail, "password": req.body.password }, (err, user) => {
-				if (user) {
-					res.status(201).json(user);
-				}
-				else {
-					res.status(403).json({ erro: err })
-				}
+		app.post("/connection",(req,res) =>{
+      console.log(req.body.mail);
+			database.collection("users").findOne({"mail": req.body.mail,"password": req.body.password},(err,user) =>{
+			  if(user){
+          console.log(user);
+          const forTokenConnexion = {
+            id: user._id,
+            mail: req.body.mail,
+          };
+          console.log(forTokenConnexion);
+          jwt.sign(forTokenConnexion,secretKey,{expiresIn: 120},(err,token) => {
+            if (token) {
+              const response = {
+                name: user.name,
+                surname: user.surname,
+                birthday: user.birthday,
+                mail: user.mail,
+                token: token,
+              }
+              console.log(response);
+              res.status(201).json(response);
+            }
+            else{
+              res.status(401).json({err: err});
+            }
+    			});
+			  }
+			  else{
+				res.status(404).json({erro: err})
+			  }
 			});
-		});
+		 });
+
+     app.get("/testtoken",verifyToken,(req,res)=>{
+       console.log("token correct");
+        res.status(201).json("ok");
+     });
 
 		// route pour vider la BD pour la phase de test
 		app.delete("/users", (req, res) => {
@@ -296,7 +332,7 @@ MongoClient.connect(url, {
 				latitude: req.body.latitude,
 				longitude: req.body.longitude,
 				comment: req.body.comment,
-				createtime: req.body.create,
+				createtime: req.body.createtime,
 				timeout: new Date(req.body.timeout)
 			}
 
@@ -418,4 +454,3 @@ MongoClient.connect(url, {
 	})
 
 	.catch(err => { throw err })
-

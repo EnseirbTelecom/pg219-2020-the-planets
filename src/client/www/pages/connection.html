@@ -7,6 +7,7 @@
       </a>
       <div class="appbar-inner">
         FriendFinder
+        <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
       </div>
     </div>
     <div class="page-content login-screen-content">
@@ -48,13 +49,14 @@
         dataApp.mail = document.querySelector('#input-mail').value;
         const password = document.querySelector('#input-password').value;
         const url = "http://localhost:3000/connection/";
+        console.log(dataApp.mail);
         const router = this.$router;
         const dialog = this.$app.dialog;
         const passwordEncoding = CryptoJS.MD5(password);
         if(dataApp.mail && passwordEncoding){
           fetch(url,{
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers:{'Content-Type' : 'application/json'},
             body: JSON.stringify({
               mail: dataApp.mail,
               password: passwordEncoding
@@ -67,11 +69,16 @@
                 dataApp.surname = data.surname;
                 dataApp.pseudo = data.pseudo;
                 dataApp.birthday = data.birthday;
-                router.navigate('/devFriends');
+                dataApp.token = data.token;
+                localStorage.setItem("token",dataApp.token);
+                localStorage.setItem("email",dataApp.mail);
+                const httpHeaders = { 'Content-Type' : 'application/json', 'authorization' : 'Basic ' + dataApp.token};
+                dataApp.header = new Headers(httpHeaders);
+                router.navigate('/homeFriend');
               });
             }
             else{
-              response.json().then(data =>{dialog.alert("Le mot de passe ou le mail n'est pas correcte veuillez ressayer")});
+              response.json().then(data =>{dialog.alert(data.err)});
             }
           })
           .catch(err => this.$app.dialog.alert('Error ' + err));

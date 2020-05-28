@@ -51,9 +51,12 @@
 
 /* Your app custom styles here */
 .hist-title{
-    margin: auto;
-    text-align:center; 
-    background-color: brown;
+    text-align:center;
+    vertical-align: middle;
+    line-height: 50px;
+    height: 50px;
+    font-weight:bold;
+    font-size: larger;
   }
 
 .container{
@@ -61,9 +64,9 @@
   height: 110px;
   margin: auto;
   box-sizing: border-box;
-  line-height: 100px; 
+  line-height: 100px;
   background-color: rgb(53, 113, 182);
-  position: relative; 
+  position: relative;
   border-radius: 20px;
 }
 
@@ -71,7 +74,7 @@
   width: 100%;
   height: 100%;
   position: absolute;
-  top: 40%; 
+  top: 40%;
   left: 83%;
   /* background-color: rgb(26, 27, 27); */
 }
@@ -102,8 +105,22 @@
   width: 20%;
   height: 40%;
   position: relative;
-  top: 0%; 
+  top: 0%;
   left: 0%;
+  background-color: Transparent;
+  background-repeat:no-repeat;
+  border: none;
+  cursor:pointer;
+  overflow: hidden;
+  outline:none;
+}
+
+.btn-delete-friend {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0%;
+  margin-left: 30%;
   background-color: Transparent;
   background-repeat:no-repeat;
   border: none;
@@ -123,9 +140,16 @@
   height: 70%;
   margin: auto;
   padding-top:600px;
-    
+
   overflow: scroll;
 }
+
+/*
+.page-content.scroll{
+  height: 200%;
+  padding-top:60px;
+
+} */
 
 .vertical_center{
   position:relative;
@@ -135,6 +159,10 @@
 
 .appbar-inner{
   margin-left: 15px;
+}
+
+.back{
+  width:10px;
 }
 
 form {
@@ -192,4 +220,55 @@ button {
 }
 .demo-card-header-pic .card-content-padding .date{
   color: #8e8e93;
+}
+
+
+/* clock */
+
+
+.clock {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgb(39, 36, 36);
+  border-radius: 50%;
+}
+
+.wrapper {
+  width: 50px;
+  height: 50px;
+  position: absolute;
+}
+
+.inner-1, .inner-2 {
+  border-radius: 10px;
+  background-color: rgb(39, 36, 36);
+  position: absolute;
+  top: calc(50% - (10px /2));
+  left: calc(50% - (10px /2));
+}
+
+.inner-1 {
+  width: 25px;
+  height: 9px;
+}
+.inner-2 {
+  width: 25px;
+  height: 9px;
+}
+
+.rotate-1 {
+  animation: rotate 1s linear infinite;
+}
+.rotate-2 {
+  animation: rotate 10s linear infinite;
+}
+
+@keyframes rotate {
+  to { transform: rotate(360deg) }
+}
+
+.deconnexion{
+  float: right;
+  width: auto;
+  display: inline-block;
 }

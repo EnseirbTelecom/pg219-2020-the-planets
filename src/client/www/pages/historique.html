@@ -44,19 +44,6 @@
                                 </button>
                             </div>
                         </div>
-
-                        <!-- <div class="container">
-                            <div class="latitude-display">Latitude: {{this.latitude}}</div><br>
-                            <div class="longitude-display">Longitude: {{this.longitude}}</div><br>
-                            <div class="timeout-display">Archived {{this.timeout}}</div>
-                            <div class="trash">
-                                <button class="btn-delete-pos" @click="deletePositionHist('{{this.id}}')">
-                                    <i class="f7-icons">
-                                        trash
-                                    </i>
-                                </button>
-                            </div>
-                        </div> -->
                         <br>
                         {{/each}}
                     </div>
@@ -83,7 +70,6 @@
             },
 
             deletePositionHist: function (idpos) {
-                const router = this.$router;
 
                 fetch("http://localhost:3000/historique/" + idpos, {
                     method: "DELETE",
@@ -100,7 +86,6 @@
                 this.$setState({
                     totalItem: totalItem
                 });
-                // router.navigate("/historique", {reloadCurrent: true});
             },
 
 
@@ -127,9 +112,10 @@
                                     var i;
                                     for (i = 0; i < data.length; i++) {
                                         var date = new Date(data[i].timeout);
-                                        var hours = date.getHours();
+
                                         var datec = monthNames[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' at '
                                             + ("0" + (date.getHours())).slice(-2) + ':' + ("0" + (date.getMinutes())).slice(-2);
+                                            
                                         totalItem.push({
                                             latitude: parseFloat(data[i].latitude).toFixed(2),
                                             longitude: parseFloat(data[i].longitude).toFixed(2),

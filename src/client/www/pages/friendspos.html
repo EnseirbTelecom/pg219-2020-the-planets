@@ -10,7 +10,8 @@
             </div>
         </div>
         <div class="page-content">
-            <div class="list simple-list">
+            <div class="hist-title">Friends Position</div>
+            <!-- <div class="list simple-list">
                 <ul>
                     {{#each friendsPos}}
                     <li>{{this.pseudo}}</li>
@@ -18,7 +19,41 @@
                     <li>{{this.longitude}}</li>
                     {{/each}}
                 </ul>
+            </div> -->
+
+            {{#each friendsPos}}
+
+            <div class="card">
+                <div class="card-header">
+                    Friend: {{this.pseudo}}
+                </div>
+
+                <div class="card-content card-content-padding">
+                    <div class="item-content item-input">
+                        <div class="item-inner">
+                            <div class="item-input-wrap">
+                                <p>Latitude: {{this.latitude}}</p>
+                                <p>Longitude: {{this.longitude}}</p>
+                                <div class="block-title">Comment</div>
+                                <!-- Inset content block -->
+                                <div class="block block-strong inset"
+                                    style="background-color: rgba(216, 216, 216, 0.226);">
+                                    <p>{{this.comment}} </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
+            <br>
+            {{/each}}
+            <br>
+            <br>
+            <br>
+
+
+
         </div>
     </div>
 </template>
@@ -70,8 +105,9 @@
                                                         for (j = 0; j < dataFriendpos.length; j++) {
                                                             friendsPos.push({
                                                                 pseudo:  dataFriendpos[j].pseudo,
-                                                                latitude: dataFriendpos[j].latitude.toFixed(2),
-                                                                longitude: dataFriendpos[j].longitude.toFixed(2),
+                                                                latitude: dataFriendpos[j].latitude,
+                                                                longitude: dataFriendpos[j].longitude,
+                                                                comment: dataFriendpos[j].comment,
                                                             });
                                                         }
 

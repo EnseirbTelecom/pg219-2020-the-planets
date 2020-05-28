@@ -17,3 +17,42 @@
     </div>
   </div>
 </template>
+<script>
+  return {
+    // ===============================================
+    // fonction qui s'exécute au chargement de la page
+    async data() {
+      try {
+        const url = "http://localhost:3000/testtoken";
+        const dialog = this.$app.dialog;
+        const dataApp = this.$app.data;
+        const router = this.$router;
+        fetch(url,{
+          method: "GET",
+          headers: { "Content-Type": "application/json","authorization" : 'Basic ' + localStorage.getItem("token")}
+        })
+        .then(function(response){
+          if (response.ok) {
+            response.json().then(data => {
+              dataApp.token = localStorage.getItem("token");
+              dataApp.mail = localStorage.getItem("email");
+              const httpHeaders = { 'Content-Type' : 'application/json', 'authorization' : 'Basic ' + localStorage.getItem("token")};
+              dataApp.header = new Headers(httpHeaders);
+              router.navigate('/homeFriend');
+            });
+          }
+          else{
+            localStorage.setItem("email",null);
+            localStorage.setItem("token",null);
+            response.json().then(data =>{
+              console.log(data);
+            });
+          }
+        })
+        .catch(err => this.$app.dialog.alert('Error ' + err));
+      } catch(err) {
+        this.$app.dialog.alert("Error " + err);
+      }
+    }
+  }
+</script>

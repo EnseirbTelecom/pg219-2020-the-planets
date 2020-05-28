@@ -1,4 +1,4 @@
-<!-- Cette page permet d'afficher les amitiés, 
+<!-- Cette page permet d'afficher les amitiés,
      les requêtes reçues et les requêtes envoyées -->
 
 <!-- ===================== -->
@@ -18,18 +18,6 @@
 
     <!-- Scrollable page content -->
     <div class="page-content">
-
-      <div class="block-title">Liste des amis : </div>
-
-      <div class="list links-list">
-        <ul>
-          {{#each friendName}}
-          <a href="/friend/{{mail}}">
-            <li>Vous êtes ami avec {{surname}} {{name}}</li>
-          </a>
-          {{/each}}
-        </ul>
-      </div>
 
       <div class="block-title">Liste des demandes envoyées : </div>
 
@@ -75,7 +63,17 @@
           <a class="button" href="/historique">Historique</a>
         </div>
       </div>
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/FriendList">Friend List</a>
+        </div>
+      </div>
+      <br>
+      <br>
+      <br>
     </div>
+
+
 
     <div class="fab fab-center-center">
       <a @click="add" href="#">
@@ -128,33 +126,12 @@
           senderName.push(temp[0]);
         }
 
-        // récupération des amis
-        var friend = [];
-        friend = await fetch("http://localhost:3000/reqFriends/" + this.$app.data.mail)
-          .then(res => res.json());
-
-        // récupération des noms des amis
-        var friendName = [];
-        let temp = {};
-        for (let i = 0; i < friend.length; i++) {
-          const friendi = Object.values(friend[i]);
-
-          if (friendi[1] === this.$app.data.mail) {
-            temp = await fetch("http://localhost:3000/friendName/" + friendi[2])
-              .then(res => res.json());
-          }
-          else {
-            temp = await fetch("http://localhost:3000/friendName/" + friendi[1])
-              .then(res => res.json());
-          }
-          friendName.push(temp[0]);
-        }
 
       } catch (err) {
         this.$app.dialog.alert("Error " + err);
       }
-      console.log(receiverName);
-      return { receiverName: receiverName, senderName: senderName, friendName: friendName };
+
+      return { receiverName: receiverName, senderName: senderName };
     },
 
     methods: {

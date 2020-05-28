@@ -9,14 +9,14 @@
         FriendFinder
       </div>
     </div>
-    <div data-page="index" class="page"> 
+    <div data-page="index" class="page">
     <div class="page-content login-screen-content fixed-container">
       <form style="border:none">
         <div class="list">
           <!-- <ul> -->
             <li class="item-content item-input">
               <div class="item-inner">
-                <div class="item-title item-label">Nom</div>
+                <div class="item-title item-label">Name</div>
                 <div class="item-input-wrap">
                   <input id="input-name" type="text" name="user_name" placeholder="Entrer votre nom" required />
                 </div>
@@ -24,7 +24,7 @@
             </li>
             <li class="item-content item-input">
               <div class="item-input-wrap">
-                <div class="item-title item-label">Prénom</div>
+                <div class="item-title item-label">Surname</div>
                 <div class="item-input">
                   <input id="input-surname" type="text" name="user_surname" placeholder="Entrer votre prénom" required />
                 </div>
@@ -40,7 +40,7 @@
             </li>
             <li class="item-content item-input">
               <div class="item-inner">
-                <div class="item-title item-label">Date de naissance</div>
+                <div class="item-title item-label">Date of the birth</div>
                 <div class="item-input-wrap">
                   <input id="input-birthday" type="date" name="user_birthday" placeholder="Entrer votre date de naissance" required />
                 </div>
@@ -96,7 +96,7 @@
         const confirmation = document.querySelector('#input-confirmation').value;
         if(password === confirmation){
           if(dataApp.name && dataApp.surname && dataApp.mail && password && confirmation && dataApp.pseudo){
-            const url = "http://localhost:3000/users/";
+            const url = "http://localhost:3000/registration/";
             let chemin;
             const router = this.$router;
             const dialog = this.$app.dialog;
@@ -115,8 +115,14 @@
             })
             .then(function(response){
               if (response.ok) {
-                response.json().then(data => {dataApp.token = data.token})
-                router.navigate('/');
+                response.json().then(data => {
+                  dataApp.token = data.token;
+                  localStorage.setItem("token",dataApp.token);
+                  localStorage.setItem("email",dataApp.mail);
+                  const httpHeaders = { 'Content-Type' : 'application/json', 'authorization' : 'Basic ' + data.token};
+                  dataApp.header = new Headers(httpHeaders);
+                  router.navigate('/');
+                });
               }
               else{
                 response.json().then(data =>{dialog.alert(data.error)});

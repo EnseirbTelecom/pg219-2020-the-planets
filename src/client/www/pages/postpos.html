@@ -11,7 +11,7 @@
             </div>
         </div>
 
-        <div class="page-content">
+        <div class="page-content srcoll">
 
             <div class="card">
                 <div class="card-header">{{this.statuspos}}</div>
@@ -43,13 +43,25 @@
 
             {{#js_if "this.statuspos === 'Update position'" }}
             <div class="card">
-                <div class="card-header">Current Position</div>
+                <div class="card-header">
+                    Current Position
+                    <p id="minutes"></p>
+                    <div class="clock">
+                        <div class="wrapper rotate-1">
+                            <div class="inner-1"></div>
+                        </div>
+                        <div class="wrapper rotate-2">
+                            <div class="inner-2"></div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="card-content card-content-padding">
                     <div class="item-content item-input">
                         <div class="item-inner">
                             <div class="item-input-wrap">
                                 {{#each userpos}}
+                                <p>Created on: {{this.createtime}}</p>
                                 <p>Latitude: {{this.latitude}}</p>
                                 <p>Longitude: {{this.longitude}}</p>
                                 <div class="block-title">Comment</div>
@@ -72,6 +84,9 @@
                 </div>
 
             </div>
+            <br>
+            <br>
+            <br>
             {{/js_if}}
             <!-- <div class="preloader infinite-scroll-preloader"></div> -->
         </div>
@@ -88,16 +103,20 @@
             }
         },
         methods: {
+
             getPosition: function () {
                 var self = this;
                 const dataApp = this.$app.data;
+                const dialog = this.$app.dialog;
 
                 var textEditor = app.textEditor.get('.text-editor-init');
                 dataApp.comment = textEditor.value;
                 textEditor.setValue("");
 
                 dataApp.timeout = document.querySelector('#input-timeout').value;
-                $$('#input-timeout').val('')
+                $$('#input-timeout').val('');
+
+                dataApp.createtime = new Date();
 
                 var options = {
                     enableHighAccuracy: true,
@@ -118,9 +137,14 @@
 
                     const url = "http://localhost:3000/postpos/";
 
-                    if (dataApp.timeout != "") {
+                    const monthNames = ["January", "February", "March", "April", "May", "June",
+                        "July", "August", "September", "October", "November", "December"
+                    ];
+
+                    if (new Date(dataApp.timeout) > new Date(dataApp.createtime)) {
 
                         if (statuspos == "Update position") {
+                            $$(".page-content").scrollTop(10000, 400);
 
                             fetch("http://localhost:3000/deletecurrentpos/" + userpos[0]._id, {
                                 method: "DELETE",
@@ -147,21 +171,33 @@
                                 body: JSON.stringify({
                                     mymail: dataApp.mail,
                                     pseudo: dataApp.pseudo,
-                                    latitude: position.coords.latitude,
-                                    longitude: position.coords.longitude,
+                                    latitude: parseFloat(position.coords.latitude).toFixed(2),
+                                    longitude: parseFloat(position.coords.longitude).toFixed(2),
                                     comment: dataApp.comment,
-                                    timeout: dataApp.timeout
+                                    timeout: dataApp.timeout,
+                                    createtime: dataApp.createtime,
                                 })
                             })
                                 .then(function (res1) {
                                     return res1.json()
                                         .then(function (datamypos) {
-                                            console.log(datamypos);
+                                            var date = new Date(datamypos.createtime);
+
+                                            var datec = monthNames[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' at '
+                                                + ("0" + (date.getHours())).slice(-2) + ':' + ("0" + (date.getMinutes())).slice(-2);
 
                                             userpos = [];
 
-                                            userpos.push(datamypos);
-                                            console.log(userpos);
+                                            userpos.push({
+                                                latitude: datamypos.latitude,
+                                                longitude: datamypos.longitude,
+                                                _id: datamypos._id,
+                                                comment: datamypos.comment,
+                                                timeout: datamypos.timeout,
+                                                createtime: datec
+                                            });
+
+                                            dataApp.timeout2 = userpos[0].timeout;
 
                                             self.$setState({
                                                 userpos: userpos,
@@ -184,21 +220,35 @@
                                 body: JSON.stringify({
                                     mymail: dataApp.mail,
                                     pseudo: dataApp.pseudo,
-                                    latitude: position.coords.latitude,
-                                    longitude: position.coords.longitude,
+                                    latitude: parseFloat(position.coords.latitude).toFixed(2),
+                                    longitude: parseFloat(position.coords.longitude).toFixed(2),
                                     comment: dataApp.comment,
-                                    timeout: dataApp.timeout
+                                    timeout: dataApp.timeout,
+                                    createtime: dataApp.createtime,
                                 })
                             })
                                 .then(function (res1) {
                                     return res1.json()
                                         .then(function (datamypos) {
-                                            console.log(datamypos);
+
+                                            var date = new Date(datamypos.createtime);
+
+                                            var datec = monthNames[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' at '
+                                                + ("0" + (date.getHours())).slice(-2) + ':' + ("0" + (date.getMinutes())).slice(-2);
 
                                             userpos = [];
 
-                                            userpos.push(datamypos);
+                                            userpos.push({
+                                                latitude: datamypos.latitude,
+                                                longitude: datamypos.longitude,
+                                                _id: datamypos._id,
+                                                comment: datamypos.comment,
+                                                timeout: datamypos.timeout,
+                                                createtime: datec
+                                            });
 
+
+                                            dataApp.timeout2 = userpos[0].timeout;
 
                                             statuspos = "Update position"
 
@@ -206,23 +256,24 @@
                                                 userpos: userpos,
                                                 statuspos: statuspos,
                                             });
+
                                         })
                                 });
-
-                            // self.app.calendar.get().update();
-
 
                         }
                     }
 
+                    else {
+                        dialog.alert("Enter a valid time out date");
+                    }
 
-                    // router.navigate("/historique");
                 };
 
                 function onError(error) {
                     alert('code: ' + error.code + '\n' + 'message: ' + error.message + '\n');
                 }
             },
+
             deleteCurrentPos: function () {
                 const router = this.$router;
                 const dataApp = this.$app.data;
@@ -237,7 +288,7 @@
                         longitude: userpos[0].longitude,
                         comment: userpos[0].comment,
                         timeout: userpos[0].timeout,
-                        // createtime: userpos[0].createtime
+                        createtime: userpos[0].createtime
                     })
                 });
 
@@ -254,11 +305,17 @@
                     userpos: null,
                 });
             },
+
         },
         on: {
             pageInit: function () {
                 var self = this;
                 var app = self.$app;
+                const dataApp = this.$app.data;
+
+                const monthNames = ["January", "February", "March", "April", "May", "June",
+                    "July", "August", "September", "October", "November", "December"
+                ];
 
                 self.calendarDateTime = app.calendar.create({
                     inputEl: '#input-timeout',
@@ -281,18 +338,26 @@
                                     userpos = [];
                                     if (datamypos.length >= 1) {
                                         statuspos = "Update position";
+
+                                        var date = new Date(datamypos[0].createtime);
+
+                                        var datec = monthNames[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' at '
+                                            + ("0" + (date.getHours())).slice(-2) + ':' + ("0" + (date.getMinutes())).slice(-2);
+
                                         userpos.push({
-                                            latitude: datamypos[0].latitude.toFixed(2),
-                                            longitude: datamypos[0].longitude.toFixed(2),
+                                            latitude: datamypos[0].latitude,
+                                            longitude: datamypos[0].longitude,
                                             _id: datamypos[0]._id,
-                                            comment: datamypos[0].comment
+                                            comment: datamypos[0].comment,
+                                            timeout: datamypos[0].timeout,
+                                            createtime: datec
                                         });
+                                        dataApp.timeout2 = datamypos[0].timeout;
 
                                     }
                                     else {
                                         statuspos = "Post new position";
                                     }
-                                    console.log(userpos);
 
                                     self.$setState({
                                         statuspos: statuspos,
@@ -304,50 +369,138 @@
                     })
 
             },
-            // pageAfterIn: function (e, page) {
+            pageAfterIn: function (e, page) {
 
-            //     var self = this;
-            //     var app = self.$app;
+                var self = this;
+                var app = self.$app;
+                const dataApp = this.$app.data;
 
-            //     //start your interval after page is in
+                //start your interval after page is in
 
 
-            //     setInterval(function () {
-            //         fetch("http://localhost:3000/mypos/" + app.data.mail, {
-            //             method: "GET",
-            //         })
-            //             .then(function (res1) {
-            //                 return res1.json()
-            //                     .then(function (datamypos) {
-            //                         if (res1.ok == true) {
-            //                             console.log(datamypos.length)
-            //                             userpos = [];
-            //                             if (datamypos.length >= 1) {
-            //                                 statuspos = "Update position";
-            //                                 userpos.push({
-            //                                     latitude: datamypos[0].latitude.toFixed(2),
-            //                                     longitude: datamypos[0].longitude.toFixed(2),
-            //                                     _id: datamypos[0]._id,
-            //                                     comment: datamypos[0].comment
-            //                                 });
 
-            //                             }
-            //                             else {
-            //                                 statuspos = "Post new position";
-            //                             }
-            //                             console.log(userpos);
+                var interval;
 
-            //                             self.$setState({
-            //                                 statuspos: statuspos,
-            //                                 userpos: userpos,
-            //                             });
-            //                         }
+                dataApp.interval = setInterval(function () {
 
-            //                     })
-            //             })
-            //     }, 30000)
+                    if (statuspos == "Update position") {
 
-            // },
+                        var date = new Date();
+                        var datetimeout = new Date(dataApp.timeout2);
+                        console.log(date.getHours())
+                        console.log(datetimeout.getHours())
+
+                        if (date.getDate() === datetimeout.getDate()) {
+
+                            if (date.getHours() === datetimeout.getHours()) {
+
+                                if (date.getMinutes() === datetimeout.getMinutes()) {
+
+
+
+
+                                    fetch("http://localhost:3000/mypos/" + app.data.mail, {
+                                        method: "GET",
+                                    })
+                                        .then(function (res1) {
+                                            return res1.json()
+                                                .then(function (datamypos) {
+                                                    if (res1.ok == true) {
+                                                        console.log(datamypos.length)
+                                                        userpos = [];
+                                                        if (datamypos.length >= 1) {
+
+                                                            userpos.push({
+                                                                latitude: datamypos[0].latitude,
+                                                                longitude: datamypos[0].longitude,
+                                                                _id: datamypos[0]._id,
+                                                                comment: datamypos[0].comment,
+                                                                timeout: datamypos[0].timeout,
+                                                                createtime: datamypos[0].createtime
+                                                            });
+
+                                                        }
+                                                        else {
+                                                            statuspos = "Post new position";
+                                                        }
+
+                                                        console.log("qodskvnfdovsn");
+                                                        self.$setState({
+                                                            userpos: userpos,
+                                                            statuspos: statuspos,
+                                                        });
+
+                                                    }
+
+                                                })
+                                        })
+                                }
+                            }
+                        }
+                    }
+                }, 1000);
+
+                var interval2;
+                dataApp.interval2 = setInterval(function () {
+                    if (statuspos == "Update position") {
+
+                        var delta = Math.abs(new Date(dataApp.timeout2) - new Date()) / 1000;
+
+                        // calculate (and subtract) whole days
+                        var days = Math.floor(delta / 86400);
+                        delta -= days * 86400;
+
+                        if (days == 0) {
+                            html_days = "";
+                        }
+                        else {
+                            html_days = days + "d ";
+                        }
+
+                        // calculate (and subtract) whole hours
+                        var hours = Math.floor(delta / 3600) % 24;
+                        delta -= hours * 3600;
+
+                        if (hours == 0) {
+                            html_hours = "";
+                        }
+                        else {
+                            html_hours = hours + "h ";
+                        }
+
+                        // calculate (and subtract) whole minutes
+                        var minutes = Math.floor(delta / 60) % 60;
+
+                        if (minutes == 0) {
+                            html_minutes = "";
+                            if (days == 0) {
+                                if (hours == 0) {
+                                    html_minutes = "less than one minute";
+                                }
+                            }
+
+                        }
+                        else {
+                            html_minutes = minutes + "m";
+                        }
+
+
+
+
+                        document.getElementById("minutes").innerHTML = "time left: " + html_days + html_hours + html_minutes;
+                        console.log("aaaaaaaaaaaaaaaaaa");
+                    }
+
+                }, 1000);
+
+
+
+            },
+            pageBeforeRemove: function (e, page) {
+                const dataApp = this.$app.data;
+                clearInterval(dataApp.interval);
+                clearInterval(dataApp.interval2);
+            },
         }
     }
 </script>
