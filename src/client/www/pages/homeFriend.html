@@ -12,7 +12,7 @@
     <div class="appbar">
       <div class="appbar-inner">
         Amis
-        <div class="col"><a @click="ho" class="button" href="#">Accueil</a></div>
+        <div class="col"><a @click="hom" class="button" href="#">Accueil</a></div>
       </div>
     </div>
 
@@ -42,35 +42,6 @@
           {{/each}}
         </ul>
       </div>
-
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="button" href="/postpos">Post my position</a>
-        </div>
-      </div>
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="button" href="/map">Show map</a>
-        </div>
-      </div>
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="button" href="/friendspos">See friends pos</a>
-        </div>
-      </div>
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="button" href="/historique">Historique</a>
-        </div>
-      </div>
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="button" href="/FriendList">Friend List</a>
-        </div>
-      </div>
-      <br>
-      <br>
-      <br>
     </div>
 
 
@@ -141,9 +112,10 @@
       },
 
       // fonction bouton retour à la page d'accueil
-      ho: function () {
-        this.$router.navigate("/devFriends");
+      hom: function () {
+        this.$router.navigate("/homeApp");
       },
+      
     }
   }
 </script>

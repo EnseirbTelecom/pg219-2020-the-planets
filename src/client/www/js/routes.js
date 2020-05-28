@@ -5,6 +5,11 @@ var routes = [
     path: '/',
     componentUrl: './pages/home.html'
   },
+  // Afficher la page d'accueil une fois connecté
+  {
+    path: '/homeApp',
+    componentUrl: './pages/homeApp.html'
+  },
   // Afficher la page des amis
   {
     path: '/homeFriend',
@@ -28,12 +33,22 @@ var routes = [
   // Afficher la page de la collection friends (dev)
   {
     path: '/devFriends',
-    componentUrl: './pages/dev_home.html'
+    componentUrl: './pages/dev_friendsDB.html'
   },
   // Afficher une requete d'amitiée (dev)
   {
     path: '/friends/:friendId?',
     componentUrl: './pages/dev_friend.html',
+  },
+  // Afficher la page de la collection users (dev)
+  {
+    path: '/devUsers',
+    componentUrl: './pages/dev_usersDB.html'
+  },
+  // Afficher un utilisateur (dev)
+  {
+    path: '/user/:userId?',
+    componentUrl: './pages/dev_user.html',
   },
   {
     path: '/connection',

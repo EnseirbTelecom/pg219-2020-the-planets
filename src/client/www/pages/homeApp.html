@@ -1,0 +1,72 @@
+<!-- Cette page est le menu d'accueil  
+     une fois qu'on est connecté  -->
+
+<!-- ===================== -->
+<!-- ===   PAGE HTML   === -->
+<!-- ===================== -->
+
+<template>
+  <div class="page" data-name="home">
+
+    <!-- Appbar -->
+    <div class="appbar">
+      <div class="appbar-inner">
+        Accueil
+        <div class="col"><a @click="dev" class="button" href="#">Dev</a></div>
+      </div>
+    </div>
+
+    <!-- Scrollable page content -->
+    <div class="page-content">
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/postpos">Post my position</a>
+        </div>
+      </div>
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/map">Show map</a>
+        </div>
+      </div>
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/friendspos">See friends pos</a>
+        </div>
+      </div>
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/historique">Historique</a>
+        </div>
+      </div>
+      <div class="block block-strong col">
+        <div class="col">
+          <a class="button" href="/homeFriend">Friend List</a>
+        </div>
+      </div>
+      <br>
+      <br>
+      <br>
+    </div>
+  </div>
+
+  </div>
+
+</template>
+
+
+<!-- =========================== -->
+<!-- ===   CODE JAVASCRIPT   === -->
+<!-- =========================== -->
+
+<script>
+  return {
+    methods: {
+      
+      // fonction bouton retour à la page d'accueil de dev
+      dev: function () {
+        this.$router.navigate("/devFriends");
+      },
+    }
+  }
+</script>
+

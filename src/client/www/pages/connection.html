@@ -74,7 +74,7 @@
                 localStorage.setItem("email",dataApp.mail);
                 const httpHeaders = { 'Content-Type' : 'application/json', 'authorization' : 'Basic ' + dataApp.token};
                 dataApp.header = new Headers(httpHeaders);
-                router.navigate('/homeFriend');
+                router.navigate('/homeApp');
               });
             }
             else{

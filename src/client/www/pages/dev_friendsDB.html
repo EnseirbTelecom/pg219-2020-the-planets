@@ -6,7 +6,8 @@
   <div class="appbar">
     <div class="appbar-inner">
       Control center
-      <div class="col"><a @click="fri" class="button" href="#">Amis</a></div>
+      <div class="col"><a @click="hom" class="button" href="#">Accueil</a></div>
+      <div class="col"><a @click="use" class="button" href="#">Dev_Users</a></div>
     </div>
   </div>
 
@@ -50,8 +51,11 @@
       add: function() {
         this.$router.navigate("/friends/");
       },
-      fri: function(){
-        this.$router.navigate("/homeFriend/");
+      hom: function(){
+        this.$router.navigate("/homeApp/");
+      },
+      use: function(){
+        this.$router.navigate("/devUsers/");
       }
     }
   }

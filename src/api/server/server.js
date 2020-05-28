@@ -95,9 +95,9 @@ MongoClient.connect(url, {
 		var friends = database.collection("Friends");
 		var historique = database.collection("Historique");
 
-		// ======================
-		// ===   home (dev)   ===
-		// ======================
+		// =========================
+		// ===   dev (friends)   ===
+		// =========================
 
 		app.get("/friends/:id", (req, res) => {
 			database.collection("friends").findOne({ _id: ObjectID(req.params.id) })
@@ -147,6 +147,53 @@ MongoClient.connect(url, {
 
 		app.get("/friends", (req, res) => {
 			database.collection("friends").find().toArray()
+				.then(items => res.json(items))
+		})
+
+		// =======================
+		// ===   dev (users)   ===
+		// =======================
+
+		app.get("/user/:id", (req, res) => {
+			database.collection("users").findOne({ _id: ObjectID(req.params.id) })
+				.then(item => (item) ? res.json(item) : res.status(404).json({ error: "Entity not found." }))
+				.catch(err => console.log("err" + err))
+		})
+
+		app.put("/user/:id", (req, res) => {
+			const user = {
+				name: req.body.name,
+                surname: req.body.surname,
+                pseudo: req.body.pseudo,
+                birthday: req.body.birthday,
+                mail: req.body.mail,
+                password: CryptoJS.MD5(req.body.password)
+			}
+			database.collection("users").update({ _id: ObjectID(req.params.id) }, { $set: friend })
+				.then(command => (command.result.n == 1) ? res.json(req.body) : res.status(404).json({ error: "Entity not found." }))
+				.catch(err => console.log("Error " + err))
+		})
+
+		app.delete("/user/:id", (req, res) => {
+			database.collection("users").deleteOne({ _id: ObjectID(req.params.id) })
+				.then(command => (command.result.n == 1) ? res.json(req.params.id) : res.status(404).json({ error: "Entity not found." }))
+		})
+
+		app.post("/user", (req, res) => {
+			const user = {
+				name: req.body.name,
+                surname: req.body.surname,
+                pseudo: req.body.pseudo,
+                birthday: req.body.birthday,
+                mail: req.body.mail,
+                password: CryptoJS.MD5(req.body.password)
+			}
+			database.collection("users").insertOne(user)
+				.then(command => res.status(201).json(user))
+		})
+
+		app.get("/user", (req, res) => {
+			database.collection("users").find().toArray()
 				.then(items => res.json(items))
 		})
 

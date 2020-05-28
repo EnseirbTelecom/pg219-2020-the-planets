@@ -1,0 +1,63 @@
+
+<template>
+  <div class="page" data-name="home">
+
+  <!-- Appbar -->
+  <div class="appbar">
+    <div class="appbar-inner">
+      Control center
+      <div class="col"><a @click="hom" class="button" href="#">Accueil</a></div>
+      <div class="col"><a @click="fri" class="button" href="#">Dev_Friends</a></div>
+    </div>
+  </div>
+
+  <!-- Scrollable page content-->
+  <div class="page-content">
+
+    <div class="block-title">Collection : users</div>
+      <div class="list links-list">
+        <ul>
+          {{#each users}}
+          <a href="/user/{{_id}}"><li>{{name}} {{surname}} {{pseudo}} {{birthday}} {{mail}} {{password}}</li></a>
+          {{/each}}
+        </ul>
+      </div>
+    </div>
+
+    <div class="fab fab-center-bottom">
+      <a @click="add" href="#">
+        <i class="icon f7-icons">plus</i>
+      </a>
+    </div>
+
+  </div>
+
+</template>
+
+
+<script>
+  return {
+    async data() {
+      let users = [];
+      console.log("test");
+      try {
+        users = await fetch("http://localhost:3000/user")
+          .then(res => res.json());
+      } catch(err) {
+        this.$app.dialog.alert("Error " + err);
+      }
+      return { users: users };
+    },
+    methods: {
+      add: function() {
+        this.$router.navigate("/user/");
+      },
+      hom: function(){
+        this.$router.navigate("/homeApp/");
+      },
+      fri: function(){
+        this.$router.navigate("/deFriends/");
+      }
+    }
+  }
+</script>
