@@ -107,9 +107,11 @@
 
         // récupération des noms des demandes d'amis envoyées
         var receiverName = [];
+        console.log(receiver);
         for (let i = 0; i < receiver.length; i++) {
           let temp = await fetch("http://localhost:3000/friendName/" + receiver[i].mailReceiver)
             .then(res => res.json());
+          console.log(temp[0]);
           receiverName.push(temp[0]);
         }
 
@@ -151,7 +153,7 @@
       } catch (err) {
         this.$app.dialog.alert("Error " + err);
       }
-
+      console.log(receiverName);
       return { receiverName: receiverName, senderName: senderName, friendName: friendName };
     },
 

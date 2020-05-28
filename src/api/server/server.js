@@ -146,7 +146,7 @@ MongoClient.connect(url, {
 
 		// récupérer les noms liés aux mails
 		app.get("/friendName/:mail", (req, res) => {
-			database.collection("users").find({ mail: req.params.mail }, { _id: 1, firstName: 1, lastName: 1, mail: 1 }).toArray()
+			database.collection("users").find({ mail: req.params.mail }, { _id: 1, surname: 1, name: 1, mail: 1 }).toArray()
 				.then(items => res.json(items))
 		})
 
