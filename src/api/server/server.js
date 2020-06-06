@@ -64,12 +64,6 @@ const friendChecker = (req, res, next) => {
 	next()
 }
 
-// vérifie qu'une requête d'amitié n'existe pas déjà
-const requestChecker = (req, res, friends) => {
-	friends.findOne({$or : [{mailSender: req.body.mailSender, mailReceiver: req.body.mailReceiver},
-							{mailSender: req.body.mailReceiver, mailReceiver: req.body.mailSender}]}, 
-					(err, result) => {return result;})
-}
 
 // ===================================
 // ======      CONNECTION      =======
@@ -238,21 +232,45 @@ MongoClient.connect(url, {
 		})
 
 		// faire une nouvelle demande d'ami
-		app.post("/friendRequest", friendChecker, (req, res) => {
-			if (requestChecker(req, res, friends) === {}){
-				const friend = {
-					mailSender: req.body.mailSender,
-					mailReceiver: req.body.mailReceiver,
-					acceptation: req.body.acceptation
-				}
-				friends.insertOne(friend)
-					.then(command => res.status(201).json(friend))
+		app.post("/friendRequest", friendChecker, requestChecker, userChecker, (req, res) => {
+			const friend = {
+				mailSender: req.body.mailSender,
+				mailReceiver: req.body.mailReceiver,
+				acceptation: req.body.acceptation
 			}
-			else {
-				res.status(404).end();
-			}
+			friends.insertOne(friend)
+				.then(command => res.status(201).json(friend))
 		})
 
+		// vérifie qu'une requête d'amitié n'existe pas déjà
+		function requestChecker(req,res,next) {
+			friends.findOne(
+				{$or : [{mailSender: req.body.mailSender, mailReceiver: req.body.mailReceiver},
+				{mailSender: req.body.mailReceiver, mailReceiver: req.body.mailSender}]}
+				,(err,friendRequest)=>{
+			  if(friendRequest){
+				console.log("Erreur : requête d'amitié similaire déjà existante");
+				res.status(401).json({error: err});
+			  }
+			  else{
+				next();
+			  }
+			})
+		}
+		// vérifie que l'utilisateur existe
+		function userChecker(req,res,next) {
+			users.findOne(
+				{mail: req.body.mailReceiver}
+				,(err,user)=>{
+			  if(user){
+				next();
+			  }
+			  else{
+				console.log("Erreur : l'utilisateur n'existe pas dans le bdd");
+				res.status(401).json({error: err});
+			  }
+			})
+		}
 		// répondre à une demande d'ami
 		app.put("/friendRequest/:id", friendChecker, (req, res) => {
 			const friend = {
@@ -357,10 +375,10 @@ MongoClient.connect(url, {
 			});
 		 });
 
-     app.get("/testtoken",verifyToken,(req,res)=>{
-       console.log("token correct");
-        res.status(201).json("ok");
-     });
+		app.get("/testtoken",verifyToken,(req,res)=>{
+		console.log("token correct");
+			res.status(201).json("ok");
+		});
 
 		// route pour vider la BD pour la phase de test
 		app.delete("/users", (req, res) => {
