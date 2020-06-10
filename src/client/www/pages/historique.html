@@ -136,6 +136,39 @@
                             })
                     });
             },
+
+            pageAfterIn: function (e, page) {
+              const url = "http://localhost:3000/testtoken";
+              const dialog = this.$app.dialog;
+              const dataApp = this.$app.data;
+              const router = this.$router;
+                //start your interval after page is in
+                var interval;
+                dataApp.interval = setInterval(function () {
+
+                  fetch(url,{
+                    method: "GET",
+                    headers: { "Content-Type": "application/json","authorization" : 'Basic ' + localStorage.getItem("token")}
+                  })
+                  .then(function(response){
+                    if (response.ok) {
+                      console.log("ok");
+                    }
+                    else {
+                      localStorage.setItem("email",null);
+                      localStorage.setItem("token",null);
+                      console.log("ici");
+                      router.navigate('/');
+                    }
+                  })
+                  .catch(err => this.$app.dialog.alert('Error ' + err));
+                }, 60000);
+            },
+
+            pageBeforeRemove: function (e, page) {
+                const dataApp = this.$app.data;
+                clearInterval(dataApp.interval);
+            },
         }
     }
 </script>

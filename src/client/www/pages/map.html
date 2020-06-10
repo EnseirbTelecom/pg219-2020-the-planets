@@ -1,61 +1,82 @@
-
-
-   <template>
-        <div class="page" data-name="home">
-          <div class="appbar">
-              <a href="#" class="link back">
-                  <i class="icon icon-back"></i>
-                  <span class="if-not-md">Back</span>
-              </a>
-              <div class="appbar-inner">
-                  FriendFinder
-                  <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
-              </div>
-          </div>
-          <div class="page-content">
-            <br>
-            <div class="vertical_center">
-                  <div id="map" style=" height:400px " ></div>
-            </div>
-          </div>
-
-
-
+ <template>
+  <div class="page" data-name="home">
+    <div class="appbar">
+        <a href="#" class="link back">
+            <i class="icon icon-back"></i>
+            <span class="if-not-md">Back</span>
+        </a>
+        <div class="appbar-inner">
+            FriendFinder
+            <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
+        </div>
+    </div>
+    <div class="page-content">
+      <br>
+      <div class="vertical_center">
+            <div id="map" style=" height:400px " ></div>
       </div>
-      </template>
-
-      <script>
-
-          return{
-              on:{
-                  pageInit : function() {
-                      console.log('Show Map');
-                      var lat = this.$route.params.lat;
-                      var lon = this.$route.params.lon;
-
-                      var macarte = null;
-                      // Créer l'objet "macarte" et l'insèrer dans l'élément HTML qui a l'ID "map"
-                      macarte = L.map('map').setView([lat, lon], 11);
-                      // Leaflet ne récupère pas les cartes (tiles) sur un serveur par défaut. Nous devons lui préciser où nous souhaitons les récupérer. Ici, openstreetmap.fr
-                      L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
-                          // Il est toujours bien de laisser le lien vers la source des données
-                          attribution: 'données © <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
-                          minZoom: 1,
-                          maxZoom: 20
-                      }).addTo(macarte);
-                      var marker = L.marker([lat, lon]).addTo(macarte);
-
-                  }
-              }
-          }
-
-      </script>
-
-<<<<<<< HEAD
+    </div>
 
 
+</div>
+</template>
 
-=======
+<script>
 
+    return{
+        on:{
+            pageInit : function() {
+                console.log('Show Map');
+                var lat = this.$route.params.lat;
+                var lon = this.$route.params.lon;
 
->>>>>>> Map
+                var macarte = null;
+                // Créer l'objet "macarte" et l'insèrer dans l'élément HTML qui a l'ID "map"
+                macarte = L.map('map').setView([lat, lon], 11);
+                // Leaflet ne récupère pas les cartes (tiles) sur un serveur par défaut. Nous devons lui préciser où nous souhaitons les récupérer. Ici, openstreetmap.fr
+                L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+                    // Il est toujours bien de laisser le lien vers la source des données
+                    attribution: 'données © <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
+                    minZoom: 1,
+                    maxZoom: 20
+                }).addTo(macarte);
+                var marker = L.marker([lat, lon]).addTo(macarte);
+
+            },
+
+            pageAfterIn: function (e, page) {
+              const url = "http://localhost:3000/testtoken";
+              const dialog = this.$app.dialog;
+              const dataApp = this.$app.data;
+              const router = this.$router;
+                //start your interval after page is in
+                var interval;
+                dataApp.interval = setInterval(function () {
+
+                  fetch(url,{
+                    method: "GET",
+                    headers: { "Content-Type": "application/json","authorization" : 'Basic ' + localStorage.getItem("token")}
+                  })
+                  .then(function(response){
+                    if (response.ok) {
+                      console.log("ok");
+                    }
+                    else {
+                      localStorage.setItem("email",null);
+                      localStorage.setItem("token",null);
+                      console.log("ici");
+                      router.navigate('/');
+                    }
+                  })
+                  .catch(err => this.$app.dialog.alert('Error ' + err));
+                }, 60000);
+            },
+
+            pageBeforeRemove: function (e, page) {
+                const dataApp = this.$app.data;
+                clearInterval(dataApp.interval);
+            },
+        }
+    }
+
+</script>

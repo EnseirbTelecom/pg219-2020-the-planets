@@ -489,7 +489,7 @@ MongoClient.connect(url, {
 		app.get("/historique/:mymail", (req, res) => {
 			// var ObjectId = require('mongodb').ObjectId;
 			// var myid = new ObjectId("5eb53d6bbd2f9326602accc2");
-			historique.find({ "mymail": req.params.mymail }).sort({ timeout: 1 }).toArray()
+			historique.find({ "mymail": req.params.mymail }).sort({ timeout: -1 }).toArray()
 				.then(mypos => {
 					res.status(200).json(mypos);
 				})

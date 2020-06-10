@@ -276,4 +276,5 @@ button {
   float: right;
   width: auto;
   display: inline-block;
+  border: none;
 }
