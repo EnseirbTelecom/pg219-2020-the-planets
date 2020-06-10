@@ -1,5 +1,4 @@
 <template>
-    <!-- <div data-page="index" class="page"> -->
     <div class="page" data-name="home">
         <div class="appbar">
             <a href="#" class="link back">
@@ -8,6 +7,7 @@
             </a>
             <div class="appbar-inner">
                 FriendFinder
+                <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
             </div>
         </div>
 
@@ -88,10 +88,8 @@
             <br>
             <br>
             {{/js_if}}
-            <!-- <div class="preloader infinite-scroll-preloader"></div> -->
         </div>
     </div>
-    <!-- </div>         -->
 </template>
 <script>
     return {
@@ -387,8 +385,6 @@
 
                         var date = new Date();
                         var datetimeout = new Date(dataApp.timeout2);
-                        console.log(date.getHours())
-                        console.log(datetimeout.getHours())
 
                         if (date.getDate() === datetimeout.getDate()) {
 
@@ -406,7 +402,6 @@
                                             return res1.json()
                                                 .then(function (datamypos) {
                                                     if (res1.ok == true) {
-                                                        console.log(datamypos.length)
                                                         userpos = [];
                                                         if (datamypos.length >= 1) {
 
@@ -424,7 +419,6 @@
                                                             statuspos = "Post new position";
                                                         }
 
-                                                        console.log("qodskvnfdovsn");
                                                         self.$setState({
                                                             userpos: userpos,
                                                             statuspos: statuspos,
@@ -488,7 +482,6 @@
 
 
                         document.getElementById("minutes").innerHTML = "time left: " + html_days + html_hours + html_minutes;
-                        console.log("aaaaaaaaaaaaaaaaaa");
                     }
 
                 }, 1000);
