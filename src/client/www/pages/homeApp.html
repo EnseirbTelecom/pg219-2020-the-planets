@@ -86,6 +86,11 @@
               .catch(err => this.$app.dialog.alert('Error ' + err));
             }, 60000);
         },
+
+        pageBeforeRemove: function (e, page) {
+            const dataApp = this.$app.data;
+            clearInterval(dataApp.interval);
+        },
       },
 
     methods: {
