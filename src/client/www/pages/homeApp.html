@@ -41,7 +41,7 @@
       </div>
       <div class="block block-strong col">
         <div class="col">
-          <a class="button" href="/homeFriend">Friend List</a>
+          <a class="button" href="/FriendList">Friend List</a>
         </div>
       </div>
       <br>
@@ -49,9 +49,6 @@
       <br>
     </div>
   </div>
-
-  </div>
-
 </template>
 
 
@@ -61,6 +58,36 @@
 
 <script>
   return {
+      on: {
+        pageAfterIn: function (e, page) {
+          const url = "http://localhost:3000/testtoken";
+          const dialog = this.$app.dialog;
+          const dataApp = this.$app.data;
+          const router = this.$router;
+            //start your interval after page is in
+            var interval;
+            dataApp.interval = setInterval(function () {
+
+              fetch(url,{
+                method: "GET",
+                headers: { "Content-Type": "application/json","authorization" : 'Basic ' + localStorage.getItem("token")}
+              })
+              .then(function(response){
+                if (response.ok) {
+                  console.log("ok");
+                }
+                else {
+                  localStorage.setItem("email",null);
+                  localStorage.setItem("token",null);
+                  console.log("ici");
+                  router.navigate('/');
+                }
+              })
+              .catch(err => this.$app.dialog.alert('Error ' + err));
+            }, 60000);
+        },
+      },
+
     methods: {
 
       // fonction bouton retour à la page d'accueil de dev
