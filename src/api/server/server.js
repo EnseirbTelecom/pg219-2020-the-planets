@@ -357,6 +357,7 @@ MongoClient.connect(url, {
               const response = {
                 name: user.name,
                 surname: user.surname,
+                pseudo: user.pseudo,
                 birthday: user.birthday,
                 mail: user.mail,
                 token: token,
@@ -400,6 +401,8 @@ MongoClient.connect(url, {
 				createtime: req.body.createtime,
 				timeout: new Date(req.body.timeout)
 			}
+
+      console.log(user_position);
 
 
 			positions.insertOne(user_position)
