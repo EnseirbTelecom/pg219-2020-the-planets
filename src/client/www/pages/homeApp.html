@@ -1,4 +1,4 @@
-<!-- Cette page est le menu d'accueil  
+<!-- Cette page est le menu d'accueil
      une fois qu'on est connecté  -->
 
 <!-- ===================== -->
@@ -11,8 +11,8 @@
     <!-- Appbar -->
     <div class="appbar">
       <div class="appbar-inner">
-        Accueil
-        <div class="col"><a @click="dev" class="button" href="#">Dev</a></div>
+        FriendFinder
+        <div class="col">Home</div>
         <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
       </div>
     </div>
@@ -62,7 +62,7 @@
 <script>
   return {
     methods: {
-      
+
       // fonction bouton retour à la page d'accueil de dev
       dev: function () {
         this.$router.navigate("/devFriends");
@@ -70,4 +70,3 @@
     }
   }
 </script>
-

@@ -10,17 +10,22 @@
 
     <!-- Appbar -->
     <div class="appbar">
+      <a href="#" class="link back">
+        <i class="icon icon-back"></i>
+        <span class="if-not-md">Back</span>
+      </a>
       <div class="appbar-inner">
-        Amis
-        <div class="col"><a @click="hom" class="button" href="#">Accueil</a></div>
+        FriendFinder
+        <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
       </div>
     </div>
+
 
     <!-- Scrollable page content -->
     <div class="page-content">
 
       <div class="block-title">Liste des amis : </div>
-      
+
       <div class="list links-list">
         <ul>
           {{#each friendName}}
@@ -146,7 +151,7 @@
       hom: function () {
         this.$router.navigate("/homeApp");
       },
-      
+
     }
   }
 </script>

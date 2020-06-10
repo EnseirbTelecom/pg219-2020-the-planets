@@ -1,14 +1,15 @@
 <template>
     <div class="page" data-name="home">
-        <div class="appbar">
-            <a href="#" class="link back">
-                <i class="icon icon-back"></i>
-                <span class="if-not-md">Back</span>
-            </a>
-            <div class="appbar-inner">
-                FriendFinder
-            </div>
+      <div class="appbar">
+        <a href="#" class="link back">
+          <i class="icon icon-back"></i>
+          <span class="if-not-md">Back</span>
+        </a>
+        <div class="appbar-inner">
+          FriendFinder
+          <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
         </div>
+      </div>
         <div class="page-content">
             <div class="hist-title">Friends Position</div>
             <!-- <div class="list simple-list">

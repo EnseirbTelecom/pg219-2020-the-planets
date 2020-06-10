@@ -1,4 +1,4 @@
-<!-- Cette page permet de supprimer une amitié 
+<!-- Cette page permet de supprimer une amitié
      ou une requête d'amitié  que l'on a envoyée -->
 
 <!-- ===================== -->
@@ -7,11 +7,16 @@
 
 <template>
   <div class="page" data-name="friendRequest">
-  
+
     <!-- Appbar -->
     <div class="appbar">
+      <a href="#" class="link back">
+        <i class="icon icon-back"></i>
+        <span class="if-not-md">Back</span>
+      </a>
       <div class="appbar-inner">
         FriendFinder
+        <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
       </div>
     </div>
 
@@ -47,13 +52,13 @@
     // ===============================================
     // fonction qui s'exécute au chargement de la page
     async data() {
-      
+
       // initialisation des variables
       let friendRequest = {};
       var mailSender = undefined;
       var mailReceiver = undefined;
       var mail = undefined;
-      
+
       // récupération des infos pour identifier la requête d'ami dans la bdd
       mailReceiver = this.$route.params.mailReceiver;
       mail = this.$route.params.mail;
@@ -82,7 +87,7 @@
         }
 
       }
-      // permet de savoir si on traite une requête ou une amitié 
+      // permet de savoir si on traite une requête ou une amitié
       friendOrNot = (friendRequest.acceptation === "0");
 
       return {

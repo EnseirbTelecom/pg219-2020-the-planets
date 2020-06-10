@@ -1,15 +1,17 @@
 <template>
     <!-- <div data-page="index" class="page"> -->
     <div class="page" data-name="home">
-        <div class="appbar">
-            <a href="#" class="link back">
-                <i class="icon icon-back"></i>
-                <span class="if-not-md">Back</span>
-            </a>
-            <div class="appbar-inner">
-                FriendFinder
-            </div>
+      <div class="appbar">
+        <a href="#" class="link back">
+          <i class="icon icon-back"></i>
+          <span class="if-not-md">Back</span>
+        </a>
+        <div class="appbar-inner">
+          FriendFinder
+          <div class="col">Friends</div>
+          <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
         </div>
+      </div>
 
         <div class="page-content">
             <div class="hist-title">Friends List</div>
@@ -89,7 +91,7 @@
                             .then(function (data) {
 
                                 if (res.ok == true) {
-                                    
+
 
                                     friendsPos = [];
                                     FrirendMail = [];
@@ -97,34 +99,34 @@
 
 
                                     for (i = 0; i < data.length; i++) {
-                                        
+
                                         if (data[i].mailSender != app.data.mail) {
                                             FrirendMail.push(data[i].mailSender);
-                                            
+
                                         }
                                         else {
                                             FrirendMail.push(data[i].mailReceiver);
                                         }
-                                        
+
                                         idFriend.push(data[i]._id);
-                                        
+
                                     }
                                     dataApp.idFriend = idFriend;
                                     dataApp.index = 0;
-                                    
-                                    
 
-                                    
+
+
+
                                     for (j = 0; j < FrirendMail.length; j++) {
-                                        
+
 
                                         fetch("http://localhost:3000/friendName/" + FrirendMail[j])
                                             .then(function (res) {
                                                 return res.json()
                                                     .then(function (datan) {
-                                                        
+
                                                         friendsPos.push({
-                                                            pseudo: datan[0].pseudo, 
+                                                            pseudo: datan[0].pseudo,
                                                             active: 0,
                                                             id: dataApp.idFriend[dataApp.index],
                                                         });
@@ -139,7 +141,7 @@
                                                     })
                                             })
                                     }
-                                    
+
                                 }
 
                                 else console.log("error");
@@ -203,7 +205,7 @@
                             })
                     })
 
-                    
+
 
 
 

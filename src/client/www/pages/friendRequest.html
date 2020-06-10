@@ -1,4 +1,4 @@
-<!-- Cette page permet de faire une nouvelle requête 
+<!-- Cette page permet de faire une nouvelle requête
      d'amitié ou de répondre à une requête -->
 
 <!-- ===================== -->
@@ -7,11 +7,16 @@
 
 <template>
   <div class="page" data-name="friendRequest">
-  
+
     <!-- Appbar -->
     <div class="appbar">
+      <a href="#" class="link back">
+        <i class="icon icon-back"></i>
+        <span class="if-not-md">Back</span>
+      </a>
       <div class="appbar-inner">
         FriendFinder
+        <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
       </div>
     </div>
 
@@ -75,7 +80,7 @@
       let friendRequest = {};
       var mailSender = undefined;
       var mailReceiver = undefined;
-      
+
       // récupération des infos pour identifier la requête dans la bdd
       mailSender = this.$route.params.mailSender;
       if (mailSender != undefined) {
@@ -110,7 +115,7 @@
         var mailReceiver = undefined;
         var acceptation = undefined;
 
-        // récupération des paramètres 
+        // récupération des paramètres
         if (this.friendRequest._id != undefined) {
           mailSender = this.friendRequest.mailSender;
           mailReceiver = this.friendRequest.mailReceiver;
@@ -121,11 +126,11 @@
           mailReceiver = document.querySelector('#input-mailReceiver').value;
           acceptation = "0";
         }
-        
+
         // récupération du bon entête
         const queryData = this.getSaveQueryData();
 
-        // création de la requête JSON 
+        // création de la requête JSON
         fetch(queryData.url, {
           method: queryData.method,
           headers: { "Content-Type": "application/json" },

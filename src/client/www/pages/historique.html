@@ -1,14 +1,15 @@
 <template>
     <div class="page" data-name="home">
-        <div class="appbar">
-            <a href="#" class="link back">
-                <i class="icon icon-back"></i>
-                <span class="if-not-md">Back</span>
-            </a>
-            <div class="appbar-inner">
-                FriendFinder
-            </div>
+      <div class="appbar">
+        <a href="#" class="link back">
+          <i class="icon icon-back"></i>
+          <span class="if-not-md">Back</span>
+        </a>
+        <div class="appbar-inner">
+          FriendFinder
+          <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
         </div>
+      </div>
         <div class="page-content">
             <div class="hist-title">Historique</div>
             <div class="list simple-list">
@@ -21,7 +22,7 @@
                                 <div class="item-content item-input">
                                     <div class="item-inner">
                                         <div class="item-input-wrap">
-                                            
+
                                             <p class="date">Archived on {{this.timeout}}</p>
                                             <p>Latitude: {{this.latitude}}</p>
                                             <p>Longitude: {{this.longitude}}</p>
@@ -115,7 +116,7 @@
 
                                         var datec = monthNames[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear() + ' at '
                                             + ("0" + (date.getHours())).slice(-2) + ':' + ("0" + (date.getMinutes())).slice(-2);
-                                            
+
                                         totalItem.push({
                                             latitude: parseFloat(data[i].latitude).toFixed(2),
                                             longitude: parseFloat(data[i].longitude).toFixed(2),
