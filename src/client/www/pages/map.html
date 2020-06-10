@@ -3,32 +3,36 @@
    <template>
         <div class="page" data-name="home">
           <div class="appbar">
-            <div class="appbar-inner">
-              FriendFinder
-            </div>
+              <a href="#" class="link back">
+                  <i class="icon icon-back"></i>
+                  <span class="if-not-md">Back</span>
+              </a>
+              <div class="appbar-inner">
+                  FriendFinder
+                  <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
+              </div>
           </div>
           <div class="page-content">
+            <br>
             <div class="vertical_center">
                   <div id="map" style=" height:400px " ></div>
-      
-
             </div>
           </div>
-      
-           
-      
+
+
+
       </div>
       </template>
-      
+
       <script>
-      
+
           return{
               on:{
                   pageInit : function() {
                       console.log('Show Map');
                       var lat = this.$route.params.lat;
                       var lon = this.$route.params.lon;
-                    
+
                       var macarte = null;
                       // Créer l'objet "macarte" et l'insèrer dans l'élément HTML qui a l'ID "map"
                       macarte = L.map('map').setView([lat, lon], 11);
@@ -40,18 +44,18 @@
                           maxZoom: 20
                       }).addTo(macarte);
                       var marker = L.marker([lat, lon]).addTo(macarte);
-      
+
                   }
               }
           }
-      
+
       </script>
-      
+
 <<<<<<< HEAD
-      
-      
-      
+
+
+
 =======
-   
+
 
 >>>>>>> Map
