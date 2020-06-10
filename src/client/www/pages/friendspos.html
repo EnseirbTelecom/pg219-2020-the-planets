@@ -41,6 +41,13 @@
                                     style="background-color: rgba(216, 216, 216, 0.226);">
                                     <p>{{this.comment}} </p>
                                 </div>
+                                <div>
+                                    <a  class="center" @click="showMap('{{this.latitude}}', '{{this.longitude}}')">Map</a>
+                                        
+                                </div>
+
+                                <div id="map" style=" height:400px; width:100%" ></div>
+
                             </div>
                         </div>
                     </div>
@@ -69,6 +76,25 @@
             return {
                 // empty initial user data
                 friendsPos: null,
+            }
+        },
+        methods : {
+            showMap : function(lat,lon) {
+                console.log('Show Map lat ' + lat + ' Show Map long ' +  lon);
+                // var lat = 48.852969;
+                // var lon = 2.349903;
+                var macarte = null;
+
+                // Créer l'objet "macarte" et l'insèrer dans l'élément HTML qui a l'ID "map"
+                macarte = L.map('map').setView([lat, lon], 11);
+                // Leaflet ne récupère pas les cartes (tiles) sur un serveur par défaut. Nous devons lui préciser où nous souhaitons les récupérer. Ici, openstreetmap.fr
+                L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+                // Il est toujours bien de laisser le lien vers la source des données
+                attribution: 'données © <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
+                minZoom: 1,
+                maxZoom: 20
+                }).addTo(macarte);
+                var marker = L.marker([lat, lon]).addTo(macarte);
             }
         },
         on: {
