@@ -14,86 +14,74 @@
         <i class="icon icon-back"></i>
         <span class="if-not-md">Back</span>
       </a>
+
       <div class="appbar-inner">
-        FriendFinder
-        <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
+        Friends
       </div>
     </div>
-
 
     <!-- Scrollable page content -->
     <div class="page-content">
 
-      <div class="block-title">Liste des amis : </div>
+      <div class="hist-title">Requests you recieved : </div>
 
-      <div class="list links-list">
-        <ul>
-          {{#each friendName}}
-          <a href="/friend/{{mail}}"><li>Vous êtes ami avec {{surname}} {{name}}</li></a>
-          {{/each}}
-        </ul>
-      </div>
+      <div class="list contacts-list">
+        <div class="list-group">
+          <ul>
+            {{#each senderName}}
+              <li>
+                <div class="item-content">
+                    <div class="item-inner">
+              
+                      <div class="item-title">{{surname}} {{name}}</div>
+                      
+                      <button class="btn-delete-friend">
+                        <a href="/friendRequestReceiver/{{mail}}">
+                          <i class="material-icons">
+                              edit
+                          </i>
+                        </a>
+                      </button>
 
-      <div class="block-title">Liste des demandes envoyées : </div>
-
-      <div class="list links-list">
-        <ul>
-          {{#each receiverName}}
-          <a href="/friendRequestSender/{{mail}}?">
-            <li>Vous avez envoyé une demande à {{surname}} {{name}}</li>
-          </a>
-          {{/each}}
-        </ul>
-      </div>
-
-      <div class="block-title">Liste des demandes reçues : </div>
-
-      <div class="list links-list">
-        <ul>
-          {{#each senderName}}
-          <a href="/friendRequestReceiver/{{mail}}">
-            <li>{{surname}} {{name}} vous a envoyé une demande</li>
-          </a>
-          {{/each}}
-        </ul>
-      </div>
-
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="button" href="/postpos">Post my position</a>
+                    </div>
+                  </div>
+              </li>
+            {{/each}}
+          </ul>
         </div>
       </div>
 
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="button" @click="mapShow">Show map</a>
-        </div>
-      </div> 
-         
-    <div class="fab fab-center-center">
-      <!-- <a class="button button-round button-fill" @click="testMap"> 
-        Test!!!
-      </a> -->
-      </div> 
+      <div class="hist-title">Requests you sent : </div>
 
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="button" href="/friendspos">See friends pos</a>
+      <div class="list contacts-list">
+        <div class="list-group">
+          <ul>
+            {{#each receiverName}}
+            <li>
+              <div class="item-content">
+                  <div class="item-inner">
+
+                    <div class="item-title">{{surname}} {{name}}</div>
+                    
+                    <button class="btn-delete-friend">
+                      <a href="/friendRequestSender/{{mail}}?">
+                        <i class="f7-icons">
+                            trash
+                        </i>
+                      </a>
+                    </button>
+
+                  </div>
+                </div>
+            </li>
+            {{/each}}
+          </ul>
         </div>
       </div>
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="button" href="/historique">Historique</a>
-        </div>
-      </div>
+
     </div>
 
 
-    </div>
-    <br>
-    <br>
-    <br>
-    
 
     <div class="fab fab-center-center">
       <a @click="add" href="#">
@@ -117,7 +105,7 @@
     // ===============================================
     // fonction qui s'exécute au chargement de la page
     async data() {
-      try {
+      try { 
         // récuperation des demandes d'amis envoyées
         var receiver = [];
         receiver = await fetch("http://localhost:3000/reqFriendSender/" + this.$app.data.mail)
@@ -145,7 +133,7 @@
             .then(res => res.json());
           senderName.push(temp[0]);
         }
-
+        /*
         // récupération des amis
         var friend = [];
         friend = await fetch("http://localhost:3000/reqFriends/" + this.$app.data.mail)
@@ -167,12 +155,12 @@
           }
           friendName.push(temp[0]);
         }
-
+        */
       } catch (err) {
         this.$app.dialog.alert("Error " + err);
       }
 
-      return { receiverName: receiverName, senderName: senderName, friendName: friendName };
+      return { receiverName: receiverName, senderName: senderName, /* friendName: friendName */};
     },
 
     methods: {
@@ -184,11 +172,7 @@
       // fonction bouton retour à la page d'accueil
       hom: function () {
         this.$router.navigate("/homeApp");
-      },
-
-      mapShow : function(){
-        this.$router.navigate("/map");
-      }
+      },      
     }
   }
 </script>

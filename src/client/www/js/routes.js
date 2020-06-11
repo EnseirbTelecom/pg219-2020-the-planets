@@ -79,6 +79,10 @@ var routes = [
     componentUrl: './pages/FriendList.html',
   },
   {
+    path: '/FriendRequestsList',
+    componentUrl: './pages/homeFriend.html',
+  },
+  {
     path: '/historique',
     componentUrl: './pages/historique.html',
     reloadCurrent: true,
