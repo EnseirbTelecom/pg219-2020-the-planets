@@ -24,9 +24,9 @@
     <div class="page-content">
       <div class="block-title">
         {{#if friendRequest._id}}
-          Voulez vous être amis avec {{friendRequest.mailSender}} ?
+          Do you want to be friend with {{friendRequest.mailSender}} ?
         {{else}}
-          Ajouter un ami
+          Add a friend
         {{/if}}
       </div>
 
@@ -37,7 +37,7 @@
           <li>
             <div class="item-content item-input">
               <div class="item-inner">
-                <div class="item-title item-label">Mail de la personne</div>
+                <div class="item-title item-label">User mail</div>
                 <div class="item-input-wrap">
                   <input id="input-mailReceiver" type="text" name="mailReceiver" placeholder="mail" value="">
                 </div>
@@ -50,12 +50,12 @@
 
       <!-- Footer -->
       <div class="block block-strong row">
-        <div class="col"><a @click="cancel" class="button" href="#">Annuler</a></div>
+        <div class="col"><a @click="cancel" class="button" href="#">Cancel</a></div>
         {{#if friendRequest._id}}
-          <div class="col"><a @click="delete" class="button" href="#">Supprimer</a></div>
-          <div class="col"><a @click="save" class="button" href="#">Confirmer</a></div>
+          <div class="col"><a @click="delete" class="button" href="#">Delete</a></div>
+          <div class="col"><a @click="save" class="button" href="#">Confirm</a></div>
         {{else}}
-          <div class="col"><a @click="save" class="button" href="#">Sauvegarder</a></div>
+          <div class="col"><a @click="save" class="button" href="#">Save</a></div>
         {{/if}}
       </div>
 
