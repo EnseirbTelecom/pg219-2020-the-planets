@@ -46,7 +46,7 @@ if(tokenHearder !== undefined){
     }
   });
 }else{
-	res.status(403).json({err: "Manque le token"});
+	res.status(403).json({err: "No token"});
 	}
 }
 
@@ -306,7 +306,7 @@ MongoClient.connect(url, {
 			users.findOne({"mail": req.body.mail},(err,user) =>{
 				if(user){
 				console.log("Compte deja existant");
-				return res.status(401).json({ error: "Compte deja existant" });
+				return res.status(401).json({ error: "Account already used" });
 				}else{
 				next();
 				}
@@ -327,7 +327,7 @@ MongoClient.connect(url, {
 					mail: req.body.mail,
 				}
         console.log(forToken);
-				jwt.sign(forToken,secretKey,{expiresIn: 120},(err,token) => {
+				jwt.sign(forToken,secretKey,{expiresIn: 300},(err,token) => {
           if (token) {
             console.log(token);
             res.status(201).json({token: token});
@@ -352,7 +352,7 @@ MongoClient.connect(url, {
             mail: req.body.mail,
           };
           console.log(forTokenConnexion);
-          jwt.sign(forTokenConnexion,secretKey,{expiresIn: 120},(err,token) => {
+          jwt.sign(forTokenConnexion,secretKey,{expiresIn: 300},(err,token) => {
             if (token) {
               const response = {
                 name: user.name,
