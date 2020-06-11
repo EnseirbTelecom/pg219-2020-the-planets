@@ -48,14 +48,15 @@
       </form>
       {{/if}}
 
+      <br><br><br><br><br><br>
       <!-- Footer -->
       <div class="block block-strong row">
-        <div class="col"><a @click="cancel" class="button" href="#">Cancel</a></div>
+        <div class="col"><a @click="cancel" class="center3" href="#">Cancel</a></div>
         {{#if friendRequest._id}}
-          <div class="col"><a @click="delete" class="button" href="#">Delete</a></div>
-          <div class="col"><a @click="save" class="button" href="#">Confirm</a></div>
+          <div class="col"><a @click="delete" class="center3" href="#">Delete</a></div>
+          <div class="col"><a @click="save" class="center3" href="#">Confirm</a></div>
         {{else}}
-          <div class="col"><a @click="save" class="button" href="#">Save</a></div>
+          <div class="col"><a @click="save" class="center3" href="#">Save</a></div>
         {{/if}}
       </div>
 

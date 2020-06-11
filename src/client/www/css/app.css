@@ -200,6 +200,14 @@ input{
   font-size: 1.3em;
 }
 
+.center3{
+  margin: auto;
+  display: inline-block;
+  font-weight: bold;
+  font-size: 1em;
+}
+
+
 .col{
   text-align: center;
 }
