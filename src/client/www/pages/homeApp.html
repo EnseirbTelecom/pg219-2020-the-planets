@@ -13,40 +13,28 @@
       <div class="appbar-inner">
         FriendFinder
         <div class="col">Home</div>
-        <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
+        <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign
+          out</button>
       </div>
     </div>
 
     <!-- Scrollable page content -->
     <div class="page-content">
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="center" href="/postpos">Post my position</a>
+      <div class="vertical_center">
+        <div class="block block-strong col">
+          <a class="center2" href="/postpos">Post my position</a>
         </div>
-      </div>
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="center" href="/map">Show map</a>
+        <div class="block block-strong col">
+          <a class="center2" href="/friendspos">See friends position</a>
         </div>
-      </div>
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="center" href="/friendspos">See friends position</a>
+        <div class="block block-strong col">
+          <a class="center2" href="/historique">Historique</a>
         </div>
-      </div>
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="center" href="/historique">Historique</a>
+        <div class="block block-strong col">
+          <a class="center2" href="/FriendList">Friend List</a>
         </div>
-      </div>
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="center" href="/FriendList">Friend List</a>
-        </div>
-      </div>
-      <div class="block block-strong col">
-        <div class="col">
-          <a class="center" href="/FriendRequestsList">Friend Requests</a>
+        <div class="block block-strong col">
+          <a class="center2" href="/FriendRequestsList">Friend Requests</a>
         </div>
       </div>
       <br>
@@ -63,40 +51,40 @@
 
 <script>
   return {
-      on: {
-        pageAfterIn: function (e, page) {
-          const url = "http://localhost:3000/testtoken";
-          const dialog = this.$app.dialog;
-          const dataApp = this.$app.data;
-          const router = this.$router;
-            //start your interval after page is in
-            var interval;
-            dataApp.interval = setInterval(function () {
+    on: {
+      pageAfterIn: function (e, page) {
+        const url = "http://localhost:3000/testtoken";
+        const dialog = this.$app.dialog;
+        const dataApp = this.$app.data;
+        const router = this.$router;
+        //start your interval after page is in
+        var interval;
+        dataApp.interval = setInterval(function () {
 
-              fetch(url,{
-                method: "GET",
-                headers: { "Content-Type": "application/json","authorization" : 'Basic ' + localStorage.getItem("token")}
-              })
-              .then(function(response){
-                if (response.ok) {
-                  console.log("ok");
-                }
-                else {
-                  localStorage.setItem("email",null);
-                  localStorage.setItem("token",null);
-                  console.log("ici");
-                  router.navigate('/');
-                }
-              })
-              .catch(err => this.$app.dialog.alert('Error ' + err));
-            }, 60000);
-        },
-
-        pageBeforeRemove: function (e, page) {
-            const dataApp = this.$app.data;
-            clearInterval(dataApp.interval);
-        },
+          fetch(url, {
+            method: "GET",
+            headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") }
+          })
+            .then(function (response) {
+              if (response.ok) {
+                console.log("ok");
+              }
+              else {
+                localStorage.setItem("email", null);
+                localStorage.setItem("token", null);
+                console.log("ici");
+                router.navigate('/');
+              }
+            })
+            .catch(err => this.$app.dialog.alert('Error ' + err));
+        }, 60000);
       },
+
+      pageBeforeRemove: function (e, page) {
+        const dataApp = this.$app.data;
+        clearInterval(dataApp.interval);
+      },
+    },
 
     methods: {
 

@@ -144,12 +144,6 @@
   overflow: scroll;
 }
 
-/*
-.page-content.scroll{
-  height: 200%;
-  padding-top:60px;
-
-} */
 
 .vertical_center{
   position:relative;
@@ -197,6 +191,13 @@ input{
 .center{
   margin: auto;
   display: inline-block;
+}
+
+.center2{
+  margin: auto;
+  display: inline-block;
+  font-weight: bold;
+  font-size: 1.3em;
 }
 
 .col{
