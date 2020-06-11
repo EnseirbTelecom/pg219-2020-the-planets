@@ -17,13 +17,14 @@
 
       <div class="appbar-inner">
         Friends
+        <button class="deconnexion appbar" type="button" name="button" @click="this.$app.methods.deconnexion">Sign out</button>
       </div>
     </div>
 
     <!-- Scrollable page content -->
     <div class="page-content">
 
-      <div class="hist-title">Requests you recieved : </div>
+      <div class="hist-title">Requests you received : </div>
 
       <div class="list contacts-list">
         <div class="list-group">
@@ -32,9 +33,9 @@
               <li>
                 <div class="item-content">
                     <div class="item-inner">
-              
+
                       <div class="item-title">{{surname}} {{name}}</div>
-                      
+
                       <button class="btn-delete-friend">
                         <a href="/friendRequestReceiver/{{mail}}">
                           <i class="material-icons">
@@ -62,7 +63,7 @@
                   <div class="item-inner">
 
                     <div class="item-title">{{surname}} {{name}}</div>
-                    
+
                     <button class="btn-delete-friend">
                       <a href="/friendRequestSender/{{mail}}?">
                         <i class="f7-icons">
@@ -105,7 +106,7 @@
     // ===============================================
     // fonction qui s'exécute au chargement de la page
     async data() {
-      try { 
+      try {
         // récuperation des demandes d'amis envoyées
         var receiver = [];
         receiver = await fetch("http://localhost:3000/reqFriendSender/" + this.$app.data.mail)
@@ -172,7 +173,44 @@
       // fonction bouton retour à la page d'accueil
       hom: function () {
         this.$router.navigate("/homeApp");
-      },      
+      },
+    },
+
+    on: {
+
+      pageAfterIn: function (e, page) {
+        const url = "http://localhost:3000/testtoken";
+        const dialog = this.$app.dialog;
+        const dataApp = this.$app.data;
+        const router = this.$router;
+          //start your interval after page is in
+          var interval;
+          dataApp.interval = setInterval(function () {
+
+            fetch(url,{
+              method: "GET",
+              headers: { "Content-Type": "application/json","authorization" : 'Basic ' + localStorage.getItem("token")}
+            })
+            .then(function(response){
+              if (response.ok) {
+                console.log("ok");
+              }
+              else {
+                localStorage.setItem("email",null);
+                localStorage.setItem("token",null);
+                console.log("ici");
+                router.navigate('/');
+              }
+            })
+            .catch(err => this.$app.dialog.alert('Error ' + err));
+          }, 60000);
+      },
+
+      pageBeforeRemove: function (e, page) {
+          const dataApp = this.$app.data;
+          clearInterval(dataApp.interval);
+      },
+
     }
   }
 </script>
