@@ -52,7 +52,7 @@
         const router = this.$router;
         const dialog = this.$app.dialog;
         const passwordEncoding = CryptoJS.MD5(password);
-        if(dataApp.mail && passwordEncoding){
+        if(dataApp.mail && password){
           fetch(url,{
             method: "POST",
             headers:{'Content-Type' : 'application/json'},
@@ -79,7 +79,7 @@
               });
             }
             else{
-              response.json().then(data =>{dialog.alert(data.err)});
+              response.json().then(data =>{dialog.alert("Wrong email or password")});
             }
           })
           .catch(err => this.$app.dialog.alert('Error ' + err));
