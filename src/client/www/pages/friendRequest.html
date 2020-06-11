@@ -22,33 +22,35 @@
 
     <!-- Scrollable page content -->
     <div class="page-content">
-      <div class="block-title">
+      
         {{#if friendRequest._id}}
-          Do you want to be friend with {{friendRequest.mailSender}} ?
+          <div class="hist-title">
+            Do you want to be friend with {{friendRequest.mailSender}} ?
+          </div>
+        
         {{else}}
-          Add a friend
-        {{/if}}
-      </div>
+          <div class="hist-title">
+            Add a friend
+          </div>
 
-      {{#if friendRequest._id}}
-      {{else}}
-      <form class="list" id="friendRequest-form">
-        <ul>
-          <li>
-            <div class="item-content item-input">
-              <div class="item-inner">
-                <div class="item-title item-label">User mail</div>
-                <div class="item-input-wrap">
-                  <input id="input-mailReceiver" type="text" name="mailReceiver" placeholder="mail" value="">
+          <form class="list contacts-list" id="friendRequest-form">
+            <ul>
+              <li>
+                <div class="item-content item-input">
+                  <div class="item-inner">
+                    <div class="item-title item-label">User mail</div>
+                    <div class="item-input-wrap">
+                      <input id="input-mailReceiver" type="text" name="mailReceiver" placeholder="mail" value="">
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          </li>
-        </ul>
-      </form>
-      {{/if}}
+              </li>
+            </ul>
+          </form>
 
-      <br><br><br><br><br><br>
+          {{/if}}
+
+      <br><br><br><br><br><br><br><br><br><br><br>
       <!-- Footer -->
       <div class="block block-strong row">
         <div class="col"><a @click="cancel" class="center3" href="#">Cancel</a></div>
