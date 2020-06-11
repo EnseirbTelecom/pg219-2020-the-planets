@@ -115,6 +115,8 @@
         var mailSender = undefined;
         var mailReceiver = undefined;
         var acceptation = undefined;
+        const router = this.$router;
+        const dialog = this.$app.dialog;
 
         // récupération des paramètres
         if (this.friendRequest._id != undefined) {
@@ -141,10 +143,17 @@
             acceptation: acceptation
           })
         })
+          .then(function(friend){
+            if (friend.ok) {
+              friend.json().then(data => {
+                router.navigate('/homeRequest');
+              });
+            }
+            else {
+              dialog.alert("A request or a friendship already exist"); 
+            }
+          })
           .catch(err => this.$app.dialog.alert('Error ' + err))
-          .finally(() => {
-            this.$router.navigate("/homeFriend");
-          });
       },
 
       // retourne le bon entête en fonction de si c'est une nouvelle demande ou une réponse
@@ -171,7 +180,7 @@
           })
             .catch(err => this.$app.dialog.alert('Error ' + err))
             .finally(() => {
-              this.$router.navigate("/homeFriend");
+              this.$router.navigate("/homeRequest");
             });
         }
       }

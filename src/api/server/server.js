@@ -187,7 +187,7 @@ MongoClient.connect(url, {
 		})
 
 		// ======================
-		// ===   homeFriend   ===
+		// ===   homeRequest   ===
 		// ======================
 
 		// récupérer les noms liés aux mails

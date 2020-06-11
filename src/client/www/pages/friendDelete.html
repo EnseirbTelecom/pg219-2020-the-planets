@@ -30,10 +30,12 @@
         {{/if}}
       </div>
 
+      <br><br><br>
+
       <!-- Footer -->
       <div class="block block-strong row">
-        <div class="col"><a @click="cancel" class="button" href="#">Annuler</a></div>
-        <div class="col"><a @click="delete" class="button" href="#">Supprimer</a></div>
+        <div class="col"><a @click="cancel" class="button" href="#">Cancel</a></div>
+        <div class="col"><a @click="delete" class="button" href="#">Delete</a></div>
       </div>
 
     </div>
@@ -111,7 +113,7 @@
           })
             .catch(err => this.$app.dialog.alert('Error ' + err))
             .finally(() => {
-              this.$router.navigate("/homeFriend");
+              this.$router.navigate("/homeRequest");
             });
         }
       }

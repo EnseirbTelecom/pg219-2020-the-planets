@@ -12,8 +12,8 @@ var routes = [
   },
   // Afficher la page des amis
   {
-    path: '/homeFriend',
-    componentUrl: './pages/homeFriend.html'
+    path: '/homeRequest',
+    componentUrl: './pages/homeRequest.html'
   },
   // Afficher une amitié
   {
@@ -80,7 +80,7 @@ var routes = [
   },
   {
     path: '/FriendRequestsList',
-    componentUrl: './pages/homeFriend.html',
+    componentUrl: './pages/homeRequest.html',
   },
   {
     path: '/historique',
