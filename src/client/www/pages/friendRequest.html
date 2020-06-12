@@ -10,7 +10,7 @@
 
     <!-- Appbar -->
     <div class="appbar">
-      <a href="#" class="link back">
+      <a href="/homeApp" class="link">
         <i class="icon icon-back"></i>
         <span class="if-not-md">Back</span>
       </a>
@@ -136,7 +136,7 @@
         // création de la requête JSON
         fetch(queryData.url, {
           method: queryData.method,
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") },
           body: JSON.stringify({
             mailSender: mailSender,
             mailReceiver: mailReceiver,
@@ -150,7 +150,7 @@
               });
             }
             else {
-              dialog.alert("A request or a friendship already exist"); 
+              dialog.alert("A request or a friendship already exist");
             }
           })
           .catch(err => this.$app.dialog.alert('Error ' + err))
@@ -177,6 +177,7 @@
         if (this.friendRequest._id != undefined) {
           fetch("http://localhost:3000/friendRequest/" + this.friendRequest._id, {
             method: "DELETE",
+            headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") }
           })
             .catch(err => this.$app.dialog.alert('Error ' + err))
             .finally(() => {
