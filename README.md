@@ -9,7 +9,7 @@ Réalisation d'une application de géo-localisation d’amis : **FriendFinder**.
 -   Al Ktabe Amera
 
 ## Démo 
-Lien pour accéder à la démo : https://youtu.be/gWLcmgNrQNE
+Lien pour accéder à la démo : https://youtu.be/APtrIZKqfLE
 
 ## Informations diverses 
  L'application comporte un serveur utilisant Node / Express / MongoDB, et un client destiné à s’exécuter sur plateforme Android, développé via Framework7 / Cordova.

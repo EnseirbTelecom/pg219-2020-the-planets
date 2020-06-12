@@ -327,7 +327,7 @@ MongoClient.connect(url, {
 					mail: req.body.mail,
 				}
         console.log(forToken);
-				jwt.sign(forToken,secretKey,{expiresIn: 300},(err,token) => {
+				jwt.sign(forToken,secretKey,{expiresIn: 86400},(err,token) => { // 24h = 86400s
           if (token) {
             console.log(token);
             res.status(201).json({token: token});
@@ -352,7 +352,7 @@ MongoClient.connect(url, {
             mail: req.body.mail,
           };
           console.log(forTokenConnexion);
-          jwt.sign(forTokenConnexion,secretKey,{expiresIn: 300},(err,token) => {
+          jwt.sign(forTokenConnexion,secretKey,{expiresIn: 86400},(err,token) => { // 24h = 86400s
             if (token) {
               const response = {
                 name: user.name,
