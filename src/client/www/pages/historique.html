@@ -74,7 +74,7 @@
 
                 fetch("http://localhost:3000/historique/" + idpos, {
                     method: "DELETE",
-                    headers: { "Content-Type": "application/json" }
+                    headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") }
                 })
                     .catch(err => this.$app.dialog.alert('Error ' + err));
                 totalItem.forEach(function (e, index) {
@@ -99,6 +99,7 @@
 
                 fetch("http://localhost:3000/historique/" + app.data.mail, {
                     method: "GET",
+                    headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") }
 
                 })
                     .then(function (res) {

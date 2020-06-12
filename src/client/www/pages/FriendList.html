@@ -55,6 +55,7 @@
                 if (idpos != undefined) {
                     fetch("http://localhost:3000/friendRequest/" + idpos, {
                         method: "DELETE",
+                        headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") }
                     })
                         .catch(err => this.$app.dialog.alert('Error ' + err))
                     friendsPos.forEach(function (e, index) {
@@ -79,6 +80,7 @@
 
                 fetch("http://localhost:3000/reqFriends/" + app.data.mail, {
                     method: "GET",
+                    headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") }
 
                 })
                     .then(function (res) {
@@ -147,6 +149,7 @@
 
                 fetch("http://localhost:3000/reqFriends/" + app.data.mail, {
                     method: "GET",
+                    headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") }
 
                 })
                     .then(function (res) {
@@ -171,6 +174,7 @@
 
                                         fetch("http://localhost:3000/mypos/" + FrirendMail, {
                                             method: "GET",
+                                            headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") }
                                         })
                                             .then(function (res1) {
                                                 return res1.json()

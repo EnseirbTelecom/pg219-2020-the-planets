@@ -110,6 +110,7 @@
         if (this.friendRequest._id != undefined) {
           fetch("http://localhost:3000/friendRequest/" + this.friendRequest._id, {
             method: "DELETE",
+            headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") }
           })
             .catch(err => this.$app.dialog.alert('Error ' + err))
             .finally(() => {

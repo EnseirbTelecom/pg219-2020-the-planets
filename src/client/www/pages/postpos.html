@@ -152,12 +152,12 @@
 
                             fetch("http://localhost:3000/deletecurrentpos/" + userpos[0]._id, {
                                 method: "DELETE",
-                                headers: { "Content-Type": "application/json" }
+                                headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") }
                             });
 
                             fetch("http://localhost:3000/posthistpos/", {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") },
                                 body: JSON.stringify({
                                     _id: userpos[0]._id,
                                     mymail: dataApp.mail,
@@ -171,7 +171,7 @@
 
                             fetch("http://localhost:3000/postpos/", {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") },
                                 body: JSON.stringify({
                                     mymail: dataApp.mail,
                                     pseudo: dataApp.pseudo,
@@ -220,7 +220,7 @@
 
                             fetch(url, {
                                 method: "POST",
-                                headers: { "Content-Type": "application/json" },
+                                headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") },
                                 body: JSON.stringify({
                                     mymail: dataApp.mail,
                                     pseudo: dataApp.pseudo,
@@ -284,7 +284,7 @@
 
                 fetch("http://localhost:3000/posthistpos/", {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
+                    headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") },
                     body: JSON.stringify({
                         _id: userpos[0]._id,
                         mymail: dataApp.mail,
@@ -298,7 +298,7 @@
 
                 fetch("http://localhost:3000/deletecurrentpos/" + userpos[0]._id, {
                     method: "DELETE",
-                    headers: { "Content-Type": "application/json" }
+                    headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") }
                 })
                     .catch(err => this.$app.dialog.alert('Error ' + err));
 
@@ -352,6 +352,7 @@
 
                 fetch("http://localhost:3000/mypos/" + app.data.mail, {
                     method: "GET",
+                    headers: { "Content-Type": "application/json", "authorization": 'Basic ' + localStorage.getItem("token") }
                 })
                     .then(function (res1) {
                         return res1.json()

@@ -35,12 +35,10 @@ if(tokenHearder !== undefined){
 	req.token = splitTokenHeader[1];
   jwt.verify(req.token,secretKey,(err,decode)=>{
     if (err) {
-      console.log(err);
       res.status(401).json({err: err.message});
       return;
     }
     if (decode) {
-      console.log(decode);
       req.id = decode.id;
       next();
     }
@@ -88,13 +86,13 @@ MongoClient.connect(url, {
 		// ===   dev (friends)   ===
 		// =========================
 
-		app.get("/friends/:id", (req, res) => {
+		app.get("/friends/:id",(req, res) => {
 			friends.findOne({ _id: ObjectID(req.params.id) })
 				.then(item => (item) ? res.json(item) : res.status(404).json({ error: "Entity not found." }))
 				.catch(err => console.log("err" + err))
 		})
 
-		app.put("/friends/:id", friendChecker, (req, res) => {
+		app.put("/friends/:id",verifyToken, friendChecker, (req, res) => {
 			const friend = {
 				mailSender: req.body.mailSender,
 				mailReceiver: req.body.mailReceiver,
@@ -105,7 +103,7 @@ MongoClient.connect(url, {
 				.catch(err => console.log("Error " + err))
 		})
 
-		app.patch("/friends/:id", (req, res) => {
+		app.patch("/friends/:id",verifyToken, (req, res) => {
 			const friend = {}
 			if (req.body.mailSender)
 				friend.mailSender = req.body.mailSender
@@ -119,12 +117,12 @@ MongoClient.connect(url, {
 				.catch(err => console.log("Error: " + err))
 		})
 
-		app.delete("/friends/:id", (req, res) => {
+		app.delete("/friends/:id", verifyToken,(req, res) => {
 			friends.deleteOne({ _id: ObjectID(req.params.id) })
 				.then(command => (command.result.n == 1) ? res.json(req.params.id) : res.status(404).json({ error: "Entity not found." }))
 		})
 
-		app.post("/friends", friendChecker, (req, res) => {
+		app.post("/friends",verifyToken, friendChecker, (req, res) => {
 			const friend = {
 				mailSender: req.body.mailSender,
 				mailReceiver: req.body.mailReceiver,
@@ -134,7 +132,7 @@ MongoClient.connect(url, {
 				.then(command => res.status(201).json(friend))
 		})
 
-		app.get("/friends", (req, res) => {
+		app.get("/friends",(req, res) => {
 			friends.find().toArray()
 				.then(items => res.json(items))
 		})
@@ -149,7 +147,7 @@ MongoClient.connect(url, {
 				.catch(err => console.log("err" + err))
 		})
 
-		app.put("/user/:id", (req, res) => {
+		app.put("/user/:id",verifyToken, (req, res) => {
 			const user = {
 				name: req.body.name,
                 surname: req.body.surname,
@@ -163,7 +161,7 @@ MongoClient.connect(url, {
 				.catch(err => console.log("Error " + err))
 		})
 
-		app.delete("/user/:id", (req, res) => {
+		app.delete("/user/:id",verifyToken, (req, res) => {
 			users.deleteOne({ _id: ObjectID(req.params.id) })
 				.then(command => (command.result.n == 1) ? res.json(req.params.id) : res.status(404).json({ error: "Entity not found." }))
 		})
@@ -202,7 +200,7 @@ MongoClient.connect(url, {
 				.then(items => res.json(items))
 		})
 		// récupérer la liste des demandes faites à quelqu'un
-		app.get("/reqFriendReceiver/:mail", (req, res) => {
+		app.get("/reqFriendReceiver/:mail",(req, res) => {
 			friends.find({ $and: [{ mailReceiver: req.params.mail }, { acceptation: "0" }] }, { _id: 1, mailSender: 0, mailReceiver: 0, acceptation: 0 }).toArray()
 				.then(items => res.json(items))
 		})
@@ -226,13 +224,13 @@ MongoClient.connect(url, {
 		})
 
 		// supprimer une demande d'ami ou une amitié
-		app.delete("/friendRequest/:id", (req, res) => {
+		app.delete("/friendRequest/:id",verifyToken, (req, res) => {
 			friends.deleteOne({ _id: ObjectID(req.params.id) })
 				.then(command => (command.result.n == 1) ? res.json(req.params.id) : res.status(404).json({ error: "Entity not found." }))
 		})
 
 		// faire une nouvelle demande d'ami
-		app.post("/friendRequest", friendChecker, requestChecker, userChecker, (req, res) => {
+		app.post("/friendRequest",verifyToken, friendChecker, requestChecker, userChecker, (req, res) => {
 			const friend = {
 				mailSender: req.body.mailSender,
 				mailReceiver: req.body.mailReceiver,
@@ -272,7 +270,7 @@ MongoClient.connect(url, {
 			})
 		}
 		// répondre à une demande d'ami
-		app.put("/friendRequest/:id", friendChecker, (req, res) => {
+		app.put("/friendRequest/:id",verifyToken, friendChecker, (req, res) => {
 			const friend = {
 				mailSender: req.body.mailSender,
 				mailReceiver: req.body.mailReceiver,
@@ -284,7 +282,7 @@ MongoClient.connect(url, {
 		})
 
 		// récupérer les infos de l'amitié à partir des mails des deux personnes
-		app.get("/friend/:mailSender/:mailReceiver", (req, res) => {
+		app.get("/friend/:mailSender/:mailReceiver",(req, res) => {
 			friends.findOne({ $or: [{ mailSender: req.params.mailSender, mailReceiver: req.params.mailReceiver }, { mailSender: req.params.mailReceiver, mailReceiver: req.params.mailSender }] }, { _id: 1, mailSender: 1, mailReceiver: 1, acceptation: 1 })
 				.then(item => (item) ? res.json(item) : res.status(404).json({ error: "Entity not found." }))
 				.catch(err => console.log("err" + err))
@@ -382,14 +380,14 @@ MongoClient.connect(url, {
 		});
 
 		// route pour vider la BD pour la phase de test
-		app.delete("/users", (req, res) => {
+		app.delete("/users", verifyToken,(req, res) => {
 			users.deleteMany()
 				.then(items => res.json(items));
 		});
 
 		// Balthazar
 
-		app.post('/postpos', (req, res) => {
+		app.post('/postpos', verifyToken,(req, res) => {
 			// positions.createIndex({ "expireAt": 1 }, { expireAfterSeconds: 0 });
 
 			const user_position = {
@@ -437,7 +435,7 @@ MongoClient.connect(url, {
 		});
 
 
-		app.delete('/deletecurrentpos/:id', (req, res) => {
+		app.delete('/deletecurrentpos/:id', verifyToken,(req, res) => {
 			console.log(req.params.id)
 
 			var my_job = schedule.scheduledJobs["task" + req.params.id];
@@ -449,7 +447,7 @@ MongoClient.connect(url, {
 		});
 
 
-		app.post('/posthistpos', (req, res) => {
+		app.post('/posthistpos', verifyToken,(req, res) => {
 			console.log(req);
 			const user_last_position = {
 				_id: ObjectID(req.body._id),
