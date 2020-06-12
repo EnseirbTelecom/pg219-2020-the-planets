@@ -1,0 +1,392 @@
+openapi: 3.0.1
+info:
+  title: FriendFlinder
+  description: Api documentation for the API FriendFinder
+  version: 1.0.0
+servers:
+- url: http://localhost:3000/
+tags:
+- name: user
+  description: Everything about authentification
+- name: position 
+  description: Access to position and history
+- name: friend 
+  description: Operations about friend and friend request
+  
+paths:
+  /registration:
+    post:
+      tags:
+      - user
+      summary: add a new user
+      operationId: add a new id
+      requestBody:
+        description: 
+        content :
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        400:
+          description: Email already used
+          content: {}
+      x-codegen-request-body-name: body
+    
+  /connection:
+    post:
+      tags:
+      - user
+      summary: log in
+      operationId: findUserbyEmail
+      requestBody:
+        content: 
+          - email
+          - password
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            
+        400:
+          description: Wrong email or password
+          content: {}
+      x-codegen-request-body-name: body
+      
+  /reqFriends/{mail}:
+    get:
+      tags:
+      - friend
+      summmary: give the list of friend of the user
+      parameters:
+        - name: mail
+          in: path
+          required: true
+          description: The mail of the user
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Friend"
+        400:
+          description: fail
+          content: {} 
+      
+  /friendRequest:
+    post:
+      tags:
+      - friend
+      summary: make a friend request
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Friend'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Friend'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            
+        400:
+          description: Wrong email
+          content: {}
+      x-codegen-request-body-name: body
+      
+  /friendRequest/{id}:
+    delete:
+      tags: friend
+      summary: delete a request
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: The mail of the user
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+        400:
+          description: fail
+          content: {}
+          
+  /reqFriendSender/{mail}:
+    get:
+      tags:
+      - friend
+      summmary: give the list of request received
+      parameters:
+        - name: mail
+          in: path
+          required: true
+          description: The mail of the user
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Friend"
+        400:
+          description: fail
+          content: {}
+          
+  /reqFriendReceiver/{mail}:
+    get:
+      tags:
+      - friend
+      summmary: give the list of request send
+      parameters:
+        - name: mail
+          in: path
+          required: true
+          description: The mail of the user
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Friend"
+        400:
+          description: fail
+          content: {}  
+          
+  
+  /postpos:
+    post:
+      tags:
+      - position
+      summary: post a new position
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Position'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Position'
+        required: true
+      responses:
+        200:
+          description: successful operation
+          content:
+            
+        400:
+          description: Lack of information
+          content: {}
+      x-codegen-request-body-name: body
+      
+  /deletecurrentpos/{positionId}:
+    delete:
+      tags:
+      - position
+      summmary: delete a current position of the user
+      parameters:
+        - name: positionId
+          in: path
+          required: true
+          description: The id of the position to retrieve
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            
+        400:
+          description: fail
+          content: {}
+          
+  /historique/{positionId}:
+    delete:
+      tags:
+      - position
+      summmary: delete a position of the history
+      parameters:
+        - name: positionId
+          in: path
+          required: true
+          description: The id of the position to retrieve
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          content:
+            
+        400:
+          description: fail
+          content: {}
+          
+  /historique/{mymail}:
+    get:
+      tags:
+      - position
+      summmary: give the history of the user
+      parameters:
+        - name: mymail
+          in: path
+          required: true
+          description: The mail to retrieve
+          schema:
+            type: string
+      responses:
+        200:
+          description: successful operation
+          headers:
+            x-next:
+              description: A link to the next page of responses
+              schema:
+                type: string
+          content:
+            application/json:    
+              schema:
+                $ref: "#/components/schemas/Position"
+        400:
+          description: fail
+          content: {} 
+  
+  
+    
+          
+components:
+  schemas:
+    
+    Friend:
+      required:
+      - mailSender
+      -  mailReceiver
+      -  acceptation
+      type: object
+      properties:
+        id:
+          type: interger
+          format: int64
+        mailSender:
+          type: string
+        mailReceiver:
+          type: string
+        acceptation:
+          type: interger
+          format: int64
+      xml:
+        name: Friend
+    
+        
+    User:
+      required:
+      - name
+      - surname
+      - pseudo
+      - birthday
+      - mail
+      - password
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+        surname:
+          type: string
+        pseudo:
+          type: string
+        birthday:
+          type: string
+        mail:
+          type: string
+        password:
+          type: string
+      xml:
+        name: User
+        
+        
+        
+    Position:
+      required:
+      - email
+      - latitude
+      - longitude
+      - creaetime
+      - timeout
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+        latitude:
+          type: string
+        longitude:
+          type: string
+        comment:
+          type: string
+        createtime:
+          type: string
+        timeout:
+          type: integer
+          format: int64
+      xml:
+        name: Position
+
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: http://petstore.swagger.io/oauth/dialog
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+
+      
+      
+    
