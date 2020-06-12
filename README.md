@@ -3,13 +3,13 @@
 Réalisation d'une application de géo-localisation d’amis : **FriendFinder**.
 
 ## Groupe The Planets
-Robin Balthazar
-Ramboasolo Jérémy
-Dubreuil Julien
-Al Ktabe Amera
+-   Robin Balthazar
+-   Ramboasolo Jérémy
+-   Dubreuil Julien
+-   Al Ktabe Amera
 
 ## Démo 
-lien pour accéder à la démo : https://youtu.be/gWLcmgNrQNE
+Lien pour accéder à la démo : https://youtu.be/gWLcmgNrQNE
 
 ## Informations diverses 
  L'application comporte un serveur utilisant Node / Express / MongoDB, et un client destiné à s’exécuter sur plateforme Android, développé via Framework7 / Cordova.
